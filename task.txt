@@ -1,7 +1,0 @@
-  Pour la validation du code, on doit utiliser un autre endpoint pas celui de keycloak 
-  Le accessToken est celui recuperer lors de la connexion sur keycloak.
-  
-final String baseUrl = 'https://tyure-backend-dev.todoustudio.cloud/api/v1';
-
-final Uri url = Uri.parse('$baseUrl/merchants/terminals/link');
-

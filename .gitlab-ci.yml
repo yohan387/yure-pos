@@ -1,0 +1,4 @@
+include:
+  - project: "ci-deployment-files/apps-deployment"
+    ref: "mobile"
+    file: "/.gitlab-ci.yml"
