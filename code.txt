@@ -1,0 +1,34 @@
+créer une application de fintech en flutter qui permet de faire des transactions financieres :
+
+Voici les différents screen : 
+
+Ecran de connexion : code à vérifier, si code correct on redirige sur écran de verification OTP
+Ecran de vérification de OTP : Si l'OTP est correct on reçoit un json {"message :'', "access_token : '', ""} qui contient un access_token dont le decodage contient un délai d'expiration.
+Chaque fois que l'utilisateur ouvre l'application, si le token est valide ou n'a pas expiré, on redirige sur la page d'accueil, sinon la page de connexion 
+
+Ecran d'accueil : le solde en haut de l'ecran, une carte afficher en bas, et enfain l'historique des transactions
+
+1- Je veux que tu me code l'app avec une architecture bloc
+2- Je vais utiliser une api, donc coder de maniere pro, un dev senior avec commentaires toutes les fonctionnalités. 
+   Toutes variables global, les constants doivent etre declaré dans un fichier
+
+3- Chaque appelle à l'api doit vérifier qu'il existe une connexion internet
+3- Des messages d'erreurs claire à afficher pour l'utilisateur en cas d'echec de connexion, d'echec de requete, de succès de requete, d'erreur.
+Ecran d'accueil : je te dis comment elle doit etre :
+1- Elle est divisé en 2 parties, en haut : affichage du solde, d’une carte
+2- En bas, 10 dernieres transactions recentes dans un bottomshette : Quand on pousse le bottom sheet vers le haut, on affiche toutes les transactions avec un scrool infinite. Quand on pouse vers le haut, elle doit s'arreter après avoir fermer la carte, mais pas la balance. Parce que la balance est affiché en haut de la carte
+
+voici comment verifier le temps d'expiration du token, tu peux adapter comme tu veux:
+ final parts = token.split('.');
+if (parts.length != 3) {
+    throw Exception('Invalid token');
+}
+
+final payload = json.decode(utf8.decode(base64Url.decode(base64Url.normalize(parts[1]))));
+final expiry = payload['exp'];
+print(expiry);
+
+if (expiry != null && DateTime.now().millisecondsSinceEpoch / 1000 > expiry) {
+    token = null;
+    await SecureStorageService().deleteToken();
+}

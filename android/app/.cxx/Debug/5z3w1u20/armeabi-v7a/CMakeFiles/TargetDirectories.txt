@@ -1,0 +1,2 @@
+C:/eburtis/mien/todou/mobile-app-ty/android/app/.cxx/Debug/5z3w1u20/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/eburtis/mien/todou/mobile-app-ty/android/app/.cxx/Debug/5z3w1u20/armeabi-v7a/CMakeFiles/rebuild_cache.dir
