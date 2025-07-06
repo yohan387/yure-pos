@@ -3,12 +3,14 @@ class AuthResponseModel {
   final String accessToken;
   final String marchandId;
   final String terminalId;
+  final String merchantFirstName;
 
   AuthResponseModel(
       {required this.message,
       required this.accessToken,
       required this.marchandId,
-      required this.terminalId});
+      required this.terminalId,
+      this.merchantFirstName = ''});
 
   factory AuthResponseModel.fromJson(Map<String, dynamic> json) {
     return AuthResponseModel(
@@ -16,6 +18,7 @@ class AuthResponseModel {
       accessToken: json['access_token'] ?? '',
       marchandId: "${json['merchant_id']}",
       terminalId: "${json['terminal_id']}",
+      merchantFirstName: "${json['merchant_first_name']}",
     );
   }
 }

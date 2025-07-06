@@ -4,5 +4,5 @@ import 'package:todouapp/features/payments/data/models/stripe_payment_intent_res
 
 abstract class StripePaymentRepository {
   Future<Either<Failure, StripePaymentIntentResponse>> createPaymentIntent(
-      double amount);
+      int amount);
 }

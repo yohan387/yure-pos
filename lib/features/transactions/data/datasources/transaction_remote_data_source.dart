@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:todouapp/core/errors/exceptions.dart';
 import 'package:todouapp/core/network/api_client.dart';
 import 'package:todouapp/features/transactions/data/models/balance_model.dart';
+import 'package:todouapp/features/transactions/data/models/cancel_response.dart';
 import 'package:todouapp/features/transactions/data/models/transactions_response_model.dart';
 
 import '../../../../core/constants/api_constants.dart';
@@ -12,6 +13,7 @@ abstract class TransactionRemoteDataSource {
   Future<BalanceModel> getBalance();
   Future<TransactionsResponseModel> getTransactions(
       {int page = 1, int limit = 10});
+  Future<CancelPaymentResponse> cancelTransaction(reference);
 }
 
 class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
@@ -58,6 +60,23 @@ class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
     } catch (e) {
       log('$e');
       throw ServerException(message: 'Failed to fetch transactions');
+    }
+  }
+
+  @override
+  Future<CancelPaymentResponse> cancelTransaction(reference) async {
+    try {
+      log('Canceling transaction with reference: $reference');
+      final response = await apiClient.post(
+          '${ApiConstants.stripePaymentCancel}/$reference',
+          requiresAuth: true);
+      log('Cancelation response: $response');
+
+      return CancelPaymentResponse.fromJson(response);
+    } on ServerException {
+      rethrow;
+    } catch (e) {
+      throw ServerException(message: 'Failed to cancel transaction');
     }
   }
 }

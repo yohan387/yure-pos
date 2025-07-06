@@ -22,7 +22,7 @@ class StripePaymentRepositoryImpl implements StripePaymentRepository {
 
   @override
   Future<Either<Failure, StripePaymentIntentResponse>> createPaymentIntent(
-      double amount) async {
+      int amount) async {
     // 1. Vérifier la connexion internet
     if (!await networkInfo.isConnected) {
       return Left(NetworkFailure());
@@ -46,7 +46,7 @@ class StripePaymentRepositoryImpl implements StripePaymentRepository {
       final response = await apiClient.post(ApiConstants.stripePaymentIntent,
           body: {
             'amount': amount,
-            'currency': 'XOF',
+            'currency': 'EUR',
             "terminal_id": int.parse('$terminalId'),
             "merchant_id": int.parse('$marchantId'),
             'metadata': {

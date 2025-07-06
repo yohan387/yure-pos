@@ -115,7 +115,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 text: TextSpan(
                   children: [
                     TextSpan(text: display, style: amountStyle),
-                    TextSpan(text: ' Fcfa', style: currencyStyle),
+                    TextSpan(text: ' Euro', style: currencyStyle),
                   ],
                 ),
               ),
@@ -200,7 +200,7 @@ class _PaymentPageState extends State<PaymentPage> {
               padding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 25.0),
               child: Text(
-                "Saisissez le montant total de la transaction en francs CFA.",
+                "Saisissez le montant total de la transaction en EURO.",
                 style: TextStyle(
                   fontSize: 16,
                   fontFamily: 'Inter',

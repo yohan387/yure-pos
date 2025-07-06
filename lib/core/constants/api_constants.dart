@@ -10,8 +10,9 @@ class ApiConstants {
 
   static const String stripePaymentIntent =
       '/merchants/transactions/init-payment/card';
-  static const stripeKey =
-      "pk_test_51RTjXa2a6jwmtn5fKrCVI57JiXibY3sFts75CltLoA6UhQEB2EISs4biH7MmkcBEu611axqQoItyREtMPFijWiZr00X6wjAUIH";
+
+  static const String stripePaymentCancel =
+      '/merchants/transactions/init-payment/card/cancel';
 
   static const Duration connectionTimeout = Duration(seconds: 60);
   static const Duration receiveTimeout = Duration(seconds: 60);

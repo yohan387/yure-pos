@@ -3,6 +3,7 @@ import 'package:todouapp/core/constants/colors.dart';
 
 import '../../../../core/constants/route_constants.dart';
 import '../../../../core/utils/amout_format.dart';
+import '../../../../core/utils/paiement_amount.dart';
 import '../../../../core/widgets/button_widget.dart';
 
 class PaymentSuccessPage extends StatelessWidget {
@@ -56,17 +57,36 @@ class PaymentSuccessPage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20),
-              Text(
-                textAlign: TextAlign.center,
-                status == 'Succès'
-                    ? 'La transaction de ${AmountFormatter.format(amount)} XOF par $network a réussie'
-                    : 'La transaction de ${AmountFormatter.format(amount)} XOF par $network a echouée',
-                style: TextStyle(
-                    fontSize: 16,
-                    fontFamily: 'Inter',
-                    color: textColor,
-                    fontWeight: FontWeight.w600),
-              ),
+              if (network.toUpperCase() != 'ORANGE' ||
+                  network.toUpperCase() != 'MTN' ||
+                  network.toUpperCase() != 'MOOV' ||
+                  network.toUpperCase() != 'WAVE')
+                Text(
+                  textAlign: TextAlign.center,
+                  status == 'Succès'
+                      ? 'La transaction de ${PaiementMontant.convertFromStripeAmount(PaiementMontant.convertToStripeAmount(amount, 'EUR'), 'EUR')} EUR par $network a réussie'
+                      : 'La transaction de ${PaiementMontant.convertFromStripeAmount(PaiementMontant.convertToStripeAmount(amount, 'EUR'), 'EUR')} EUR par $network a echouée',
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: 'Inter',
+                      color: textColor,
+                      fontWeight: FontWeight.w600),
+                ),
+              if (network.toUpperCase() == 'ORANGE' ||
+                  network.toUpperCase() == 'MTN' ||
+                  network.toUpperCase() == 'MOOV' ||
+                  network.toUpperCase() == 'WAVE')
+                Text(
+                  textAlign: TextAlign.center,
+                  status == 'Succès'
+                      ? 'La transaction de ${AmountFormatter.format(amount)} XOF par $network a réussie'
+                      : 'La transaction de ${AmountFormatter.format(amount)} XOF par $network a echouée',
+                  style: TextStyle(
+                      fontSize: 16,
+                      fontFamily: 'Inter',
+                      color: textColor,
+                      fontWeight: FontWeight.w600),
+                ),
               SizedBox(height: 100),
               CustomButton(
                 text: 'Retour à l\'accueil',

@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:todouapp/core/constants/colors.dart';
+import 'package:todouapp/core/utils/paiement_amount.dart';
 import 'package:todouapp/core/utils/secure_storage.dart';
 
 import '../../domain/repositories/stripe_payment_repository.dart';
@@ -36,8 +37,12 @@ class StripePaymentBloc extends Bloc<StripePaymentEvent, StripePaymentState> {
         throw Exception('Session expirée. Veuillez vous reconnecter.');
       }
 
+      // Convertir le montant en centimes
+      int montantPourStripe =
+          PaiementMontant.convertToStripeAmount(event.amount, 'EUR');
+
       // 2. Créer l'intention de paiement
-      final result = await repository.createPaymentIntent(event.amount);
+      final result = await repository.createPaymentIntent(montantPourStripe);
 
       await result.fold(
         (failure) => throw Exception(failure.message),
@@ -77,9 +82,19 @@ class StripePaymentBloc extends Bloc<StripePaymentEvent, StripePaymentState> {
       );
     } catch (e) {
       log('bloc stripe $e');
-      emit(StripePaymentError(
-        e.toString().replaceAll('Exception: ', ''),
-      ));
+      if (e is StripeException) {
+        switch (e.error.code) {
+          case FailureCode.Canceled:
+            emit(StripePaymentError(
+                "Le paiement a été annulé par l'utilisateur."));
+            break;
+          default:
+            emit(StripePaymentError(
+                e.error.localizedMessage ?? 'Erreur de paiement'));
+        }
+      } else {
+        emit(StripePaymentError('Erreur inconnue : ${e.toString()}'));
+      }
     }
   }
 }

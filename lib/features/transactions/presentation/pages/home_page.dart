@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:todouapp/core/widgets/custom_snackbar.dart';
 import 'package:todouapp/features/transactions/presentation/bloc/transaction_bloc.dart';
 import 'package:todouapp/features/transactions/presentation/widgets/balance_card.dart';
@@ -33,6 +34,26 @@ class _HomePageState extends State<HomePage> {
           if (state.status == TransactionStatus.failure) {
             CustomSnackbar.showError(
                 context, state.errorMessage ?? 'Unknown error');
+          }
+          if (state.cancellationStatus == CancellationStatus.loading) {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (_) => Center(
+                child: SpinKitThreeBounce(color: Colors.red),
+              ),
+            );
+          } else if (state.cancellationStatus == CancellationStatus.success ||
+              state.cancellationStatus == CancellationStatus.failure) {
+            Navigator.of(context, rootNavigator: true).pop();
+            if (state.cancellationStatus == CancellationStatus.success) {
+              CustomSnackbar.showSuccess(
+                  context, 'Transaction annulée avec succès');
+            } else if (state.cancellationStatus == CancellationStatus.failure) {
+              CustomSnackbar.showError(
+                  context, state.errorMessage ?? 'Échec de l\'annulation');
+            }
+            context.read<TransactionBloc>().add(LoadInitialTransactionsEvent());
           }
         },
         child: Stack(

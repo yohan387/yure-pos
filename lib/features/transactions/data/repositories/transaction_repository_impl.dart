@@ -3,6 +3,7 @@ import 'package:todouapp/core/errors/failures.dart';
 import 'package:todouapp/core/network/network_info.dart';
 import 'package:todouapp/features/transactions/data/datasources/transaction_remote_data_source.dart';
 import 'package:todouapp/features/transactions/data/models/balance_model.dart';
+import 'package:todouapp/features/transactions/data/models/cancel_response.dart';
 import 'package:todouapp/features/transactions/data/models/transactions_response_model.dart';
 import 'package:todouapp/features/transactions/domain/repositories/transaction_repository.dart';
 
@@ -46,6 +47,21 @@ class TransactionRepositoryImpl implements TransactionRepository {
         limit: limit,
       );
       return Right(transactions);
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, CancelPaymentResponse>> cancelTransaction(
+      reference) async {
+    if (!await networkInfo.isConnected) {
+      return Left(NetworkFailure());
+    }
+
+    try {
+      final balance = await remoteDataSource.cancelTransaction(reference);
+      return Right(balance);
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));
     }

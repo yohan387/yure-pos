@@ -1,5 +1,3 @@
-import 'package:todouapp/features/transactions/data/models/balance_model.dart';
-
 class AppConstants {
   static const String appName = 'FinTech App';
   static const String tokenKey = 'auth_token';

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:todouapp/core/constants/colors.dart';
 import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/route_constants.dart';
 import '../../../../core/widgets/button_widget.dart';
@@ -60,9 +62,46 @@ class _OtpPageState extends State<OtpPage> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         const SizedBox(height: 50),
+                        RichText(
+                          text: TextSpan(
+                            style: GoogleFonts.inter(
+                              fontSize: 24,
+                              fontWeight: FontWeight.w600,
+                              color: Color(0xFF080808),
+                            ),
+                            children: [
+                              TextSpan(
+                                text: 'Bienvenue',
+                                style: GoogleFonts.inter(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF080808),
+                                ),
+                              ),
+                              TextSpan(
+                                text: state.merchantName != null
+                                    ? ' ${state.merchantName}'
+                                    : '',
+                                style: GoogleFonts.inter(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.orange,
+                                ),
+                              ),
+                              TextSpan(
+                                text: ' !',
+                                style: GoogleFonts.inter(
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.w600,
+                                  color: Color(0xFF080808),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
                         const Text(
                           "Saisissez l'OTP envoyé à votre appareil",
-                          style: TextStyle(fontSize: 18),
+                          style: TextStyle(fontSize: 16),
                         ),
                         const SizedBox(height: 20),
                         PinCodeTextField(

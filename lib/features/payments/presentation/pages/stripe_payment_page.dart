@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todouapp/features/nfc/scanner_reader.dart';
 import 'package:todouapp/features/payments/presentation/bloc/stripe_payment_bloc.dart';
 
 import '../../../../core/constants/colors.dart';
@@ -47,7 +48,7 @@ class _StripePaymentPageState extends State<StripePaymentPage> {
                     amount: widget.amount,
                     transactionId: state.transactionId,
                     status: 'Succès',
-                    network: 'carte'),
+                    network: 'CARD'),
               ),
             );
             context.read<TransactionBloc>().add(LoadInitialTransactionsEvent());
@@ -82,8 +83,19 @@ class _StripePaymentPageState extends State<StripePaymentPage> {
                         textAlign: TextAlign.center,
                       ),
                     ),
-                    Center(
-                      child: Image.asset('assets/images/scan_image.png'),
+                    InkWell(
+                      onTap: () {
+                        // Navigator.pushNamed(context, RouteConstants.topTopay);
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ScannerReader(amount: widget.amount),
+                          ),
+                        );
+                      },
+                      child: Center(
+                        child: Image.asset('assets/images/scan_image.png'),
+                      ),
                     ),
                   ],
                 ),

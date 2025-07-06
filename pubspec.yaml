@@ -36,6 +36,15 @@ dependencies:
   flutter_stripe: ^11.5.0
   country_list_pick: ^1.0.1+6
   qr_flutter: ^4.1.0
+  lottie: ^3.3.1
+  share_plus: ^11.0.0
+  path_provider: ^2.1.2
+  screenshot: ^3.0.0
+  flutter_dotenv: ^5.2.1
+  mek_stripe_terminal: ^3.7.0
+  permission_handler: ^12.0.0+1
+  rive: ^0.13.20
+  awesome_dialog: ^3.2.1
 
 dev_dependencies:
   flutter_test:
@@ -64,6 +73,8 @@ flutter:
   assets:
     - assets/images/
     - assets/svg/
+    - assets/animations/
+    - .env
 
   fonts:
     - family: Inter

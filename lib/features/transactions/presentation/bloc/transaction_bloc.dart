@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:todouapp/features/transactions/domain/usecases/get_balance.dart';
+import 'package:todouapp/features/transactions/domain/usecases/get_cancel_payment.dart';
 import 'package:todouapp/features/transactions/domain/usecases/get_transactions.dart';
 
 import '../../data/models/balance_model.dart';
@@ -14,14 +15,17 @@ part 'transaction_state.dart';
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   final GetBalance getBalance;
   final GetTransactions getTransactions;
+  final GetCancelPayment getCancelPayment;
 
   TransactionBloc({
     required this.getBalance,
     required this.getTransactions,
+    required this.getCancelPayment,
   }) : super(const TransactionState()) {
     on<LoadBalanceEvent>(_onLoadBalance);
     on<LoadInitialTransactionsEvent>(_onLoadInitialTransactions);
     on<LoadMoreTransactionsEvent>(_onLoadMoreTransactions);
+    on<CancelTransactionEvent>(_onCancelTransaction);
   }
 
   Future<void> _onLoadBalance(
@@ -88,6 +92,28 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         transactions: [...state.transactions, ...response.transactions],
         hasMore: response.hasMore,
         currentPage: response.page,
+      )),
+    );
+  }
+
+  Future<void> _onCancelTransaction(
+    CancelTransactionEvent event,
+    Emitter<TransactionState> emit,
+  ) async {
+    emit(state.copyWith(cancellationStatus: CancellationStatus.loading));
+
+    await Future.delayed(const Duration(seconds: 2));
+
+    final result = await getCancelPayment(event.reference);
+
+    result.fold(
+      (failure) => emit(state.copyWith(
+        cancellationStatus: CancellationStatus.failure,
+        errorMessage: failure.message,
+      )),
+      (response) => emit(state.copyWith(
+        cancellationStatus: CancellationStatus.success,
+        transactions: state.transactions.toList(),
       )),
     );
   }

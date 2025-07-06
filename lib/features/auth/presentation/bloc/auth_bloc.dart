@@ -41,9 +41,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         message: failure.message,
       )),
       (response) => emit(state.copyWith(
-        status: AuthStatus.success,
-        message: response.message,
-      )),
+          status: AuthStatus.success,
+          message: response.message,
+          merchantName: response.merchantFirstName)),
     );
   }
 
@@ -68,16 +68,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           await secureStorage.saveToken(response.accessToken);
           await secureStorage.saveMarchandId(response.marchandId);
           await secureStorage.saveTerminalId(response.terminalId);
+          await secureStorage.saveMerchantName(response.merchantFirstName);
 
           if (!emit.isDone) {
             // Vérification cruciale
             emit(state.copyWith(
-              status: AuthStatus.success,
-              message: response.message,
-              statusOtp: AuthStatus.success,
-              accessToken: response.accessToken,
-              isAuthenticated: true,
-            ));
+                status: AuthStatus.success,
+                message: response.message,
+                statusOtp: AuthStatus.success,
+                accessToken: response.accessToken,
+                isAuthenticated: true,
+                merchantName: response.merchantFirstName));
           }
         },
       );

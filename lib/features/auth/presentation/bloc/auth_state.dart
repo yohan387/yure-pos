@@ -8,32 +8,33 @@ class AuthState extends Equatable {
   final AuthStatus statusOtp;
   final String? accessToken;
   final bool isAuthenticated;
+  final String? merchantName;
 
-  const AuthState({
-    this.status = AuthStatus.initial,
-    this.message,
-    this.statusOtp = AuthStatus.initial,
-    this.accessToken,
-    this.isAuthenticated = false,
-  });
+  const AuthState(
+      {this.status = AuthStatus.initial,
+      this.message,
+      this.statusOtp = AuthStatus.initial,
+      this.accessToken,
+      this.isAuthenticated = false,
+      this.merchantName = ''});
 
-  AuthState copyWith({
-    AuthStatus? status,
-    String? message,
-    AuthStatus? statusOtp,
-    String? accessToken,
-    bool? isAuthenticated,
-  }) {
+  AuthState copyWith(
+      {AuthStatus? status,
+      String? message,
+      AuthStatus? statusOtp,
+      String? accessToken,
+      bool? isAuthenticated,
+      String? merchantName}) {
     return AuthState(
-      status: status ?? this.status,
-      message: message ?? this.message,
-      statusOtp: statusOtp ?? this.statusOtp,
-      accessToken: accessToken ?? this.accessToken,
-      isAuthenticated: isAuthenticated ?? this.isAuthenticated,
-    );
+        status: status ?? this.status,
+        message: message ?? this.message,
+        statusOtp: statusOtp ?? this.statusOtp,
+        accessToken: accessToken ?? this.accessToken,
+        isAuthenticated: isAuthenticated ?? this.isAuthenticated,
+        merchantName: merchantName ?? this.merchantName);
   }
 
   @override
   List<Object?> get props =>
-      [status, message, accessToken, isAuthenticated, statusOtp];
+      [status, message, accessToken, isAuthenticated, statusOtp, merchantName];
 }

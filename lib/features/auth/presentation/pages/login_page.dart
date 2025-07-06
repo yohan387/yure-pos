@@ -116,22 +116,24 @@ class LoginPage extends StatelessWidget {
                                   const SizedBox(height: 30),
                                   CustomButton(
                                     text: 'Valider',
-                                    onPressed: state.status ==
-                                            AuthStatus.loading
-                                        ? null
-                                        : () {
-                                            if (_formKey.currentState
-                                                    ?.validate() ??
-                                                false) {
-                                              context.read<AuthBloc>().add(
-                                                    VerifyCodeEvent(
-                                                        _codeController.text),
-                                                  );
-                                            } else {
-                                              CustomSnackbar.showError(context,
-                                                  "Veuillez entrer un code valide (6 chiffres)");
-                                            }
-                                          },
+                                    onPressed:
+                                        state.status == AuthStatus.loading
+                                            ? null
+                                            : () {
+                                                if (_formKey.currentState
+                                                        ?.validate() ??
+                                                    false) {
+                                                  context.read<AuthBloc>().add(
+                                                        VerifyCodeEvent(
+                                                            _codeController.text
+                                                                .trim()),
+                                                      );
+                                                } else {
+                                                  CustomSnackbar.showError(
+                                                      context,
+                                                      "Veuillez entrer un code valide (6 chiffres)");
+                                                }
+                                              },
                                   )
                                 ],
                               ),

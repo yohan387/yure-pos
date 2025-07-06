@@ -2,6 +2,8 @@ part of 'transaction_bloc.dart';
 
 enum TransactionStatus { initial, loading, success, failure, loadingMore }
 
+enum CancellationStatus { initial, loading, success, failure }
+
 class TransactionState extends Equatable {
   final TransactionStatus status;
   final BalanceModel? balance;
@@ -9,6 +11,7 @@ class TransactionState extends Equatable {
   final bool hasMore;
   final int currentPage;
   final String? errorMessage;
+  final CancellationStatus cancellationStatus;
 
   const TransactionState({
     this.status = TransactionStatus.initial,
@@ -17,6 +20,7 @@ class TransactionState extends Equatable {
     this.hasMore = true,
     this.currentPage = 1,
     this.errorMessage,
+    this.cancellationStatus = CancellationStatus.initial,
   });
 
   TransactionState copyWith({
@@ -26,6 +30,7 @@ class TransactionState extends Equatable {
     bool? hasMore,
     int? currentPage,
     String? errorMessage,
+    CancellationStatus? cancellationStatus,
   }) {
     return TransactionState(
       status: status ?? this.status,
@@ -34,6 +39,7 @@ class TransactionState extends Equatable {
       hasMore: hasMore ?? this.hasMore,
       currentPage: currentPage ?? this.currentPage,
       errorMessage: errorMessage ?? this.errorMessage,
+      cancellationStatus: cancellationStatus ?? this.cancellationStatus,
     );
   }
 
@@ -45,5 +51,6 @@ class TransactionState extends Equatable {
         hasMore,
         currentPage,
         errorMessage,
+        cancellationStatus,
       ];
 }

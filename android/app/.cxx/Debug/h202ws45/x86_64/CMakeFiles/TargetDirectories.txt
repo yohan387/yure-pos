@@ -1,0 +1,2 @@
+C:/eburtis/mien/todou/mobile-app-ty/android/app/.cxx/Debug/h202ws45/x86_64/CMakeFiles/edit_cache.dir
+C:/eburtis/mien/todou/mobile-app-ty/android/app/.cxx/Debug/h202ws45/x86_64/CMakeFiles/rebuild_cache.dir

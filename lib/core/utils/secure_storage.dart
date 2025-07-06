@@ -31,4 +31,12 @@ class SecureStorageService {
   Future<void> saveTerminalId(String token) async {
     await _storage.write(key: 'terminal_id', value: token);
   }
+
+  Future<String?> getMerchantName() async {
+    return await _storage.read(key: 'merchant_first_name');
+  }
+
+  Future<void> saveMerchantName(String token) async {
+    await _storage.write(key: 'merchant_first_name', value: token);
+  }
 }

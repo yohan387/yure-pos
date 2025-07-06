@@ -1,5 +1,8 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:http/http.dart' as http;
 import 'package:todouapp/core/constants/route_constants.dart';
@@ -14,30 +17,49 @@ import 'package:todouapp/features/auth/data/repositories/auth_repository_impl.da
 import 'package:todouapp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:todouapp/features/auth/presentation/pages/login_page.dart';
 import 'package:todouapp/features/auth/presentation/pages/otp_page.dart';
+import 'package:todouapp/features/profil/data/datasources/profil_remote_data_source.dart';
+import 'package:todouapp/features/profil/data/repositories/profil_repository_impl.dart';
+import 'package:todouapp/features/profil/domain/usecases/get_profil.dart';
+import 'package:todouapp/features/profil/presentation/bloc/profil_bloc.dart';
 import 'package:todouapp/features/transactions/data/datasources/transaction_remote_data_source.dart';
+import 'package:todouapp/features/transactions/data/models/transaction_model.dart';
 import 'package:todouapp/features/transactions/data/repositories/transaction_repository_impl.dart';
 import 'package:todouapp/features/transactions/presentation/bloc/transaction_bloc.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:todouapp/onbording_page.dart';
 
-import 'core/constants/api_constants.dart';
 import 'features/auth/domain/usecases/verify_code.dart';
 import 'features/auth/domain/usecases/verify_otp.dart';
 import 'features/mobile_payments/data/repositories/mobile_payment_repository_impl.dart';
 import 'features/mobile_payments/domain/usecases/init_payment.dart';
 import 'features/mobile_payments/domain/usecases/verify_payment.dart';
 import 'features/mobile_payments/presentation/bloc/mobile_payment_bloc.dart';
+import 'features/nfc/scanner_reader.dart';
 import 'features/payments/data/repositories/stripe_payment_repository_impl.dart';
 import 'features/payments/presentation/bloc/stripe_payment_bloc.dart';
 import 'features/payments/presentation/pages/stripe_payment_page.dart';
+import 'features/profil/presentation/pages/profil_page.dart';
 import 'features/transactions/domain/usecases/get_balance.dart';
+import 'features/transactions/domain/usecases/get_cancel_payment.dart';
 import 'features/transactions/domain/usecases/get_transactions.dart';
 import 'features/transactions/presentation/pages/home_page.dart';
+import 'features/transactions/presentation/pages/payment_detail_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  log('Step 1 - before runApp');
+  await dotenv.load(fileName: ".env");
 
   final secureStorage = SecureStorageService();
-  final token = await secureStorage.getToken();
+  String? token;
+
+  try {
+    token = await secureStorage.getToken();
+  } catch (e) {
+    log(' Erreur de lecture du token : $e');
+    // Si déchiffrement échoue, on nettoie le stockage
+    await secureStorage.deleteToken();
+  }
   final isAuthenticated = TokenValidator.isTokenValid(token);
 
   // Écouter les événements d'expiration
@@ -52,7 +74,7 @@ void main() async {
   });
 
   // Configurez Stripe
-  Stripe.publishableKey = ApiConstants.stripeKey;
+  Stripe.publishableKey = dotenv.env['STRIPE_PUBLISHABLE_KEY'] ?? '';
   // Stripe.merchantIdentifier = 'merchant.flutter.stripe.example';
   await Stripe.instance.applySettings();
 
@@ -73,6 +95,8 @@ class TodouApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    log('Step 2 - in MyApp.build');
+
     final connectivity = Connectivity();
     final httpClient = http.Client();
     final apiClient = ApiClient(
@@ -123,6 +147,14 @@ class TodouApp extends StatelessWidget {
                 networkInfo: NetworkInfoImpl(connectivity),
               ),
             ),
+            getCancelPayment: GetCancelPayment(
+              TransactionRepositoryImpl(
+                remoteDataSource: TransactionRemoteDataSourceImpl(
+                  apiClient: apiClient,
+                ),
+                networkInfo: NetworkInfoImpl(connectivity),
+              ),
+            ),
           ),
         ),
         BlocProvider<StripePaymentBloc>(
@@ -150,15 +182,27 @@ class TodouApp extends StatelessWidget {
             ),
           ),
         ),
+        BlocProvider<ProfilBloc>(
+          create: (context) => ProfilBloc(
+            getProfil: GetProfil(
+              ProfilRepositoryImpl(
+                remoteDataSource: ProfilRemoteDataSourceImpl(
+                  apiClient: apiClient,
+                ),
+                networkInfo: NetworkInfoImpl(connectivity),
+              ),
+            ),
+          ),
+        ),
       ],
       child: MaterialApp(
-        navigatorKey: navigatorKey, // Ajout de la clé de navigation
+        navigatorKey: navigatorKey,
         title: 'Todou App',
-
         debugShowCheckedModeBanner: false,
         initialRoute:
-            isAuthenticated ? RouteConstants.home : RouteConstants.login,
+            isAuthenticated ? RouteConstants.home : RouteConstants.onbording,
         routes: {
+          RouteConstants.onbording: (context) => OnbordingPage(),
           RouteConstants.login: (context) => LoginPage(),
           RouteConstants.otp: (context) => OtpPage(),
           RouteConstants.home: (context) => const HomePage(),
@@ -166,6 +210,15 @@ class TodouApp extends StatelessWidget {
             final amount = ModalRoute.of(context)!.settings.arguments as double;
             return StripePaymentPage(amount: amount);
           },
+          RouteConstants.topTopay: (context) => ScannerReader(
+                amount: ModalRoute.of(context)!.settings.arguments as double? ??
+                    0.0,
+              ),
+          RouteConstants.profil: (context) => const ProfilPage(),
+          RouteConstants.paymentDetail: (context) => PaymentDetailPage(
+                transaction: ModalRoute.of(context)!.settings.arguments
+                    as TransactionModel,
+              ),
         },
       ),
     );
