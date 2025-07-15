@@ -16,7 +16,7 @@ class BalanceCard extends StatelessWidget {
             context, MaterialPageRoute(builder: (context) => PaymentPage()));
       },
       child: Container(
-        height: 200,
+        height: 185,
         padding:
             const EdgeInsets.only(left: 18, right: 18, top: 22, bottom: 22),
         decoration: BoxDecoration(

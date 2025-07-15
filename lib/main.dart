@@ -95,8 +95,6 @@ class TodouApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    log('Step 2 - in MyApp.build');
-
     final connectivity = Connectivity();
     final httpClient = http.Client();
     final apiClient = ApiClient(

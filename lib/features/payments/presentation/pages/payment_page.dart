@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/utils/payment_helper.dart';
 import '../../../../core/widgets/keyboard.dart';
+import '../../../nfc/scanner_reader.dart';
 
 class PaymentPage extends StatefulWidget {
   const PaymentPage({Key? key}) : super(key: key);
@@ -140,18 +141,14 @@ class _PaymentPageState extends State<PaymentPage> {
       child: GestureDetector(
         onTap: amount.isNotEmpty
             ? () async {
-                // Navigator.push(
-                //   context,
-                //   MaterialPageRoute(
-                //       builder: (context) => const PaymentCardPage()),
-                // );
-
-                // if (result == true) {
-                //   // Paiement réussi, actualiser les données
-                //   context.read<TransactionBloc>().add(LoadTransactionsEvent());
-                // }
-                await PaymentHelper.launchStripePayment(
-                    context, double.parse(amount));
+                // await PaymentHelper.launchStripePayment(
+                //     context, double.parse(amount));
+                Navigator.of(context).pushReplacement(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        ScannerReader(amount: double.parse(amount)),
+                  ),
+                );
               }
             : null,
         child: Container(
