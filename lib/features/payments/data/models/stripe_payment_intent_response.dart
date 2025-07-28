@@ -27,3 +27,37 @@ class StripePaymentIntentResponse {
         // 'payment_intent_id': paymentIntentId,
       };
 }
+
+class StripeLinkPaymentInitRequest {
+  final dynamic amount;
+  final String currency;
+  final int terminalId, merchantId;
+
+  StripeLinkPaymentInitRequest({
+    required this.amount,
+    required this.currency,
+    required this.terminalId,
+    required this.merchantId,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'amount': amount,
+        'currency': currency,
+        'terminal_id': terminalId,
+        'merchant_id': merchantId,
+      };
+}
+
+class StripeLinkToPayResponse {
+  final String paymentLink;
+  final String transactionRef;
+
+  StripeLinkToPayResponse(
+      {required this.paymentLink, required this.transactionRef});
+
+  factory StripeLinkToPayResponse.fromJson(Map<String, dynamic> json) {
+    return StripeLinkToPayResponse(
+        paymentLink: json['payment_link'] ?? '',
+        transactionRef: json['transaction_ref']);
+  }
+}

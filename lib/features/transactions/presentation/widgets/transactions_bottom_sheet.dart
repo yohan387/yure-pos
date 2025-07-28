@@ -8,6 +8,7 @@ import 'package:todouapp/features/transactions/presentation/bloc/transaction_blo
 import 'package:todouapp/features/transactions/presentation/widgets/transaction_card.dart';
 
 import '../../data/models/transaction_model.dart';
+import '../pages/search_page.dart';
 import 'transaction_card_shimmer.dart';
 
 class TransactionsBottomSheet extends StatefulWidget {
@@ -42,7 +43,7 @@ class _TransactionsBottomSheetState extends State<TransactionsBottomSheet> {
   void _updateSheetState() {
     if (_isControllerAttached) {
       setState(() {
-        _isExpanded = _sheetController.size > 0.43;
+        _isExpanded = _sheetController.size > 0.82;
       });
     }
   }
@@ -77,7 +78,7 @@ class _TransactionsBottomSheetState extends State<TransactionsBottomSheet> {
 
     try {
       await _sheetController.animateTo(
-        _isExpanded ? 0.43 : 0.82,
+        _isExpanded ? 0.82 : 0.82,
         duration: const Duration(milliseconds: 300),
         curve: Curves.easeOut,
       );
@@ -118,11 +119,11 @@ class _TransactionsBottomSheetState extends State<TransactionsBottomSheet> {
           },
           child: DraggableScrollableSheet(
             controller: _sheetController,
-            initialChildSize: 0.43,
+            initialChildSize: 0.82,
             minChildSize: 0.3,
             maxChildSize: 0.82,
             // snap: true, // Optionnel: permet un snap aux tailles intermédiaires
-            // snapSizes: const [0.2, 0.43, 0.82], // Positions de snap
+            // snapSizes: const [0.2, 0.82, 0.82], // Positions de snap
             builder: (context, scrollController) {
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 if (mounted) {
@@ -173,7 +174,17 @@ class _TransactionsBottomSheetState extends State<TransactionsBottomSheet> {
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
                           TextButton(
-                            onPressed: _expandSheet,
+                            // onPressed: _expandSheet,
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => SearchPage(
+                                            initialTransactions:
+                                                widget.initialTransactions,
+                                            hasMore: widget.hasMore,
+                                          )));
+                            },
                             child: const Text('Voir plus'),
                           ),
                         ],

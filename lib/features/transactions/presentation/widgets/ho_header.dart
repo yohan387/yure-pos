@@ -83,15 +83,15 @@ class _HoHeaderState extends State<HoHeader> {
                     fontWeight: FontWeight.w600)),
           ],
         ),
-        InkWell(
-          onTap: () {
-            Navigator.pushNamed(context, RouteConstants.profil);
-          },
-          child: Image.asset(
-            'assets/images/user-image-with-black-background.png',
-            height: 60,
-          ),
-        ),
+        // InkWell(
+        //   onTap: () {
+        //     Navigator.pushNamed(context, RouteConstants.profil);
+        //   },
+        //   child: Image.asset(
+        //     'assets/images/user-image-with-black-background.png',
+        //     height: 60,
+        //   ),
+        // ),
       ],
     );
   }

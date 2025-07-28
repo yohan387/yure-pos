@@ -45,6 +45,7 @@ dependencies:
   permission_handler: ^12.0.0+1
   rive: ^0.13.20
   awesome_dialog: ^3.2.1
+  currency_picker: ^2.0.21
 
 dev_dependencies:
   flutter_test:
@@ -55,7 +56,7 @@ dev_dependencies:
   mocktail: ^0.3.0
 
 flutter_native_splash:
-  color: "#FEECE7"
+  color: "#7C56FE"
   android: true
   image: assets/images/logo.png
   ios: true
@@ -63,7 +64,7 @@ flutter_native_splash:
 flutter_launcher_icons:
   android: true
   ios: true
-  adaptive_icon_background: "#FEECE7"
+  adaptive_icon_background: "#7C56FE"
   image_path: "assets/images/logo.png"
 
   flutter_lints: ^5.0.0

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:todouapp/core/constants/colors.dart';
 
 // ignore: must_be_immutable
 class OnbordingDots extends StatelessWidget {
@@ -13,10 +14,10 @@ class OnbordingDots extends StatelessWidget {
       height: isActive ? 10 : 12,
       width: isActive ? 36 : 12,
       decoration: BoxDecoration(
-        color: isActive ? Color(0xffFBC4B6) : Color(0xFFE9ECEE),
+        color: isActive ? primaryColor : Color(0xFFE9ECEE),
         border: isActive
             ? Border.all(
-                color: Color(0xffFBC4B6),
+                color: primaryColor,
                 width: 2.0,
               )
             : Border.all(

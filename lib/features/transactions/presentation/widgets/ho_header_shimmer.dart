@@ -45,18 +45,18 @@ class HoHeaderShimmer extends StatelessWidget {
             ),
           ],
         ),
-        Shimmer.fromColors(
-          baseColor: Colors.grey.shade300,
-          highlightColor: Colors.grey.shade100,
-          child: Container(
-            width: 60,
-            height: 60,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-            ),
-          ),
-        ),
+        // Shimmer.fromColors(
+        //   baseColor: Colors.grey.shade300,
+        //   highlightColor: Colors.grey.shade100,
+        //   child: Container(
+        //     width: 60,
+        //     height: 60,
+        //     decoration: const BoxDecoration(
+        //       color: Colors.white,
+        //       shape: BoxShape.circle,
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }

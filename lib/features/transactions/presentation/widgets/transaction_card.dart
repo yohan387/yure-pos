@@ -104,7 +104,7 @@ class TransactionCard extends StatelessWidget {
                         text: TextSpan(
                       children: [
                         TextSpan(
-                          text: 'Status: ',
+                          text: 'Statut: ',
                           style: TextStyle(
                             fontFamily: 'Inter',
                             fontWeight: FontWeight.w600,
@@ -171,22 +171,10 @@ class TransactionCard extends StatelessWidget {
                               : "assets/images/wallet.png",
               fit: BoxFit.contain,
             ),
-      title: Text(transaction.customerPhone,
-          style: TextStyle(
-              fontFamily: 'Inter', fontSize: 12, fontWeight: FontWeight.w600)),
-      subtitle: Text(
-          dateFormat.format(
-            transaction.date,
-          ),
-          style: TextStyle(
-              color: greyColor,
-              fontFamily: 'Inter',
-              fontSize: 12,
-              fontWeight: FontWeight.w600)),
-      trailing: Text(
+      title: Text(
         transaction.paymentMethod.toUpperCase() == 'CARD'
-            ? '${isSucces ? '+' : '-'}${ConvertStripeAmount.convertFromStripeAmount(transaction.amount, 'EUR')} ${transaction.currency.toUpperCase()}'
-            : '${isSucces ? '+' : '-'}${AmountFormatter.format(transaction.amount)} ${transaction.currency}',
+            ? '${isSucces ? '+' : isPending ? '' : '-'}${ConvertStripeAmount.convertFromStripeAmount(transaction.amount, 'EUR')} ${transaction.currency.toUpperCase()}'
+            : '${isSucces ? '+' : isPending ? '' : '-'}${AmountFormatter.format(transaction.amount)} ${transaction.currency}',
         style: TextStyle(
           fontFamily: 'Inter',
           fontSize: 14,
@@ -198,6 +186,54 @@ class TransactionCard extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
       ),
+      subtitle: Text(
+          dateFormat.format(
+            transaction.date,
+          ),
+          style: TextStyle(
+              color: greyColor,
+              fontFamily: 'Inter',
+              fontSize: 12,
+              fontWeight: FontWeight.w600)),
+
+      trailing: transaction.paymentMethod.toUpperCase() == 'CARD' &&
+              DateTime.now().difference(transaction.date).inHours < 24
+          ? InkWell(
+              onTap: () {
+                // Navigator.of(context, rootNavigator: true).pop();
+                final bloc = context.read<TransactionBloc>();
+                bloc.add(CancelTransactionEvent(transaction.transactionRef));
+              },
+              child: Container(
+                height: 25,
+                padding: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                    color: primaryColor.withOpacity(.8),
+                    borderRadius: BorderRadius.all(Radius.circular(10))),
+                child: Text(
+                  "Rembourser",
+                  style: TextStyle(color: Colors.black, fontFamily: 'Inter'),
+                ),
+              ),
+            )
+          : null,
+      // trailing: transaction.paymentMethod.toUpperCase() == 'CARD'
+      //     ? SizedBox(
+      //         width: double.infinity,
+      //         child: BlocListener<TransactionBloc, TransactionState>(
+      //           listener: (context, state) {},
+      //           child: CustomButton(
+      //             text: 'Annuler la transaction',
+      //             onPressed: () {
+      //               Navigator.of(context, rootNavigator: true).pop();
+      //               final bloc = context.read<TransactionBloc>();
+      //               bloc.add(
+      //                   CancelTransactionEvent(transaction.transactionRef));
+      //             },
+      //           ),
+      //         ),
+      //       )
+      //     : null,
     );
   }
 }

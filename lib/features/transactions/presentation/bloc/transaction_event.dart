@@ -21,3 +21,9 @@ class CancelTransactionEvent extends TransactionEvent {
   @override
   List<Object> get props => [reference];
 }
+
+class SearchTransactionsEvent extends TransactionEvent {
+  final String keyword;
+
+  const SearchTransactionsEvent(this.keyword);
+}

@@ -4,9 +4,11 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../../core/constants/colors.dart';
+import '../../../../core/constants/route_constants.dart';
 import '../../../../core/utils/secure_storage.dart';
 import '../../../../core/widgets/custom_snackbar.dart';
 import '../../../payments/presentation/pages/payment_response_page.dart';
+import '../../../transactions/data/models/transaction_model.dart';
 import '../../../transactions/presentation/bloc/transaction_bloc.dart';
 import '../bloc/mobile_payment_bloc.dart';
 
@@ -38,31 +40,71 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
       body: BlocConsumer<MobilePaymentBloc, MobilePaymentState>(
         listener: (context, state) {
           if (state is MobilePaymentError && state.isTimer) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (_) => PaymentSuccessPage(
-                    amount: widget.amount,
-                    transactionId: state.transactionId,
-                    status: 'Echec',
-                    network: widget.network),
-              ),
+            final transaction = TransactionModel(
+              id: 0,
+              merchantId: 0,
+              terminalId: 0,
+              amount: widget.amount,
+              currency: widget.currency,
+              transactionRef: "${state.transactionId}",
+              date: DateTime.now(),
+              paymentMethod: 'Mobile Money',
+              status: 'failed',
+              customerPhone: widget.customerPhone,
+              network: widget.network,
             );
+
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              RouteConstants.paymentDetail,
+              (route) => false,
+              arguments: transaction,
+            );
+            // Navigator.pushReplacement(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (_) => PaymentSuccessPage(
+            //         amount: widget.amount,
+            //         transactionId: state.transactionId,
+            //         status: 'Echec',
+            //         network: widget.network),
+            //   ),
+            // );
           }
           if (state is MobilePaymentError) {
             CustomSnackbar.showError(context, state.message ?? '');
           }
           if (state is MobilePaymentSuccess) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (_) => PaymentSuccessPage(
-                    amount: widget.amount,
-                    transactionId: state.reference,
-                    status: 'Echec',
-                    network: widget.network),
-              ),
+            final transaction = TransactionModel(
+              id: 0,
+              merchantId: 0,
+              terminalId: 0,
+              amount: widget.amount,
+              currency: widget.currency,
+              transactionRef: state.reference,
+              date: DateTime.now(),
+              paymentMethod: 'Mobile Money',
+              status: 'succeeded',
+              customerPhone: widget.customerPhone,
+              network: widget.network,
             );
+
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              RouteConstants.paymentDetail,
+              (route) => false,
+              arguments: transaction,
+            );
+            // Navigator.pushReplacement(
+            //   context,
+            //   MaterialPageRoute(
+            //     builder: (_) => PaymentSuccessPage(
+            //         amount: widget.amount,
+            //         transactionId: state.reference,
+            //         status: 'Echec',
+            //         network: widget.network),
+            //   ),
+            // );
             context.read<TransactionBloc>().add(LoadInitialTransactionsEvent());
           }
         },
@@ -116,7 +158,7 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
                           child: Text(
                             'Démarrer le paiement',
                             style: TextStyle(
-                              color: Colors.black,
+                              color: Colors.white,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -146,7 +188,7 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
                 fontSize: 16,
                 fontFamily: 'Inter',
                 color: textColor,
-                fontWeight: FontWeight.w300,
+                fontWeight: FontWeight.w600,
               ),
               textAlign: TextAlign.center,
             ),
@@ -159,7 +201,7 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
                 fontSize: 16,
                 fontFamily: 'Inter',
                 color: greenColor,
-                fontWeight: FontWeight.w300,
+                fontWeight: FontWeight.w900,
               ),
               textAlign: TextAlign.center,
             ),
@@ -184,7 +226,7 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
                   ? 'assets/images/wave.png'
                   : widget.network.toUpperCase() == 'MTN'
                       ? 'assets/images/momo.png'
-                      : widget.network.toUpperCase() == 'ORANGE'
+                      : widget.network.toUpperCase() == 'OM'
                           ? 'assets/images/orange.png'
                           : 'assets/images/moov.png',
               height: 150,
@@ -237,11 +279,11 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
           Padding(
             padding: const EdgeInsets.only(top: 25),
             child: Text(
-              'Temps restant : ${state.remainingSeconds}s',
+              'Temps : ${state.remainingSeconds}s',
               style: TextStyle(
                 fontSize: 14,
                 fontFamily: 'Inter',
-                color: textColor,
+                color: Colors.red,
                 fontWeight: FontWeight.w600,
               ),
               textAlign: TextAlign.center,
@@ -261,7 +303,7 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
             child: Text(
               "Confirmer le paiement de",
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 18,
                 fontFamily: 'Inter',
                 color: textColor,
                 fontWeight: FontWeight.w300,
@@ -274,7 +316,7 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
             child: Text(
               '${widget.amount} ${widget.currency}',
               style: TextStyle(
-                fontSize: 16,
+                fontSize: 18,
                 fontFamily: 'Inter',
                 color: greenColor,
                 fontWeight: FontWeight.w300,
@@ -302,7 +344,7 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
                   ? 'assets/images/wave.png'
                   : widget.network.toUpperCase() == 'MTN'
                       ? 'assets/images/momo.png'
-                      : widget.network.toUpperCase() == 'ORANGE'
+                      : widget.network.toUpperCase() == 'OM'
                           ? 'assets/images/orange.png'
                           : 'assets/images/moov.png',
               height: 150,
@@ -311,11 +353,35 @@ class _MobilePaymentScreenState extends State<MobilePaymentScreen> {
           SizedBox(height: 20),
           CircularProgressIndicator(),
           SizedBox(height: 20),
-          Text('Vérification du paiement...'),
+          Text(
+            'Vérification du paiement...',
+            style: TextStyle(
+              fontSize: 16,
+              fontFamily: 'Inter',
+              color: primaryColor,
+              fontWeight: FontWeight.w300,
+            ),
+          ),
           SizedBox(height: 10),
-          Text('${state.remainingSeconds}s restantes'),
+          Text(
+            '${state.remainingSeconds}s restantes',
+            style: TextStyle(
+              fontSize: 16,
+              fontFamily: 'Inter',
+              color: Colors.red,
+              fontWeight: FontWeight.w300,
+            ),
+          ),
           SizedBox(height: 20),
-          Text('Transaction: ${state.transactionId}'),
+          Text(
+            'Transaction: ${state.transactionId}',
+            style: TextStyle(
+              fontSize: 14,
+              fontFamily: 'Inter',
+              color: Colors.black,
+              fontWeight: FontWeight.w300,
+            ),
+          ),
         ],
       ),
     );

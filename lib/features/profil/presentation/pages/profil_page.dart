@@ -1,11 +1,15 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import 'package:todouapp/core/widgets/custom_snackbar.dart';
 import 'package:todouapp/features/profil/presentation/bloc/profil_bloc.dart';
 
 import '../../../../core/constants/colors.dart';
 import '../../../../core/utils/initials.dart';
+import '../../../../core/utils/secure_storage.dart';
 
 class ProfilPage extends StatefulWidget {
   const ProfilPage({Key? key}) : super(key: key);
@@ -19,6 +23,16 @@ class _ProfilPageState extends State<ProfilPage> {
   void initState() {
     super.initState();
     context.read<ProfilBloc>().add(LoadProfilEvent());
+    getStripeConnectedTerminal();
+  }
+
+  String terminal = '';
+  getStripeConnectedTerminal() async {
+    final secureStorage = SecureStorageService();
+    final ter = await secureStorage.getStripeConnectedTerminal();
+    setState(() {
+      terminal = "$ter";
+    });
   }
 
   @override
@@ -100,7 +114,7 @@ class _ProfilPageState extends State<ProfilPage> {
                                 fit: BoxFit.fill,
                                 child: Icon(
                                   Icons.business,
-                                  color: Colors.black,
+                                  color: Colors.white,
                                   size: 24,
                                 ),
                               ),
@@ -109,10 +123,10 @@ class _ProfilPageState extends State<ProfilPage> {
                             Text(
                               "Business",
                               style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
+                                  fontFamily: 'Inter',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white),
                             ),
                             const Spacer(),
                             SizedBox(
@@ -124,7 +138,7 @@ class _ProfilPageState extends State<ProfilPage> {
                                     fontFamily: 'Inter',
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
-                                    color: Colors.black,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
@@ -151,7 +165,7 @@ class _ProfilPageState extends State<ProfilPage> {
                                 fit: BoxFit.fill,
                                 child: Icon(
                                   Icons.business,
-                                  color: Colors.black,
+                                  color: Colors.white,
                                   size: 24,
                                 ),
                               ),
@@ -160,10 +174,10 @@ class _ProfilPageState extends State<ProfilPage> {
                             Text(
                               "Nom",
                               style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
+                                  fontFamily: 'Inter',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white),
                             ),
                             const Spacer(),
                             SizedBox(
@@ -175,7 +189,7 @@ class _ProfilPageState extends State<ProfilPage> {
                                     fontFamily: 'Inter',
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
-                                    color: Colors.black,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
@@ -202,7 +216,7 @@ class _ProfilPageState extends State<ProfilPage> {
                                 fit: BoxFit.fill,
                                 child: Icon(
                                   Icons.date_range,
-                                  color: Colors.black,
+                                  color: Colors.white,
                                   size: 24,
                                 ),
                               ),
@@ -211,10 +225,10 @@ class _ProfilPageState extends State<ProfilPage> {
                             Text(
                               "Date de création",
                               style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
+                                  fontFamily: 'Inter',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white),
                             ),
                             const Spacer(),
                             SizedBox(
@@ -223,13 +237,13 @@ class _ProfilPageState extends State<ProfilPage> {
                                 child: Text(
                                   state.profil?.createdAt != null
                                       ? dateFormat
-                                          .format(state.profil!.createdAt!)
+                                          .format(state.profil!.createdAt)
                                       : 'N/A',
                                   style: TextStyle(
                                     fontFamily: 'Inter',
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
-                                    color: Colors.black,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
@@ -256,7 +270,7 @@ class _ProfilPageState extends State<ProfilPage> {
                                 fit: BoxFit.fill,
                                 child: Icon(
                                   Icons.email,
-                                  color: Colors.black,
+                                  color: Colors.white,
                                   size: 24,
                                 ),
                               ),
@@ -265,10 +279,10 @@ class _ProfilPageState extends State<ProfilPage> {
                             Text(
                               "Email",
                               style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
+                                  fontFamily: 'Inter',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white),
                             ),
                             const Spacer(),
                             SizedBox(
@@ -280,7 +294,7 @@ class _ProfilPageState extends State<ProfilPage> {
                                     fontFamily: 'Inter',
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
-                                    color: Colors.black,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
@@ -307,7 +321,7 @@ class _ProfilPageState extends State<ProfilPage> {
                                 fit: BoxFit.fill,
                                 child: Icon(
                                   Icons.phone,
-                                  color: Colors.black,
+                                  color: Colors.white,
                                   size: 24,
                                 ),
                               ),
@@ -316,10 +330,10 @@ class _ProfilPageState extends State<ProfilPage> {
                             Text(
                               "Téléphone",
                               style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                              ),
+                                  fontFamily: 'Inter',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white),
                             ),
                             const Spacer(),
                             SizedBox(
@@ -333,7 +347,7 @@ class _ProfilPageState extends State<ProfilPage> {
                                     fontFamily: 'Inter',
                                     fontSize: 14,
                                     fontWeight: FontWeight.w500,
-                                    color: Colors.black,
+                                    color: Colors.white,
                                   ),
                                 ),
                               ),
@@ -341,6 +355,36 @@ class _ProfilPageState extends State<ProfilPage> {
                           ],
                         ),
                       ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      if (terminal.isNotEmpty)
+                        Column(
+                          children: [
+                            Text(
+                              'Terminal Connecté',
+                              style: TextStyle(
+                                fontFamily: 'Inter',
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.black,
+                              ),
+                            ),
+                            Lottie.asset(
+                              'assets/animations/connected.json',
+                              fit: BoxFit.fill,
+                              height: 40,
+                            ),
+                            Text(
+                              terminal,
+                              style: TextStyle(
+                                  fontFamily: 'Inter',
+                                  fontSize: 14,
+                                  fontWeight: FontWeight.w500,
+                                  color: primaryColor),
+                            )
+                          ],
+                        ),
                     ],
                   ),
                 )

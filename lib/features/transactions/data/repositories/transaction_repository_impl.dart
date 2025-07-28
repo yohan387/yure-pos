@@ -36,6 +36,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
   Future<Either<Failure, TransactionsResponseModel>> getTransactions({
     int page = 1,
     int limit = 10,
+    String? search,
   }) async {
     if (!await networkInfo.isConnected) {
       return Left(NetworkFailure());
@@ -43,9 +44,7 @@ class TransactionRepositoryImpl implements TransactionRepository {
 
     try {
       final transactions = await remoteDataSource.getTransactions(
-        page: page,
-        limit: limit,
-      );
+          page: page, limit: limit, search: search);
       return Right(transactions);
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));

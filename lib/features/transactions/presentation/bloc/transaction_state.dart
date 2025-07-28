@@ -12,6 +12,7 @@ class TransactionState extends Equatable {
   final int currentPage;
   final String? errorMessage;
   final CancellationStatus cancellationStatus;
+  final String? cancellationErrorMessage;
 
   const TransactionState({
     this.status = TransactionStatus.initial,
@@ -21,6 +22,7 @@ class TransactionState extends Equatable {
     this.currentPage = 1,
     this.errorMessage,
     this.cancellationStatus = CancellationStatus.initial,
+    this.cancellationErrorMessage,
   });
 
   TransactionState copyWith({
@@ -31,6 +33,7 @@ class TransactionState extends Equatable {
     int? currentPage,
     String? errorMessage,
     CancellationStatus? cancellationStatus,
+    String? cancellationErrorMessage,
   }) {
     return TransactionState(
       status: status ?? this.status,
@@ -40,6 +43,8 @@ class TransactionState extends Equatable {
       currentPage: currentPage ?? this.currentPage,
       errorMessage: errorMessage ?? this.errorMessage,
       cancellationStatus: cancellationStatus ?? this.cancellationStatus,
+      cancellationErrorMessage:
+          cancellationErrorMessage ?? this.cancellationErrorMessage,
     );
   }
 
@@ -52,5 +57,6 @@ class TransactionState extends Equatable {
         currentPage,
         errorMessage,
         cancellationStatus,
+        cancellationErrorMessage,
       ];
 }

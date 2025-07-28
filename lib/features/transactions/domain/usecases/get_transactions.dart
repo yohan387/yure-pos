@@ -12,6 +12,7 @@ class GetTransactions {
     return await repository.getTransactions(
       page: params.page,
       limit: params.limit,
+      search: params.search,
     );
   }
 }
@@ -19,6 +20,11 @@ class GetTransactions {
 class Params {
   final int page;
   final int limit;
+  final String? search;
 
-  Params({required this.page, required this.limit});
+  Params({
+    required this.page,
+    required this.limit,
+    this.search,
+  });
 }

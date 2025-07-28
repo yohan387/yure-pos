@@ -48,3 +48,14 @@ class MobileVerifyPaymentEvent extends MobilePaymentEvent {
   @override
   List<Object> get props => [transactionId, isAutoCheck];
 }
+
+class StripeVerifyPaymentEvent extends MobilePaymentEvent {
+  final String transactionId;
+
+  const StripeVerifyPaymentEvent(
+    this.transactionId,
+  );
+
+  @override
+  List<Object> get props => [transactionId];
+}

@@ -30,4 +30,14 @@ class CustomSnackbar {
       ),
     );
   }
+
+  static void showWarning(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.orangeAccent,
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
 }

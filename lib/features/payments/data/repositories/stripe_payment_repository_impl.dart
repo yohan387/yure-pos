@@ -68,4 +68,27 @@ class StripePaymentRepositoryImpl implements StripePaymentRepository {
       return Left(ServerFailure(message: 'Une erreur inattendue est survenue'));
     }
   }
+
+  @override
+  Future<Either<Failure, StripeLinkToPayResponse>> initPayLink(
+      StripeLinkPaymentInitRequest request) async {
+    if (!await networkInfo.isConnected) {
+      return Left(NetworkFailure());
+    }
+
+    try {
+      final response = await apiClient.post(ApiConstants.stripeLinkPaymentInit,
+          body: request.toJson(), requiresAuth: true);
+      log('sucess payment $response');
+      return Right(StripeLinkToPayResponse.fromJson(response));
+    } on ServerException catch (e) {
+      log('on payment ${e.message}');
+
+      return Left(ServerFailure(message: e.message));
+    } catch (e) {
+      log('error payment $e');
+
+      return Left(ServerFailure(message: 'Une erreur inattendue est survenue'));
+    }
+  }
 }

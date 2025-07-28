@@ -8,4 +8,6 @@ abstract class MobilePaymentRepository {
       MobilePaymentInitRequest request);
   Future<Either<Failure, MobilePaymentVerifyResponse>> verifyPayment(
       String transactionId);
+  Future<Either<Failure, MobilePaymentVerifyResponse>> stripeVerifyPayment(
+      String transactionId);
 }

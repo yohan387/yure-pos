@@ -5,13 +5,16 @@ import 'package:country_list_pick/country_list_pick.dart';
 
 import '../../../../core/constants/colors.dart';
 import '../../../../core/widgets/keyboard.dart';
+import 'mobile_money_page.dart';
 
 class MobileMoneyContactPage extends StatefulWidget {
   final String network;
+  final double amount;
   const MobileMoneyContactPage({
-    Key? key,
+    super.key,
     required this.network,
-  }) : super(key: key);
+    required this.amount,
+  });
 
   @override
   _MobileMoneyContactPageState createState() => _MobileMoneyContactPageState();
@@ -177,13 +180,25 @@ class _MobileMoneyContactPageState extends State<MobileMoneyContactPage> {
                 if (widget.network == 'WAVE' ||
                     widget.network == 'MTN' ||
                     widget.network == 'MOOV') {
+                  // Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute(
+                  //       builder: (context) => MobileMoneyAmountPage(
+                  //             network: widget.network,
+                  //             customerPhone: phoneNumber,
+                  //           )),
+                  // );
+
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => MobileMoneyAmountPage(
-                              network: widget.network,
-                              customerPhone: phoneNumber,
-                            )),
+                      builder: (_) => MobilePaymentScreen(
+                        amount: widget.amount,
+                        currency: 'XOF',
+                        network: widget.network,
+                        customerPhone: phoneNumber,
+                      ),
+                    ),
                   );
                 } else {
                   Navigator.push(
@@ -205,7 +220,7 @@ class _MobileMoneyContactPageState extends State<MobileMoneyContactPage> {
             child: Text(
               'Continuer',
               style: TextStyle(
-                color: phoneNumber.isNotEmpty ? Colors.black : Colors.white,
+                color: phoneNumber.isNotEmpty ? Colors.white : Colors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -259,7 +274,8 @@ class _MobileMoneyContactPageState extends State<MobileMoneyContactPage> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.orange.withOpacity(0.08),
+              // ignore: deprecated_member_use
+              color: primaryColor.withOpacity(0.08),
               blurRadius: 10,
               offset: const Offset(0, -1),
             ),

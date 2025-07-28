@@ -10,6 +10,7 @@ import 'package:todouapp/core/network/api_client.dart';
 import 'package:todouapp/core/network/network_info.dart';
 import 'package:todouapp/core/utils/event_bus.dart';
 import 'package:todouapp/core/utils/navigation.dart';
+import 'package:todouapp/core/utils/route_observer.dart';
 import 'package:todouapp/core/utils/secure_storage.dart';
 import 'package:todouapp/core/utils/token_validator.dart';
 import 'package:todouapp/features/auth/data/datasources/auth_remote_data_source.dart';
@@ -17,6 +18,8 @@ import 'package:todouapp/features/auth/data/repositories/auth_repository_impl.da
 import 'package:todouapp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:todouapp/features/auth/presentation/pages/login_page.dart';
 import 'package:todouapp/features/auth/presentation/pages/otp_page.dart';
+import 'package:todouapp/features/home/accueil_page.dart';
+import 'package:todouapp/features/mobile_payments/domain/usecases/stripe_verify_payment.dart';
 import 'package:todouapp/features/profil/data/datasources/profil_remote_data_source.dart';
 import 'package:todouapp/features/profil/data/repositories/profil_repository_impl.dart';
 import 'package:todouapp/features/profil/domain/usecases/get_profil.dart';
@@ -36,6 +39,7 @@ import 'features/mobile_payments/domain/usecases/verify_payment.dart';
 import 'features/mobile_payments/presentation/bloc/mobile_payment_bloc.dart';
 import 'features/nfc/scanner_reader.dart';
 import 'features/payments/data/repositories/stripe_payment_repository_impl.dart';
+import 'features/payments/domain/usescases/init_link_payment.dart';
 import 'features/payments/presentation/bloc/stripe_payment_bloc.dart';
 import 'features/payments/presentation/pages/stripe_payment_page.dart';
 import 'features/profil/presentation/pages/profil_page.dart';
@@ -79,14 +83,16 @@ void main() async {
   await Stripe.instance.applySettings();
 
   runApp(
-    TodouApp(isAuthenticated: isAuthenticated, secureStorage: secureStorage),
+    TodouApp(
+      isAuthenticated: isAuthenticated,
+      secureStorage: secureStorage,
+    ),
   );
 }
 
 class TodouApp extends StatelessWidget {
   final bool isAuthenticated;
   final SecureStorageService secureStorage;
-
   const TodouApp({
     Key? key,
     required this.isAuthenticated,
@@ -162,6 +168,12 @@ class TodouApp extends StatelessWidget {
               networkInfo: NetworkInfoImpl(connectivity),
             ),
             secureStorage: secureStorage,
+            initLinkPayment: InitLinkPayment(
+              StripePaymentRepositoryImpl(
+                apiClient: apiClient,
+                networkInfo: NetworkInfoImpl(connectivity),
+              ),
+            ),
           ),
         ),
         BlocProvider<MobilePaymentBloc>(
@@ -173,6 +185,12 @@ class TodouApp extends StatelessWidget {
               ),
             ),
             verifyPayment: VerifyPayment(
+              PaymentRepositoryImpl(
+                apiClient: apiClient,
+                networkInfo: NetworkInfoImpl(connectivity),
+              ),
+            ),
+            stripeVerifyPayment: StripeVerifyPayment(
               PaymentRepositoryImpl(
                 apiClient: apiClient,
                 networkInfo: NetworkInfoImpl(connectivity),
@@ -195,14 +213,16 @@ class TodouApp extends StatelessWidget {
       ],
       child: MaterialApp(
         navigatorKey: navigatorKey,
+        navigatorObservers: [routeObserver],
         title: 'Todou App',
         debugShowCheckedModeBanner: false,
         initialRoute:
-            isAuthenticated ? RouteConstants.home : RouteConstants.onbording,
+            isAuthenticated ? RouteConstants.accueil : RouteConstants.onbording,
         routes: {
           RouteConstants.onbording: (context) => OnbordingPage(),
           RouteConstants.login: (context) => LoginPage(),
           RouteConstants.otp: (context) => OtpPage(),
+          RouteConstants.accueil: (context) => AccueilPage(),
           RouteConstants.home: (context) => const HomePage(),
           RouteConstants.stripePayment: (context) {
             final amount = ModalRoute.of(context)!.settings.arguments as double;
@@ -211,6 +231,7 @@ class TodouApp extends StatelessWidget {
           RouteConstants.topTopay: (context) => ScannerReader(
                 amount: ModalRoute.of(context)!.settings.arguments as double? ??
                     0.0,
+                currency: '',
               ),
           RouteConstants.profil: (context) => const ProfilPage(),
           RouteConstants.paymentDetail: (context) => PaymentDetailPage(

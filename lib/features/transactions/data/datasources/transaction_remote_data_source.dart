@@ -11,8 +11,11 @@ import '../../../../core/utils/secure_storage.dart';
 
 abstract class TransactionRemoteDataSource {
   Future<BalanceModel> getBalance();
-  Future<TransactionsResponseModel> getTransactions(
-      {int page = 1, int limit = 10});
+  Future<TransactionsResponseModel> getTransactions({
+    int page = 1,
+    int limit = 10,
+    String? search,
+  });
   Future<CancelPaymentResponse> cancelTransaction(reference);
 }
 
@@ -43,17 +46,29 @@ class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
   }
 
   @override
-  Future<TransactionsResponseModel> getTransactions(
-      {int page = 1, int limit = 10}) async {
+  Future<TransactionsResponseModel> getTransactions({
+    int page = 1,
+    int limit = 10,
+    String? search,
+  }) async {
     try {
       log('Transactions loading...');
       final secureStorage = SecureStorageService();
       final marchantId = await secureStorage.getMarchandId();
       final terminalId = await secureStorage.getTerminalId();
       log('${ApiConstants.transactionsEndpoint}$marchantId/terminals/$terminalId/transactions');
+      final baseUrl =
+          '${ApiConstants.transactionsEndpoint}$marchantId/terminals/$terminalId/transactions';
+
+      log('Valeur de search: "$search"');
+      final queryParams =
+          '?page=$page&limit=$limit${search != null && search.isNotEmpty ? '&search=$search' : ''}';
+
+      log('sssss $baseUrl$queryParams');
       final response = await apiClient.get(
-          '${ApiConstants.transactionsEndpoint}$marchantId/terminals/$terminalId/transactions?page=$page&limit=$limit',
-          requiresAuth: true);
+        '$baseUrl$queryParams',
+        requiresAuth: true,
+      );
       return TransactionsResponseModel.fromJson(response);
     } on ServerException {
       rethrow;

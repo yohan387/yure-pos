@@ -26,6 +26,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     on<LoadInitialTransactionsEvent>(_onLoadInitialTransactions);
     on<LoadMoreTransactionsEvent>(_onLoadMoreTransactions);
     on<CancelTransactionEvent>(_onCancelTransaction);
+    on<SearchTransactionsEvent>(_onSearchTransactions);
   }
 
   Future<void> _onLoadBalance(
@@ -100,20 +101,65 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     CancelTransactionEvent event,
     Emitter<TransactionState> emit,
   ) async {
-    emit(state.copyWith(cancellationStatus: CancellationStatus.loading));
+    emit(state.copyWith(
+      cancellationStatus: CancellationStatus.loading,
+      cancellationErrorMessage: null,
+    ));
 
     await Future.delayed(const Duration(seconds: 2));
 
     final result = await getCancelPayment(event.reference);
 
     result.fold(
+      (failure) {
+        emit(state.copyWith(
+          cancellationStatus: CancellationStatus.failure,
+          cancellationErrorMessage: failure.message,
+        ));
+
+        // Reset état pour éviter répétitions UI
+        emit(state.copyWith(
+          cancellationStatus: CancellationStatus.initial,
+          cancellationErrorMessage: null,
+        ));
+      },
+      (response) {
+        // Succès annulation
+        emit(state.copyWith(
+          cancellationStatus: CancellationStatus.success,
+          cancellationErrorMessage: null,
+          transactions: state.transactions.toList(),
+        ));
+
+        // Reset état après succès
+        emit(state.copyWith(
+          cancellationStatus: CancellationStatus.initial,
+          cancellationErrorMessage: null,
+        ));
+      },
+    );
+  }
+
+  Future<void> _onSearchTransactions(
+    SearchTransactionsEvent event,
+    Emitter<TransactionState> emit,
+  ) async {
+    emit(state.copyWith(status: TransactionStatus.loading));
+
+    final result = await getTransactions(
+      Params(page: 1, limit: 20, search: event.keyword),
+    );
+
+    result.fold(
       (failure) => emit(state.copyWith(
-        cancellationStatus: CancellationStatus.failure,
+        status: TransactionStatus.failure,
         errorMessage: failure.message,
       )),
       (response) => emit(state.copyWith(
-        cancellationStatus: CancellationStatus.success,
-        transactions: state.transactions.toList(),
+        status: TransactionStatus.success,
+        transactions: response.transactions,
+        hasMore: response.hasMore,
+        currentPage: response.page,
       )),
     );
   }

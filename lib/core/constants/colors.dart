@@ -1,24 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-const COLOR_PRIMARY = Colors.deepOrangeAccent;
-const COLOR_ACCENT = Colors.orange;
-const COLOR_BACKGROUND_DARK = Color(0xFF171822);
-const COLOR_BACKGROUND = Colors.white;
-const COLOR_BACKGROUND_LIGHT = Color(0xFFF1F3F6);
-
-const primaryColor = Color(0xFFFEECE7);
+const primaryColor = Color(0xFF7C56FE);
 
 const backgroundColor = Color(0xFFFAFAFA);
 const borderColor = Color(0xFFE9ECEE);
 const textColor = Color(0xFF1C0802);
 const greenColor = Color(0xFF5DD5AB);
-const redColor = Color(0xFFFE46353);
+const redColor = Color(0xFFFE4635);
 const greyColor = Color(0xFFBFBFBF);
 
 ThemeData lightTheme = ThemeData(
   brightness: Brightness.light,
-  primaryColor: COLOR_PRIMARY,
+  primaryColor: primaryColor,
   cardColor: const Color(0xffF1F3F6),
   iconTheme: const IconThemeData(
     color: Color(0xFF3A4276),
@@ -72,9 +66,6 @@ ThemeData lightTheme = ThemeData(
       fontWeight: FontWeight.w700,
     ),
   ),
-  colorScheme: ColorScheme.fromSwatch()
-      .copyWith(secondary: COLOR_BACKGROUND_LIGHT)
-      .copyWith(background: COLOR_BACKGROUND),
 );
 
 ThemeData darkTheme = ThemeData(
@@ -131,18 +122,5 @@ ThemeData darkTheme = ThemeData(
       color: Colors.white,
       fontWeight: FontWeight.w700,
     ),
-  ),
-  colorScheme: const ColorScheme(
-    brightness: Brightness.dark,
-    primary: COLOR_PRIMARY,
-    onPrimary: Colors.white,
-    secondary: COLOR_ACCENT,
-    onSecondary: Colors.black,
-    error: Colors.red,
-    onError: Colors.white,
-    background: COLOR_BACKGROUND_DARK,
-    onBackground: Colors.white,
-    surface: Color(0xFF212330),
-    onSurface: Colors.white,
   ),
 );

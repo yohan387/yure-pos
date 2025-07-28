@@ -7,7 +7,9 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:todouapp/core/constants/colors.dart';
 import 'package:todouapp/core/utils/paiement_amount.dart';
 import 'package:todouapp/core/utils/secure_storage.dart';
+import 'package:todouapp/features/payments/domain/usescases/init_link_payment.dart';
 
+import '../../data/models/stripe_payment_intent_response.dart';
 import '../../domain/repositories/stripe_payment_repository.dart';
 
 part 'stripe_payment_event.dart';
@@ -16,12 +18,15 @@ part 'stripe_payment_state.dart';
 class StripePaymentBloc extends Bloc<StripePaymentEvent, StripePaymentState> {
   final StripePaymentRepository repository;
   final SecureStorageService secureStorage;
+  final InitLinkPayment initLinkPayment;
 
-  StripePaymentBloc({
-    required this.repository,
-    required this.secureStorage,
-  }) : super(StripePaymentInitial()) {
+  StripePaymentBloc(
+      {required this.repository,
+      required this.secureStorage,
+      required this.initLinkPayment})
+      : super(StripePaymentInitial()) {
     on<ProcessStripePayment>(_onProcessPayment);
+    on<StripeInitPaymentLinkEvent>(_onInitLinkPayment);
   }
 
   Future<void> _onProcessPayment(
@@ -51,18 +56,7 @@ class StripePaymentBloc extends Bloc<StripePaymentEvent, StripePaymentState> {
           await Stripe.instance.initPaymentSheet(
             paymentSheetParameters: SetupPaymentSheetParameters(
               paymentIntentClientSecret: response.clientSecret,
-              //customerEphemeralKeySecret: response.ephemeralKey,
-              // customerId: response.customerId,
-
               merchantDisplayName: 'TodouApp',
-              //primaryButtonLabel: 'Payer',
-              // applePay: PaymentSheetApplePay(
-              //   merchantCountryCode: 'FR',
-              // ),
-              // googlePay: PaymentSheetGooglePay(
-              //   merchantCountryCode: 'CI',
-              //   currencyCode: 'XOF',
-              // ),
               style: ThemeMode.light,
               appearance: PaymentSheetAppearance(
                 colors: PaymentSheetAppearanceColors(
@@ -96,5 +90,31 @@ class StripePaymentBloc extends Bloc<StripePaymentEvent, StripePaymentState> {
         emit(StripePaymentError('Erreur inconnue : ${e.toString()}'));
       }
     }
+  }
+
+  Future<void> _onInitLinkPayment(
+    StripeInitPaymentLinkEvent event,
+    Emitter<StripePaymentState> emit,
+  ) async {
+    emit(StripePaymentLoading());
+
+    final request = StripeLinkPaymentInitRequest(
+      amount: event.amount,
+      currency: event.currency,
+      terminalId: event.terminalId,
+      merchantId: event.merchantId,
+    );
+
+    final result = await initLinkPayment(request);
+
+    result.fold(
+      (failure) => emit(StripePaymentError(failure.message)),
+      (response) {
+        emit(LinkPaymentQrReady(
+          transactionRef: response.transactionRef,
+          paymentLink: response.paymentLink,
+        ));
+      },
+    );
   }
 }

@@ -1,8 +1,12 @@
+import 'dart:developer';
+
+import 'package:currency_picker/currency_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:todouapp/core/widgets/button_widget.dart';
 import '../../../../core/constants/colors.dart';
-import '../../../../core/utils/payment_helper.dart';
+import '../../../../core/utils/secure_storage.dart';
 import '../../../../core/widgets/keyboard.dart';
-import '../../../nfc/scanner_reader.dart';
+import 'payment_methode_page.dart';
 
 class PaymentPage extends StatefulWidget {
   const PaymentPage({Key? key}) : super(key: key);
@@ -14,10 +18,12 @@ class PaymentPage extends StatefulWidget {
 class _PaymentPageState extends State<PaymentPage> {
   late List<List<dynamic>> keys;
   late String amount;
+  String curreny = 'EUR';
 
   @override
   void initState() {
     super.initState();
+    getCurrency();
     keys = [
       ['1', '2', '3'],
       ['4', '5', '6'],
@@ -32,6 +38,17 @@ class _PaymentPageState extends State<PaymentPage> {
       ],
     ];
     amount = '';
+  }
+
+  getCurrency() async {
+    final secureStorage = SecureStorageService();
+
+    final cyn = await secureStorage.getCurrency();
+    log("$cyn");
+
+    setState(() {
+      curreny = '$cyn';
+    });
   }
 
   onKeyTap(val) {
@@ -116,7 +133,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 text: TextSpan(
                   children: [
                     TextSpan(text: display, style: amountStyle),
-                    TextSpan(text: ' Euro', style: currencyStyle),
+                    TextSpan(text: ' $curreny', style: currencyStyle),
                   ],
                 ),
               ),
@@ -139,14 +156,20 @@ class _PaymentPageState extends State<PaymentPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
       child: GestureDetector(
-        onTap: amount.isNotEmpty
+        onTap: amount.isNotEmpty && curreny.isNotEmpty
             ? () async {
                 // await PaymentHelper.launchStripePayment(
                 //     context, double.parse(amount));
+                // Navigator.of(context).pushReplacement(
+                //   MaterialPageRoute(
+                //     builder: (context) =>
+                //         ScannerReader(amount: double.parse(amount)),
+                //   ),
+                // );
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                     builder: (context) =>
-                        ScannerReader(amount: double.parse(amount)),
+                        PaymentMethodePage(amount: double.parse(amount)),
                   ),
                 );
               }
@@ -162,7 +185,7 @@ class _PaymentPageState extends State<PaymentPage> {
             child: Text(
               'Valider',
               style: TextStyle(
-                color: amount.isNotEmpty ? Colors.black : Colors.white,
+                color: amount.isNotEmpty ? Colors.white : Colors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -197,7 +220,7 @@ class _PaymentPageState extends State<PaymentPage> {
               padding:
                   const EdgeInsets.symmetric(horizontal: 16.0, vertical: 25.0),
               child: Text(
-                "Saisissez le montant total de la transaction en EURO.",
+                "Saisissez le montant total de la transaction",
                 style: TextStyle(
                   fontSize: 16,
                   fontFamily: 'Inter',
@@ -206,6 +229,54 @@ class _PaymentPageState extends State<PaymentPage> {
                 ),
                 textAlign: TextAlign.center,
               ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Image.asset(
+                  curreny == "EUR"
+                      ? "assets/images/round.png"
+                      : "assets/images/uemoa.jpg",
+                  width: 25,
+                ),
+                SizedBox(
+                  width: 5,
+                ),
+                InkWell(
+                  onTap: () {
+                    showCurrencyPicker(
+                      context: context,
+                      showFlag: true,
+                      showSearchField: false,
+                      showCurrencyName: true,
+                      showCurrencyCode: true,
+                      favorite: [curreny],
+                      currencyFilter: <String>[
+                        'EUR',
+                        'XOF',
+                      ],
+                      onSelect: (Currency currency) async {
+                        print('Select currency: ${currency.code}');
+                        setState(() {
+                          curreny = currency.name == "Euro" ? "EUR" : "XOF";
+                        });
+                        final secureStorage = SecureStorageService();
+
+                        await secureStorage.saveCurrency(
+                            currency.name == "Euro" ? "EUR" : "XOF");
+                      },
+                    );
+                  },
+                  child: const Text(
+                    'Choisir la devise',
+                    style: TextStyle(
+                        fontSize: 14,
+                        fontFamily: 'Inter',
+                        color: primaryColor,
+                        fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ],
             ),
             renderAmount(),
           ],
@@ -216,7 +287,7 @@ class _PaymentPageState extends State<PaymentPage> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.orange.withOpacity(0.08),
+              color: primaryColor.withOpacity(0.08),
               blurRadius: 10,
               offset: const Offset(0, -1),
             ),
@@ -228,7 +299,33 @@ class _PaymentPageState extends State<PaymentPage> {
             mainAxisSize: MainAxisSize.min,
             children: [
               renderKeyboard(),
-              renderConfirmButton(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Expanded(
+                      child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CancelButton(text: "ANNULER"),
+                  )),
+                  Expanded(
+                      child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: CustomButton(
+                      text: "VALIDER",
+                      onPressed: amount.isNotEmpty
+                          ? () async {
+                              Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                  builder: (context) => PaymentMethodePage(
+                                      amount: double.parse(amount)),
+                                ),
+                              );
+                            }
+                          : null,
+                    ),
+                  ))
+                ],
+              ),
             ],
           ),
         ),

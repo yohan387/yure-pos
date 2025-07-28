@@ -12,10 +12,13 @@ import 'package:rive/rive.dart';
 import '../../core/constants/route_constants.dart';
 import '../../core/utils/secure_storage.dart';
 import '../../core/widgets/button_widget.dart';
+import '../transactions/data/models/transaction_model.dart';
 
 class ScannerReader extends StatefulWidget {
   final double amount;
-  const ScannerReader({Key? key, required this.amount}) : super(key: key);
+  final String currency;
+  const ScannerReader({Key? key, required this.amount, this.currency = "eur"})
+      : super(key: key);
   @override
   _ScannerReaderState createState() => _ScannerReaderState();
 }
@@ -53,7 +56,12 @@ class _ScannerReaderState extends State<ScannerReader> {
     final connectionStatus = await _terminal!.getConnectionStatus();
     if (connectionStatus == ConnectionStatus.connected) {
       final connectedReader = await _terminal!.getConnectedReader();
+
       if (!mounted) return;
+      final secureStorage = SecureStorageService();
+      log("terminal connecté ${connectedReader!.serialNumber}");
+
+      secureStorage.saveStripeConnectedTerminal(connectedReader!.serialNumber);
       setState(() {
         _reader = connectedReader;
         scanStatus = "";
@@ -253,6 +261,9 @@ class _ScannerReaderState extends State<ScannerReader> {
     final connectedReader =
         await terminal.connectMobileReader(reader, locationId: locationId!);
     if (!mounted) return;
+    final secureStorage = SecureStorageService();
+    log("terminal connecté ${connectedReader.serialNumber}");
+    secureStorage.saveStripeConnectedTerminal(connectedReader.serialNumber);
     setState(() => _reader = connectedReader);
   }
 
@@ -289,7 +300,7 @@ class _ScannerReaderState extends State<ScannerReader> {
     final paymentIntent = await terminal.createPaymentIntent(
       PaymentIntentParameters(
         amount: (amount * 100).ceil(),
-        currency: "eur",
+        currency: 'eur',
         captureMethod: CaptureMethod.automatic,
         paymentMethodTypes: [PaymentMethodType.cardPresent],
         metadata: {
@@ -323,7 +334,26 @@ class _ScannerReaderState extends State<ScannerReader> {
     final confirmed = await terminal.confirmPaymentIntent(paymentIntent);
     _paymentIntent = confirmed;
     if (!mounted) return;
-    setState(() => _isPaymentSuccessful = true);
+    final transaction = TransactionModel(
+      id: 0,
+      merchantId: 0,
+      terminalId: 0,
+      amount: widget.amount,
+      currency: widget.currency,
+      transactionRef: confirmed.id,
+      date: DateTime.now(),
+      paymentMethod: 'CARD',
+      status: 'succeeded',
+      customerPhone: "",
+      network: "CARD",
+    );
+
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      RouteConstants.paymentDetail,
+      (route) => false,
+      arguments: transaction,
+    );
   }
 
   void showSnackBar(String message) {
@@ -446,7 +476,7 @@ class _ScannerReaderState extends State<ScannerReader> {
                     onPressed: () async {
                       Navigator.pushNamedAndRemoveUntil(
                         context,
-                        RouteConstants.home,
+                        RouteConstants.accueil,
                         (route) => false,
                       );
                     },

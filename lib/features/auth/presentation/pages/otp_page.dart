@@ -45,7 +45,7 @@ class _OtpPageState extends State<OtpPage> {
               state.isAuthenticated) {
             Navigator.pushNamedAndRemoveUntil(
               context,
-              RouteConstants.home,
+              RouteConstants.accueil,
               (route) => false,
             );
           }
@@ -85,7 +85,7 @@ class _OtpPageState extends State<OtpPage> {
                                 style: GoogleFonts.inter(
                                   fontSize: 24,
                                   fontWeight: FontWeight.w600,
-                                  color: Colors.orange,
+                                  color: primaryColor,
                                 ),
                               ),
                               TextSpan(

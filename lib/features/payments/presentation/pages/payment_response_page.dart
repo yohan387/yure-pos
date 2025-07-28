@@ -57,10 +57,7 @@ class PaymentSuccessPage extends StatelessWidget {
                 ),
               ),
               SizedBox(height: 20),
-              if (network.toUpperCase() != 'ORANGE' ||
-                  network.toUpperCase() != 'MTN' ||
-                  network.toUpperCase() != 'MOOV' ||
-                  network.toUpperCase() != 'WAVE')
+              if (network.toUpperCase() == 'CARD')
                 Text(
                   textAlign: TextAlign.center,
                   status == 'Succès'
@@ -94,7 +91,7 @@ class PaymentSuccessPage extends StatelessWidget {
                   // Retour à l'écran d'accueil
                   Navigator.pushNamedAndRemoveUntil(
                     context,
-                    RouteConstants.home,
+                    RouteConstants.accueil,
                     (route) => false,
                   );
                 },

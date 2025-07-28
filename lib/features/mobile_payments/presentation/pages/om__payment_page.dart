@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:country_list_pick/country_list_pick.dart';
 import '../../../../core/constants/colors.dart';
 import '../../../../core/widgets/keyboard.dart';
-import 'mobile_money_amount_page.dart';
+import 'mobile_money_page.dart';
 
 class OmPaymentPage extends StatefulWidget {
   final String network;
+  final double amount;
 
-  const OmPaymentPage({Key? key, required this.network}) : super(key: key);
+  const OmPaymentPage({Key? key, required this.network, required this.amount})
+      : super(key: key);
 
   @override
   _OmPaymentPageState createState() => _OmPaymentPageState();
@@ -204,11 +206,12 @@ class _OmPaymentPageState extends State<OmPaymentPage> {
             ? () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => MobileMoneyAmountPage(
-                      network: widget.network,
-                      customerPhone: phoneNumber,
-                      otp: otp,
-                    ),
+                    builder: (_) => MobilePaymentScreen(
+                        amount: widget.amount,
+                        currency: 'XOF',
+                        network: widget.network,
+                        customerPhone: phoneNumber,
+                        otp: otp),
                   ),
                 )
             : null,
@@ -223,7 +226,7 @@ class _OmPaymentPageState extends State<OmPaymentPage> {
             child: Text(
               'Continuer',
               style: TextStyle(
-                color: ready ? Colors.black : Colors.white,
+                color: ready ? Colors.white : Colors.white,
                 fontWeight: FontWeight.bold,
               ),
             ),

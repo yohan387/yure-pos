@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 
 import 'package:share_plus/share_plus.dart';
+import 'package:todouapp/core/widgets/button_widget.dart';
 
 import 'package:todouapp/features/profil/presentation/bloc/profil_bloc.dart';
 import 'package:todouapp/features/transactions/presentation/bloc/transaction_bloc.dart';
@@ -123,12 +124,12 @@ class _PaymentDetailPageState extends State<PaymentDetailPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Status",
+                          "Statut",
                           style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                          ),
+                              fontFamily: 'Inter',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white),
                         ),
                         const Spacer(),
                         SizedBox(
@@ -142,9 +143,9 @@ class _PaymentDetailPageState extends State<PaymentDetailPage> {
                                 fontStyle: FontStyle.italic,
                                 fontWeight: FontWeight.w200,
                                 color: isSucces
-                                    ? Colors.green
+                                    ? Colors.green.shade900
                                     : isPending
-                                        ? Colors.orange
+                                        ? Colors.orange.shade900
                                         : Colors.red,
                               ),
                             ),
@@ -161,10 +162,10 @@ class _PaymentDetailPageState extends State<PaymentDetailPage> {
                         Text(
                           "Frais",
                           style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                          ),
+                              fontFamily: 'Inter',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white),
                         ),
                         const Spacer(),
                         SizedBox(
@@ -173,11 +174,10 @@ class _PaymentDetailPageState extends State<PaymentDetailPage> {
                             child: Text(
                               'O ${widget.transaction.currency} ',
                               style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w200,
-                                color: Colors.black,
-                              ),
+                                  fontFamily: 'Inter',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w200,
+                                  color: Colors.white),
                             ),
                           ),
                         ),
@@ -192,10 +192,10 @@ class _PaymentDetailPageState extends State<PaymentDetailPage> {
                         Text(
                           "Date",
                           style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                          ),
+                              fontFamily: 'Inter',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white),
                         ),
                         const Spacer(),
                         SizedBox(
@@ -204,11 +204,10 @@ class _PaymentDetailPageState extends State<PaymentDetailPage> {
                             child: Text(
                               dateFormat.format(widget.transaction.date),
                               style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 15,
-                                fontWeight: FontWeight.w200,
-                                color: Colors.black,
-                              ),
+                                  fontFamily: 'Inter',
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w200,
+                                  color: Colors.white),
                             ),
                           ),
                         ),
@@ -221,29 +220,41 @@ class _PaymentDetailPageState extends State<PaymentDetailPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          "Solde",
+                          "Montant",
                           style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                          ),
+                              fontFamily: 'Inter',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white),
                         ),
                         const Spacer(),
                         SizedBox(
                           child: FittedBox(
                             fit: BoxFit.fill,
                             child: Text(
-                              context.select<TransactionBloc, String>((bloc) =>
-                                  '${AmountFormatter.format(bloc.state.balance?.amount ?? 0)} ${bloc.state.balance?.currency ?? 'XOF'}'),
+                              '${isSucces ? '+' : '-'}${AmountFormatter.format(widget.transaction.amount)}',
                               style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 16,
-                                fontWeight: FontWeight.w200,
-                                color: Colors.black,
-                              ),
+                                  fontFamily: 'Inter',
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w200,
+                                  color: Colors.white),
                             ),
                           ),
                         ),
+                        // SizedBox(
+                        //   child: FittedBox(
+                        //     fit: BoxFit.fill,
+                        //     child: Text(
+                        //       context.select<TransactionBloc, String>((bloc) =>
+                        //           '${AmountFormatter.format(bloc.state.balance?.amount ?? 0)} ${bloc.state.balance?.currency ?? 'XOF'}'),
+                        //       style: TextStyle(
+                        //           fontFamily: 'Inter',
+                        //           fontSize: 16,
+                        //           fontWeight: FontWeight.w200,
+                        //           color: Colors.white),
+                        //     ),
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),
@@ -255,21 +266,20 @@ class _PaymentDetailPageState extends State<PaymentDetailPage> {
                         Text(
                           "Référence",
                           style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 16,
-                            fontWeight: FontWeight.w700,
-                          ),
+                              fontFamily: 'Inter',
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white),
                         ),
                         const Spacer(),
                         Expanded(
                           child: Text(
                             widget.transaction.transactionRef ?? 'N/A',
                             style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 15,
-                              fontWeight: FontWeight.w200,
-                              color: Colors.black,
-                            ),
+                                fontFamily: 'Inter',
+                                fontSize: 15,
+                                fontWeight: FontWeight.w200,
+                                color: Colors.white),
                             textAlign: TextAlign.right,
                             softWrap: true,
                             overflow: TextOverflow.visible,
@@ -281,7 +291,14 @@ class _PaymentDetailPageState extends State<PaymentDetailPage> {
                 ],
               ),
             ),
-          )
+          ),
+          if (widget.transaction.id == 0)
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 15, vertical: 45),
+              child: CancelButton(
+                text: 'Retour à l\'accueil',
+              ),
+            )
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -299,10 +316,7 @@ class _PaymentDetailPageState extends State<PaymentDetailPage> {
           await Share.share(shareText, subject: 'Détail de la transaction');
         },
         backgroundColor: primaryColor,
-        child: Icon(
-          Icons.share,
-          color: Colors.black,
-        ),
+        child: Icon(Icons.share, color: Colors.white),
       ),
     );
   }

@@ -9,6 +9,7 @@ abstract class TransactionRepository {
   Future<Either<Failure, TransactionsResponseModel>> getTransactions({
     int page,
     int limit,
+    String? search,
   });
   Future<Either<Failure, CancelPaymentResponse>> cancelTransaction(reference);
 }

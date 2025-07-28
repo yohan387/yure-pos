@@ -88,8 +88,10 @@ class _StripePaymentPageState extends State<StripePaymentPage> {
                         // Navigator.pushNamed(context, RouteConstants.topTopay);
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
-                            builder: (context) =>
-                                ScannerReader(amount: widget.amount),
+                            builder: (context) => ScannerReader(
+                              amount: widget.amount,
+                              currency: 'EUR',
+                            ),
                           ),
                         );
                       },

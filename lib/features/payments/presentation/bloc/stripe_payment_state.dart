@@ -28,3 +28,16 @@ class StripePaymentError extends StripePaymentState {
   @override
   List<Object> get props => [message];
 }
+
+class LinkPaymentQrReady extends StripePaymentState {
+  final String paymentLink;
+  final String transactionRef;
+
+  const LinkPaymentQrReady({
+    required this.paymentLink,
+    required this.transactionRef,
+  });
+
+  @override
+  List<Object> get props => [paymentLink, transactionRef];
+}

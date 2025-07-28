@@ -11,6 +11,12 @@ class ApiConstants {
   static const String stripePaymentIntent =
       '/merchants/transactions/init-payment/card';
 
+  static const String stripeLinkPaymentInit =
+      '/merchants/transactions/init-payment/card/link';
+
+  // static const String verifyPaymentLink =
+  //     '/merchants/transactions/init-payment/card/link';
+
   static const String stripePaymentCancel =
       '/merchants/transactions/init-payment/card/cancel';
 

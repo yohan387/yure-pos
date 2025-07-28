@@ -8,6 +8,8 @@ import 'package:todouapp/core/utils/onbording_model.dart';
 import 'package:todouapp/core/widgets/button_widget.dart';
 import 'package:todouapp/core/widgets/onbording/onbording_dots.dart';
 
+import '../constants/colors.dart';
+
 class OnbordingUiView extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _OnbordingUiViewState();
@@ -57,7 +59,7 @@ class _OnbordingUiViewState extends State<OnbordingUiView> {
   Widget buildOnboardingPage(
       Size media, OnbordingModel item, int currentIndex) {
     return Container(
-      decoration: BoxDecoration(color: Color(0xFFFEECE7)),
+      decoration: BoxDecoration(color: primaryColor),
       child: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
@@ -65,20 +67,6 @@ class _OnbordingUiViewState extends State<OnbordingUiView> {
               backgroundColor: Colors.transparent,
               centerTitle: true,
               elevation: 0,
-              // leading: InkWell(
-              //   onTap: () {
-              //     Navigator.pop(context);
-              //   },
-              //   child: Container(
-              //     margin: const EdgeInsets.all(8),
-
-              //     alignment: Alignment.center,
-              //     decoration: BoxDecoration(
-              //         color: Theme.of(context).colorScheme.secondary,
-              //         borderRadius: BorderRadius.circular(10)),
-              //     child: Text('Retour'),
-              //   ),
-              // ),
             ),
             SliverAppBar(
               backgroundColor: Colors.transparent,
@@ -93,7 +81,7 @@ class _OnbordingUiViewState extends State<OnbordingUiView> {
                   'Yure POS',
                   style: TextStyle(
                     fontFamily: 'Inter',
-                    color: Color(0xFFF34213),
+                    color: Colors.white,
                     fontWeight: FontWeight.w800,
                     fontSize: 40,
                   ),
@@ -140,13 +128,6 @@ class _OnbordingUiViewState extends State<OnbordingUiView> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  // Text(
-                                  //   item.onbordingHeading,
-                                  //   style: GoogleFonts.firaSans(
-                                  //       color: Color(0xFF080808),
-                                  //       fontWeight: FontWeight.w800,
-                                  //       fontSize: 20),
-                                  // ),
                                   RichText(
                                     textAlign: TextAlign.center,
                                     text: TextSpan(
@@ -221,7 +202,7 @@ class _OnbordingUiViewState extends State<OnbordingUiView> {
       return [
         TextSpan(
           text: words[0],
-          style: TextStyle(color: Color(0xFFE55C1E)),
+          style: TextStyle(color: primaryColor),
         ),
       ];
     }
@@ -231,7 +212,7 @@ class _OnbordingUiViewState extends State<OnbordingUiView> {
       TextSpan(text: '${words.join(' ')} '),
       TextSpan(
         text: lastWord,
-        style: TextStyle(color: Color(0xFFE55C1E)),
+        style: TextStyle(color: primaryColor),
       ),
     ];
   }

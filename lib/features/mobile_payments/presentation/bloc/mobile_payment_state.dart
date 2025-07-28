@@ -74,3 +74,15 @@ class MobilePaymentError extends MobilePaymentState {
   @override
   List<Object> get props => [message, isTimer];
 }
+
+class MobilePaymentPending extends MobilePaymentState {
+  final String message;
+  final DateTime timestamp;
+
+  MobilePaymentPending(
+    this.message,
+  ) : timestamp = DateTime.now();
+
+  @override
+  List<Object> get props => [message, timestamp];
+}

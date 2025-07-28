@@ -15,3 +15,25 @@ class ProcessStripePayment extends StripePaymentEvent {
   @override
   List<Object> get props => [amount];
 }
+
+class StripeInitPaymentLinkEvent extends StripePaymentEvent {
+  final dynamic amount;
+  final String currency;
+  final int terminalId;
+  final int merchantId;
+
+  const StripeInitPaymentLinkEvent({
+    required this.amount,
+    required this.currency,
+    required this.terminalId,
+    required this.merchantId,
+  });
+
+  @override
+  List<Object> get props => [
+        amount,
+        currency,
+        terminalId,
+        merchantId,
+      ];
+}

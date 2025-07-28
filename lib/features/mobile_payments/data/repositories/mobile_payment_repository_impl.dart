@@ -80,4 +80,27 @@ class PaymentRepositoryImpl implements MobilePaymentRepository {
       return Left(ServerFailure(message: 'Une erreur inattendue est survenue'));
     }
   }
+
+  @override
+  Future<Either<Failure, MobilePaymentVerifyResponse>> stripeVerifyPayment(
+      String transactionId) async {
+    if (!await networkInfo.isConnected) {
+      return Left(NetworkFailure());
+    }
+    log('${ApiConstants.mobilePaymentInitEndpoint}/check-status/$transactionId');
+
+    try {
+      final response = await apiClient.get(
+          '${ApiConstants.mobilePaymentInitEndpoint}/check-status/$transactionId',
+          requiresAuth: true);
+
+      return Right(MobilePaymentVerifyResponse.fromJson(response));
+    } on ServerException catch (e) {
+      return Left(ServerFailure(message: e.message));
+    } catch (e) {
+      log('error verify $e');
+
+      return Left(ServerFailure(message: 'Une erreur inattendue est survenue'));
+    }
+  }
 }

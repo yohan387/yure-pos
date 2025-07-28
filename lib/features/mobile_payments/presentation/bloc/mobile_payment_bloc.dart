@@ -1,10 +1,12 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
 import '../../../../core/utils/payment_verification_handler.dart';
 import '../../data/models/mobile_payment_model.dart';
 import '../../domain/usecases/init_payment.dart';
+import '../../domain/usecases/stripe_verify_payment.dart';
 import '../../domain/usecases/verify_payment.dart';
 
 part 'mobile_payment_event.dart';
@@ -13,18 +15,22 @@ part 'mobile_payment_state.dart';
 class MobilePaymentBloc extends Bloc<MobilePaymentEvent, MobilePaymentState> {
   final InitPayment initPayment;
   final VerifyPayment verifyPayment;
+  final StripeVerifyPayment stripeVerifyPayment;
+
   Timer? _verificationTimer;
   Timer? _countdownTimer;
   int _remainingSeconds = 180;
   final PaymentVerificationHandler _verificationHandler =
       PaymentVerificationHandler();
 
-  MobilePaymentBloc({
-    required this.initPayment,
-    required this.verifyPayment,
-  }) : super(MobilePaymentInitial()) {
+  MobilePaymentBloc(
+      {required this.initPayment,
+      required this.verifyPayment,
+      required this.stripeVerifyPayment})
+      : super(MobilePaymentInitial()) {
     on<MobileInitPaymentEvent>(_onInitPayment);
     on<MobileVerifyPaymentEvent>(_onVerifyPayment);
+    on<StripeVerifyPaymentEvent>(_onStripeVerifyPayment);
   }
 
   @override
@@ -152,7 +158,8 @@ class MobilePaymentBloc extends Bloc<MobilePaymentEvent, MobilePaymentState> {
       },
       (response) {
         _verificationTimer?.cancel();
-        if (response.status.toLowerCase() == 'success') {
+        if (response.status.toLowerCase() == 'success' ||
+            response.status.toLowerCase() == "succeeded") {
           _cancelTimers();
           emit(MobilePaymentSuccess(
             reference: response.reference,
@@ -162,6 +169,36 @@ class MobilePaymentBloc extends Bloc<MobilePaymentEvent, MobilePaymentState> {
           // Dernière tentative échouée après 180 sec
           _cancelTimers();
           emit(MobilePaymentError('Paiement expiré', true,
+              transactionId: event.transactionId));
+        }
+      },
+    );
+  }
+
+  Future<void> _onStripeVerifyPayment(
+    StripeVerifyPaymentEvent event,
+    Emitter<MobilePaymentState> emit,
+  ) async {
+    final result = await verifyPayment(event.transactionId);
+
+    result.fold(
+      (failure) {
+        log(failure.toString());
+        emit(MobilePaymentError(failure.message, true,
+            transactionId: event.transactionId));
+      },
+      (response) {
+        log(response.status.toString());
+        if (response.status.toLowerCase() == 'success' ||
+            response.status.toLowerCase() == "succeeded") {
+          emit(MobilePaymentSuccess(
+            reference: response.reference,
+            date: response.date,
+          ));
+        } else if (response.status.toLowerCase() == 'pending') {
+          emit(MobilePaymentPending("Paiement en cours"));
+        } else if (response.status.toLowerCase() == 'failed') {
+          emit(MobilePaymentError("Paiement echoué", true,
               transactionId: event.transactionId));
         }
       },
