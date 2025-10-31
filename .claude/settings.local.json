@@ -4,7 +4,13 @@
       "Bash(flutter --version:*)",
       "Bash(flutter pub get:*)",
       "Bash(flutter analyze:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(flutter test:*)",
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(del \"c:\\fluttersrc\\yure\\pos-app\\test\\widget_test.dart\")",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": [],
     "ask": []
