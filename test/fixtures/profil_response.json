@@ -1,0 +1,21 @@
+{
+  "id": "merchant_123456",
+  "businessType": "retail",
+  "businessName": "Boutique Example",
+  "stripeAccountId": "acct_1234567890",
+  "createdAt": "2023-01-10T08:00:00Z",
+  "updatedAt": "2024-01-15T12:00:00Z",
+  "ownerId": "owner_abc123",
+  "username": "john.doe",
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john.doe@example.com",
+  "emailVerified": true,
+  "phoneNumbers": ["+221771234567"],
+  "createdTimestamp": 1673337600000,
+  "enabled": true,
+  "totp": false,
+  "disableableCredentialTypes": [],
+  "requiredActions": [],
+  "notBefore": 0
+}

@@ -1,0 +1,4 @@
+{
+  "paymentLink": "https://checkout.stripe.com/pay/link_123abc",
+  "transactionRef": "REF_LINK_001"
+}

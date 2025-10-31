@@ -1,0 +1,47 @@
+{
+  "transactions": [
+    {
+      "id": "txn_001",
+      "merchantId": "merchant_123456",
+      "terminalId": "terminal_789",
+      "amount": 5000,
+      "currency": "XOF",
+      "transactionRef": "REF001",
+      "date": "2024-01-15T10:30:00Z",
+      "paymentMethod": "orange_money",
+      "status": "success",
+      "customerPhone": "+221771234567",
+      "network": "orange"
+    },
+    {
+      "id": "txn_002",
+      "merchantId": "merchant_123456",
+      "terminalId": "terminal_789",
+      "amount": 10000,
+      "currency": "XOF",
+      "transactionRef": "REF002",
+      "date": "2024-01-15T11:45:00Z",
+      "paymentMethod": "wave",
+      "status": "success",
+      "customerPhone": "+221779876543",
+      "network": "wave"
+    },
+    {
+      "id": "txn_003",
+      "merchantId": "merchant_123456",
+      "terminalId": "terminal_789",
+      "amount": 7500,
+      "currency": "XOF",
+      "transactionRef": "REF003",
+      "date": "2024-01-15T14:20:00Z",
+      "paymentMethod": "card",
+      "status": "pending",
+      "customerPhone": null,
+      "network": null
+    }
+  ],
+  "total": 3,
+  "page": 1,
+  "limit": 10,
+  "hasMore": false
+}

@@ -1,0 +1,5 @@
+{
+  "paymentUrl": "https://payment.wave.com/qr/abc123xyz",
+  "transactionId": "txn_mobile_456",
+  "reference": "REF_MOBILE_001"
+}
