@@ -9,22 +9,24 @@ import 'package:todouapp/core/utils/paiement_amount.dart';
 import 'package:todouapp/core/utils/secure_storage.dart';
 import 'package:todouapp/features/payments/domain/usescases/init_link_payment.dart';
 
-import '../../data/models/stripe_payment_intent_response.dart';
-import '../../domain/repositories/stripe_payment_repository.dart';
+import '../../domain/repositories/i_stripe_payment_repository.dart';
 
 part 'stripe_payment_event.dart';
 part 'stripe_payment_state.dart';
 
 class StripePaymentBloc extends Bloc<StripePaymentEvent, StripePaymentState> {
-  final StripePaymentRepository repository;
-  final SecureStorageService secureStorage;
-  final InitLinkPayment initLinkPayment;
+  final IStripePaymentRepository _repository;
+  final SecureStorageService _secureStorage;
+  final InitLinkPayment _initLinkPayment;
 
-  StripePaymentBloc(
-      {required this.repository,
-      required this.secureStorage,
-      required this.initLinkPayment})
-      : super(StripePaymentInitial()) {
+  StripePaymentBloc({
+    required IStripePaymentRepository repository,
+    required SecureStorageService secureStorage,
+    required InitLinkPayment initLinkPayment,
+  })  : _repository = repository,
+        _secureStorage = secureStorage,
+        _initLinkPayment = initLinkPayment,
+        super(StripePaymentInitial()) {
     on<ProcessStripePayment>(_onProcessPayment);
     on<StripeInitPaymentLinkEvent>(_onInitLinkPayment);
   }
@@ -37,7 +39,7 @@ class StripePaymentBloc extends Bloc<StripePaymentEvent, StripePaymentState> {
 
     try {
       // 1. Vérifier le token
-      final token = await secureStorage.getToken();
+      final token = await _secureStorage.getToken();
       if (token == null || token.isEmpty) {
         throw Exception('Session expirée. Veuillez vous reconnecter.');
       }
@@ -47,7 +49,7 @@ class StripePaymentBloc extends Bloc<StripePaymentEvent, StripePaymentState> {
           PaiementMontant.convertToStripeAmount(event.amount, 'EUR');
 
       // 2. Créer l'intention de paiement
-      final result = await repository.createPaymentIntent(montantPourStripe);
+      final result = await _repository.createPaymentIntent(montantPourStripe);
 
       await result.fold(
         (failure) => throw Exception(failure.message),
@@ -98,14 +100,7 @@ class StripePaymentBloc extends Bloc<StripePaymentEvent, StripePaymentState> {
   ) async {
     emit(StripePaymentLoading());
 
-    final request = StripeLinkPaymentInitRequest(
-      amount: event.amount,
-      currency: event.currency,
-      terminalId: event.terminalId,
-      merchantId: event.merchantId,
-    );
-
-    final result = await initLinkPayment(request);
+    final result = await _initLinkPayment(event.amount);
 
     result.fold(
       (failure) => emit(StripePaymentError(failure.message)),

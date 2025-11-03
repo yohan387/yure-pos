@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:todouapp/core/errors/exceptions.dart';
 import 'package:todouapp/core/network/api_client.dart';
+import 'package:todouapp/features/transactions/data/datasources/i_transaction_data_source.dart';
 import 'package:todouapp/features/transactions/data/models/balance_model.dart';
 import 'package:todouapp/features/transactions/data/models/cancel_response.dart';
 import 'package:todouapp/features/transactions/data/models/transactions_response_model.dart';
@@ -9,20 +10,13 @@ import 'package:todouapp/features/transactions/data/models/transactions_response
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/utils/secure_storage.dart';
 
-abstract class TransactionRemoteDataSource {
-  Future<BalanceModel> getBalance();
-  Future<TransactionsResponseModel> getTransactions({
-    int page = 1,
-    int limit = 10,
-    String? search,
-  });
-  Future<CancelPaymentResponse> cancelTransaction(reference);
-}
+/// Implémentation Remote de ITransactionDataSource
+/// Communique avec l'API backend pour les transactions
+class TransactionRemoteDataSource implements ITransactionDataSource {
+  final ApiClient _apiClient;
 
-class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
-  final ApiClient apiClient;
-
-  TransactionRemoteDataSourceImpl({required this.apiClient});
+  TransactionRemoteDataSource({required ApiClient apiClient})
+      : _apiClient = apiClient;
 
   @override
   Future<BalanceModel> getBalance() async {
@@ -33,7 +27,7 @@ class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
       log('Getting balance loading...');
       log('${ApiConstants.balanceEndpoint}$marchantId/terminals/$terminalId/balance');
 
-      final response = await apiClient.get(
+      final response = await _apiClient.get(
           '${ApiConstants.balanceEndpoint}$marchantId/terminals/$terminalId/balance',
           requiresAuth: true);
 
@@ -65,7 +59,7 @@ class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
           '?page=$page&limit=$limit${search != null && search.isNotEmpty ? '&search=$search' : ''}';
 
       log('sssss $baseUrl$queryParams');
-      final response = await apiClient.get(
+      final response = await _apiClient.get(
         '$baseUrl$queryParams',
         requiresAuth: true,
       );
@@ -79,10 +73,10 @@ class TransactionRemoteDataSourceImpl implements TransactionRemoteDataSource {
   }
 
   @override
-  Future<CancelPaymentResponse> cancelTransaction(reference) async {
+  Future<CancelPaymentResponse> cancelTransaction(String reference) async {
     try {
       log('Canceling transaction with reference: $reference');
-      final response = await apiClient.post(
+      final response = await _apiClient.post(
           '${ApiConstants.stripePaymentCancel}/$reference',
           requiresAuth: true);
       log('Cancelation response: $response');

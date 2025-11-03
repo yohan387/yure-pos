@@ -1,15 +1,15 @@
 import 'package:dartz/dartz.dart';
 import 'package:todouapp/core/errors/failures.dart';
-import 'package:todouapp/features/transactions/domain/repositories/transaction_repository.dart';
+import 'package:todouapp/features/transactions/domain/repositories/i_transaction_repository.dart';
 import 'package:todouapp/features/transactions/data/models/transactions_response_model.dart';
 
 class GetTransactions {
-  final TransactionRepository repository;
+  final ITransactionRepository _repository;
 
-  GetTransactions(this.repository);
+  GetTransactions(ITransactionRepository repository) : _repository = repository;
 
   Future<Either<Failure, TransactionsResponseModel>> call(Params params) async {
-    return await repository.getTransactions(
+    return await _repository.getTransactions(
       page: params.page,
       limit: params.limit,
       search: params.search,

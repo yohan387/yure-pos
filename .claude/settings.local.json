@@ -10,7 +10,8 @@
       "Bash(findstr:*)",
       "Bash(del \"c:\\fluttersrc\\yure\\pos-app\\test\\widget_test.dart\")",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "mcp__ide__getDiagnostics"
     ],
     "deny": [],
     "ask": []

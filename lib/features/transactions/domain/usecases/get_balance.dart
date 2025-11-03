@@ -1,14 +1,14 @@
 import 'package:dartz/dartz.dart';
 import 'package:todouapp/core/errors/failures.dart';
-import 'package:todouapp/features/transactions/domain/repositories/transaction_repository.dart';
+import 'package:todouapp/features/transactions/domain/repositories/i_transaction_repository.dart';
 import 'package:todouapp/features/transactions/data/models/balance_model.dart';
 
 class GetBalance {
-  final TransactionRepository repository;
+  final ITransactionRepository _repository;
 
-  GetBalance(this.repository);
+  GetBalance(ITransactionRepository repository) : _repository = repository;
 
   Future<Either<Failure, BalanceModel>> call() async {
-    return await repository.getBalance();
+    return await _repository.getBalance();
   }
 }

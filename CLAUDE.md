@@ -94,6 +94,127 @@ flutter pub run flutter_native_splash:create
 flutter logs
 ```
 
+## Modes d'Exécution (Mock/Prod)
+
+L'application supporte deux modes d'exécution configurables via variable d'environnement:
+
+### Mode Mock (Développement sans backend)
+
+Permet de développer et tester l'application sans connexion au backend. Toutes les données proviennent de sources mockées.
+
+**Configuration:**
+```env
+# .env
+APP_MODE=mock
+```
+
+**Caractéristiques:**
+- Aucun appel API réel
+- Données fictives cohérentes et réalistes
+- Simulation de latence réseau (500ms-1500ms)
+- Stripe désactivé
+- Identifiants de test:
+  - Code terminal: N'importe quel code non vide
+  - OTP: `1234`
+
+**Données mockées disponibles:**
+- Balance: 1 250 000 XOF
+- 4 transactions de test (success, failed, pending)
+- Profil fictif du terminal
+- Paiements mobiles simulés (Orange Money, Wave)
+- Paiements Stripe simulés
+
+**Utilisation:**
+```bash
+# S'assurer que APP_MODE=mock dans .env
+flutter run
+```
+
+### Mode Production
+
+Se connecte au vrai backend API.
+
+**Configuration:**
+```env
+# .env
+APP_MODE=prod
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_SECRET_KEY=sk_test_...
+```
+
+**Caractéristiques:**
+- Appels API réels
+- Stripe activé et configuré
+- Authentification requise
+- Données réelles du backend
+
+**Utilisation:**
+```bash
+# S'assurer que APP_MODE=prod dans .env
+flutter run
+```
+
+### Architecture du Système Mock/Prod
+
+**Service Locator avec get_it:**
+- DI centralisé dans `core/di/injection.dart`
+- Chaque feature a son propre module DI: `features/[feature]/di/injection.dart`
+- Ordre d'injection: Core → Features
+
+**Pattern par feature:**
+```
+features/[feature]/
+├── di/
+│   └── injection.dart                 # Future<void> setup[Feature]Feature()
+├── data/
+│   ├── datasources/
+│   │   ├── i_[feature]_data_source.dart          # abstract interface class
+│   │   ├── [feature]_remote_data_source.dart     # implémente I[Feature]DataSource
+│   │   └── [feature]_mock_data_source.dart       # implémente I[Feature]DataSource
+│   └── repositories/
+│       └── [feature]_repository_impl.dart        # utilise I[Feature]DataSource
+├── domain/
+│   ├── repositories/
+│   │   └── i_[feature]_repository.dart           # abstract class I[Feature]Repository
+│   └── usecases/
+└── presentation/
+```
+
+**Conventions de nommage:**
+- Interfaces: préfixe `I` (ex: `IAuthDataSource`, `IAuthRepository`)
+- Remote: `AuthRemoteDataSource`, `TransactionRemoteDataSource`
+- Mock: `AuthMockDataSource`, `TransactionMockDataSource`
+- Propriétés privées: `_dataSource`, `_networkInfo`, `_apiClient`
+
+**Données mockées:**
+- Centralisées dans `core/mock/mock_data.dart`
+- Helpers dans `core/mock/mock_helpers.dart` (latence, erreurs simulées)
+
+**Exemple d'injection par feature:**
+```dart
+// features/auth/di/injection.dart
+Future<void> setupAuthFeature() async {
+  // DATA SOURCE (choix Mock vs Prod)
+  if (AppConfig.isMockMode) {
+    sl.registerLazySingleton<IAuthDataSource>(() => AuthMockDataSource());
+  } else {
+    sl.registerLazySingleton<IAuthDataSource>(
+      () => AuthRemoteDataSource(apiClient: sl()),
+    );
+  }
+
+  // REPOSITORY (agnostique de la source)
+  sl.registerLazySingleton<IAuthRepository>(
+    () => AuthRepositoryImpl(
+      dataSource: sl<IAuthDataSource>(),
+      networkInfo: sl<INetworkInfo>(),
+    ),
+  );
+
+  // USE CASES + BLOC...
+}
+```
+
 ## Architecture
 
 This app follows **Clean Architecture** principles with a feature-based folder structure:

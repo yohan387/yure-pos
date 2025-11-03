@@ -3,38 +3,33 @@ import 'dart:developer';
 
 import 'package:dartz/dartz.dart';
 import 'package:todouapp/core/errors/failures.dart';
-import 'package:todouapp/core/network/api_client.dart';
-import 'package:todouapp/core/network/network_info.dart';
+import 'package:todouapp/core/network/i_network_info.dart';
 
-import '../../../../core/constants/api_constants.dart';
 import '../../../../core/errors/exceptions.dart';
-import '../../domain/repositories/mobile_payment_repository.dart';
+import '../../domain/repositories/i_mobile_payment_repository.dart';
+import '../datasources/i_mobile_payment_data_source.dart';
 import '../models/mobile_payment_model.dart';
 
-class PaymentRepositoryImpl implements MobilePaymentRepository {
-  final ApiClient apiClient;
-  final NetworkInfo networkInfo;
+class PaymentRepositoryImpl implements IMobilePaymentRepository {
+  final IMobilePaymentDataSource _dataSource;
+  final INetworkInfo _networkInfo;
 
   PaymentRepositoryImpl({
-    required this.apiClient,
-    required this.networkInfo,
-  });
+    required IMobilePaymentDataSource dataSource,
+    required INetworkInfo networkInfo,
+  })  : _dataSource = dataSource,
+        _networkInfo = networkInfo;
 
   @override
   Future<Either<Failure, MobilePaymentInitResponse>> initPayment(
       MobilePaymentInitRequest request) async {
-    if (!await networkInfo.isConnected) {
+    if (!await _networkInfo.isConnected) {
       return Left(NetworkFailure());
     }
-    log('proccessing .... ${ApiConstants.mobilePaymentInitEndpoint}');
-    log('body ${request.toJson()}');
+
     try {
-      final response = await apiClient.post(
-          ApiConstants.mobilePaymentInitEndpoint,
-          body: request.toJson(),
-          requiresAuth: true);
-      log('sucess payment $response');
-      return Right(MobilePaymentInitResponse.fromJson(response));
+      final response = await _dataSource.initPayment(request);
+      return Right(response);
     } on ServerException catch (e) {
       log('on payment ${e.message}');
       // Étape 1 : extraire la partie JSON depuis detail
@@ -53,7 +48,6 @@ class PaymentRepositoryImpl implements MobilePaymentRepository {
       return Left(ServerFailure(message: e.message));
     } catch (e) {
       log('error payment $e');
-
       return Left(ServerFailure(message: 'Une erreur inattendue est survenue'));
     }
   }
@@ -61,22 +55,17 @@ class PaymentRepositoryImpl implements MobilePaymentRepository {
   @override
   Future<Either<Failure, MobilePaymentVerifyResponse>> verifyPayment(
       String transactionId) async {
-    if (!await networkInfo.isConnected) {
+    if (!await _networkInfo.isConnected) {
       return Left(NetworkFailure());
     }
-    log('${ApiConstants.mobilePaymentInitEndpoint}/check-status/$transactionId');
 
     try {
-      final response = await apiClient.get(
-          '${ApiConstants.mobilePaymentInitEndpoint}/check-status/$transactionId',
-          requiresAuth: true);
-
-      return Right(MobilePaymentVerifyResponse.fromJson(response));
+      final response = await _dataSource.verifyPayment(transactionId);
+      return Right(response);
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));
     } catch (e) {
       log('error verify $e');
-
       return Left(ServerFailure(message: 'Une erreur inattendue est survenue'));
     }
   }
@@ -84,22 +73,17 @@ class PaymentRepositoryImpl implements MobilePaymentRepository {
   @override
   Future<Either<Failure, MobilePaymentVerifyResponse>> stripeVerifyPayment(
       String transactionId) async {
-    if (!await networkInfo.isConnected) {
+    if (!await _networkInfo.isConnected) {
       return Left(NetworkFailure());
     }
-    log('${ApiConstants.mobilePaymentInitEndpoint}/check-status/$transactionId');
 
     try {
-      final response = await apiClient.get(
-          '${ApiConstants.mobilePaymentInitEndpoint}/check-status/$transactionId',
-          requiresAuth: true);
-
-      return Right(MobilePaymentVerifyResponse.fromJson(response));
+      final response = await _dataSource.stripeVerifyPayment(transactionId);
+      return Right(response);
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));
     } catch (e) {
       log('error verify $e');
-
       return Left(ServerFailure(message: 'Une erreur inattendue est survenue'));
     }
   }

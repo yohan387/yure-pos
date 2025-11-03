@@ -2,19 +2,17 @@ import 'dart:developer';
 
 import 'package:todouapp/core/errors/exceptions.dart';
 import 'package:todouapp/core/network/api_client.dart';
+import 'package:todouapp/features/profil/data/datasources/i_profil_data_source.dart';
 
 import '../../../../core/constants/api_constants.dart';
 import '../../../../core/utils/secure_storage.dart';
 import '../models/profil_model.dart';
 
-abstract class ProfilRemoteDataSource {
-  Future<ProfilModel> getProfil();
-}
+/// Implémentation Remote de IProfilDataSource
+class ProfilRemoteDataSource implements IProfilDataSource {
+  final ApiClient _apiClient;
 
-class ProfilRemoteDataSourceImpl implements ProfilRemoteDataSource {
-  final ApiClient apiClient;
-
-  ProfilRemoteDataSourceImpl({required this.apiClient});
+  ProfilRemoteDataSource({required ApiClient apiClient}) : _apiClient = apiClient;
 
   @override
   Future<ProfilModel> getProfil() async {
@@ -22,7 +20,7 @@ class ProfilRemoteDataSourceImpl implements ProfilRemoteDataSource {
       log('Profile loading...');
       final secureStorage = SecureStorageService();
       final marchantId = await secureStorage.getMarchandId();
-      final response = await apiClient.get(
+      final response = await _apiClient.get(
           '${ApiConstants.transactionsEndpoint}$marchantId',
           requiresAuth: true);
       return ProfilModel.fromJson(response);

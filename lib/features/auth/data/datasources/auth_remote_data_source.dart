@@ -3,26 +3,24 @@ import 'dart:developer';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:todouapp/core/errors/exceptions.dart';
 import 'package:todouapp/core/network/api_client.dart';
+import 'package:todouapp/features/auth/data/datasources/i_auth_data_source.dart';
 import 'package:todouapp/features/auth/data/models/auth_response_model.dart';
 
 import '../../../../core/constants/api_constants.dart';
 
-abstract class AuthRemoteDataSource {
-  Future<AuthResponseModel> verifyCode(String code);
-  Future<AuthResponseModel> verifyOtp(String otp, String code);
-}
+/// Implémentation Remote de IAuthDataSource
+/// Communique avec l'API backend pour l'authentification
+class AuthRemoteDataSource implements IAuthDataSource {
+  final ApiClient _apiClient;
 
-class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
-  final ApiClient apiClient;
-
-  AuthRemoteDataSourceImpl({required this.apiClient});
+  AuthRemoteDataSource({required ApiClient apiClient}) : _apiClient = apiClient;
 
   @override
   Future<AuthResponseModel> verifyCode(String code) async {
     try {
       log(code);
       // REMY-IT-POS-B31B5A87
-      final response = await apiClient.post(ApiConstants.loginEndpoint,
+      final response = await _apiClient.post(ApiConstants.loginEndpoint,
           body: {'terminal_code': code}, requiresAuth: false);
       final storage = FlutterSecureStorage();
 
@@ -43,7 +41,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<AuthResponseModel> verifyOtp(String otp, code) async {
     try {
-      final response = await apiClient.post(ApiConstants.verifyOtpEndpoint,
+      final response = await _apiClient.post(ApiConstants.verifyOtpEndpoint,
           body: {'otp_code': otp, 'terminal_code': code}, requiresAuth: false);
       log("Response du serveur verify otp : ${response.toString()}");
 
