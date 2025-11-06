@@ -11,7 +11,14 @@
       "Bash(del \"c:\\fluttersrc\\yure\\pos-app\\test\\widget_test.dart\")",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "Bash(cat:*)",
+      "Bash(if [ ! -d \"c:\\Users\\bobo\\projects\\yure\\pos-app\\test\\core\\network\" ])",
+      "Bash(then mkdir -p \"c:\\Users\\bobo\\projects\\yure\\pos-app\\test\\core\\network\")",
+      "Bash(fi:*)",
+      "Bash(if [ -f \"coverage/lcov.info\" ])",
+      "Bash(then echo \"Coverage report exists\")",
+      "Bash(else echo \"No coverage report found\")"
     ],
     "deny": [],
     "ask": []

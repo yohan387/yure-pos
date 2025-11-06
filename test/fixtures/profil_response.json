@@ -1,21 +1,25 @@
 {
-  "id": "merchant_123456",
-  "businessType": "retail",
-  "businessName": "Boutique Example",
-  "stripeAccountId": "acct_1234567890",
-  "createdAt": "2023-01-10T08:00:00Z",
-  "updatedAt": "2024-01-15T12:00:00Z",
-  "ownerId": "owner_abc123",
-  "username": "john.doe",
-  "firstName": "John",
-  "lastName": "Doe",
-  "email": "john.doe@example.com",
-  "emailVerified": true,
-  "phoneNumbers": ["+221771234567"],
-  "createdTimestamp": 1673337600000,
-  "enabled": true,
-  "totp": false,
-  "disableableCredentialTypes": [],
-  "requiredActions": [],
-  "notBefore": 0
+  "id": 123456,
+  "business_type": "retail",
+  "business_name": "Boutique Example",
+  "stripe_account_id": "acct_1234567890",
+  "created_at": "2023-01-10T08:00:00Z",
+  "updated_at": "2024-01-15T12:00:00Z",
+  "owner": {
+    "id": "owner_abc123",
+    "username": "john.doe",
+    "firstName": "John",
+    "lastName": "Doe",
+    "email": "john.doe@example.com",
+    "emailVerified": true,
+    "attributes": {
+      "phoneNumber": ["+221771234567"]
+    },
+    "createdTimestamp": 1673337600000,
+    "enabled": true,
+    "totp": false,
+    "disableableCredentialTypes": [],
+    "requiredActions": [],
+    "notBefore": 0
+  }
 }
