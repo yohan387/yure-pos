@@ -18,7 +18,11 @@
       "Bash(fi:*)",
       "Bash(if [ -f \"coverage/lcov.info\" ])",
       "Bash(then echo \"Coverage report exists\")",
-      "Bash(else echo \"No coverage report found\")"
+      "Bash(else echo \"No coverage report found\")",
+      "Bash(python:*)",
+      "Bash(powershell:*)",
+      "Bash(del \"c:\\Users\\bobo\\projects\\yure\\pos-app\\docs\\read_excel.ps1\")",
+      "Bash(del \"c:\\Users\\bobo\\projects\\yure\\pos-app\\docs\\read_all_sheets.ps1\")"
     ],
     "deny": [],
     "ask": []
