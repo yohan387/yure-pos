@@ -23,7 +23,8 @@
       "Bash(powershell:*)",
       "Bash(del \"c:\\Users\\bobo\\projects\\yure\\pos-app\\docs\\read_excel.ps1\")",
       "Bash(del \"c:\\Users\\bobo\\projects\\yure\\pos-app\\docs\\read_all_sheets.ps1\")",
-      "Bash(full_excel_output.txt)"
+      "Bash(full_excel_output.txt)",
+      "Bash(pip install:*)"
     ],
     "deny": [],
     "ask": []
