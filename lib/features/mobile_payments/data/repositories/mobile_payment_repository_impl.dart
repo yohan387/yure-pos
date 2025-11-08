@@ -21,14 +21,19 @@ class PaymentRepositoryImpl implements IMobilePaymentRepository {
         _networkInfo = networkInfo;
 
   @override
-  Future<Either<Failure, MobilePaymentInitResponse>> initPayment(
-      MobilePaymentInitRequest request) async {
+  Future<Either<Failure, MobilePaymentInitResponse>> initPayment({
+    required MobilePaymentInitRequest request,
+    required String idempotencyKey,
+  }) async {
     if (!await _networkInfo.isConnected) {
       return Left(NetworkFailure());
     }
 
     try {
-      final response = await _dataSource.initPayment(request);
+      final response = await _dataSource.initPayment(
+        request: request,
+        idempotencyKey: idempotencyKey,
+      );
       return Right(response);
     } on ServerException catch (e) {
       log('on payment ${e.message}');

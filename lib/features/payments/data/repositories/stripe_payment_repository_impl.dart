@@ -20,14 +20,19 @@ class StripePaymentRepositoryImpl implements IStripePaymentRepository {
         _networkInfo = networkInfo;
 
   @override
-  Future<Either<Failure, StripePaymentIntentResponse>> createPaymentIntent(
-      int amount) async {
+  Future<Either<Failure, StripePaymentIntentResponse>> createPaymentIntent({
+    required int amount,
+    required String idempotencyKey,
+  }) async {
     if (!await _networkInfo.isConnected) {
       return Left(NetworkFailure());
     }
 
     try {
-      final response = await _dataSource.createPaymentIntent(amount);
+      final response = await _dataSource.createPaymentIntent(
+        amount: amount,
+        idempotencyKey: idempotencyKey,
+      );
       return Right(response);
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));
@@ -38,14 +43,19 @@ class StripePaymentRepositoryImpl implements IStripePaymentRepository {
   }
 
   @override
-  Future<Either<Failure, StripeLinkToPayResponse>> createLinkPayment(
-      int amount) async {
+  Future<Either<Failure, StripeLinkToPayResponse>> createLinkPayment({
+    required int amount,
+    required String idempotencyKey,
+  }) async {
     if (!await _networkInfo.isConnected) {
       return Left(NetworkFailure());
     }
 
     try {
-      final response = await _dataSource.createLinkPayment(amount);
+      final response = await _dataSource.createLinkPayment(
+        amount: amount,
+        idempotencyKey: idempotencyKey,
+      );
       return Right(response);
     } on ServerException catch (e) {
       log('on payment ${e.message}');

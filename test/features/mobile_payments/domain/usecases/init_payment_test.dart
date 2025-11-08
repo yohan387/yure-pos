@@ -50,27 +50,36 @@ void main() {
       reference: 'REF_001',
     );
 
+    const tIdempotencyKey = 'test-key-123';
+
     test('should call repository initPayment with correct parameters', () async {
       // Arrange
-      when(() => mockRepository.initPayment(any()))
-          .thenAnswer((_) async => Right(tResponse));
+      when(() => mockRepository.initPayment(
+            request: any(named: 'request'),
+            idempotencyKey: any(named: 'idempotencyKey'),
+          )).thenAnswer((_) async => Right(tResponse));
 
       // Act
-      await usecase.call(tRequest);
+      await usecase.call(request: tRequest, idempotencyKey: tIdempotencyKey);
 
       // Assert
-      verify(() => mockRepository.initPayment(tRequest)).called(1);
+      verify(() => mockRepository.initPayment(
+            request: tRequest,
+            idempotencyKey: tIdempotencyKey,
+          )).called(1);
       verifyNoMoreInteractions(mockRepository);
     });
 
     test('should return MobilePaymentInitResponse when repository call succeeds',
         () async {
       // Arrange
-      when(() => mockRepository.initPayment(any()))
-          .thenAnswer((_) async => Right(tResponse));
+      when(() => mockRepository.initPayment(
+            request: any(named: 'request'),
+            idempotencyKey: any(named: 'idempotencyKey'),
+          )).thenAnswer((_) async => Right(tResponse));
 
       // Act
-      final result = await usecase.call(tRequest);
+      final result = await usecase.call(request: tRequest, idempotencyKey: tIdempotencyKey);
 
       // Assert
       expect(result, Right(tResponse));
@@ -87,11 +96,13 @@ void main() {
 
     test('should return NetworkFailure when network is unavailable', () async {
       // Arrange
-      when(() => mockRepository.initPayment(any()))
-          .thenAnswer((_) async => const Left(NetworkFailure()));
+      when(() => mockRepository.initPayment(
+            request: any(named: 'request'),
+            idempotencyKey: any(named: 'idempotencyKey'),
+          )).thenAnswer((_) async => const Left(NetworkFailure()));
 
       // Act
-      final result = await usecase.call(tRequest);
+      final result = await usecase.call(request: tRequest, idempotencyKey: tIdempotencyKey);
 
       // Assert
       expect(result, const Left(NetworkFailure()));
@@ -105,11 +116,13 @@ void main() {
     test('should return ServerFailure when server returns error', () async {
       // Arrange
       const tFailure = ServerFailure(message: 'Insufficient balance');
-      when(() => mockRepository.initPayment(any()))
-          .thenAnswer((_) async => const Left(tFailure));
+      when(() => mockRepository.initPayment(
+            request: any(named: 'request'),
+            idempotencyKey: any(named: 'idempotencyKey'),
+          )).thenAnswer((_) async => const Left(tFailure));
 
       // Act
-      final result = await usecase.call(tRequest);
+      final result = await usecase.call(request: tRequest, idempotencyKey: tIdempotencyKey);
 
       // Assert
       expect(result, const Left(tFailure));
@@ -134,15 +147,20 @@ void main() {
         customerPhone: '221771111111',
         operatorOtp: '5678',
       );
-      when(() => mockRepository.initPayment(any()))
-          .thenAnswer((_) async => Right(tResponse));
+      when(() => mockRepository.initPayment(
+            request: any(named: 'request'),
+            idempotencyKey: any(named: 'idempotencyKey'),
+          )).thenAnswer((_) async => Right(tResponse));
 
       // Act
-      final result = await usecase.call(orangeRequest);
+      final result = await usecase.call(request: orangeRequest, idempotencyKey: tIdempotencyKey);
 
       // Assert
       expect(result.isRight(), true);
-      verify(() => mockRepository.initPayment(orangeRequest)).called(1);
+      verify(() => mockRepository.initPayment(
+            request: orangeRequest,
+            idempotencyKey: tIdempotencyKey,
+          )).called(1);
     });
 
     test('should work with Wave network', () async {
@@ -161,11 +179,13 @@ void main() {
         transactionId: 'WAVE_TXN_001',
         reference: 'WAVE_REF_001',
       );
-      when(() => mockRepository.initPayment(any()))
-          .thenAnswer((_) async => Right(waveResponse));
+      when(() => mockRepository.initPayment(
+            request: any(named: 'request'),
+            idempotencyKey: any(named: 'idempotencyKey'),
+          )).thenAnswer((_) async => Right(waveResponse));
 
       // Act
-      final result = await usecase.call(waveRequest);
+      final result = await usecase.call(request: waveRequest, idempotencyKey: tIdempotencyKey);
 
       // Assert
       expect(result.isRight(), true);
@@ -189,25 +209,32 @@ void main() {
         customerPhone: '221771234567',
         operatorOtp: '1234',
       );
-      when(() => mockRepository.initPayment(any()))
-          .thenAnswer((_) async => Right(tResponse));
+      when(() => mockRepository.initPayment(
+            request: any(named: 'request'),
+            idempotencyKey: any(named: 'idempotencyKey'),
+          )).thenAnswer((_) async => Right(tResponse));
 
       // Act
-      final result = await usecase.call(smallAmountRequest);
+      final result = await usecase.call(request: smallAmountRequest, idempotencyKey: tIdempotencyKey);
 
       // Assert
       expect(result.isRight(), true);
-      verify(() => mockRepository.initPayment(smallAmountRequest)).called(1);
+      verify(() => mockRepository.initPayment(
+            request: smallAmountRequest,
+            idempotencyKey: tIdempotencyKey,
+          )).called(1);
     });
 
     test('should handle ValidationFailure for invalid input', () async {
       // Arrange
       const tFailure = ValidationFailure(message: 'Invalid phone number');
-      when(() => mockRepository.initPayment(any()))
-          .thenAnswer((_) async => const Left(tFailure));
+      when(() => mockRepository.initPayment(
+            request: any(named: 'request'),
+            idempotencyKey: any(named: 'idempotencyKey'),
+          )).thenAnswer((_) async => const Left(tFailure));
 
       // Act
-      final result = await usecase.call(tRequest);
+      final result = await usecase.call(request: tRequest, idempotencyKey: tIdempotencyKey);
 
       // Assert
       expect(result.isLeft(), true);

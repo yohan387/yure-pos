@@ -40,6 +40,7 @@ Future<void> setupMobilePaymentsFeature() async {
       initPayment: sl<InitPayment>(),
       verifyPayment: sl<VerifyPayment>(),
       stripeVerifyPayment: sl<StripeVerifyPayment>(),
+      idempotencyKeyManager: sl(),
     ),
   );
 }

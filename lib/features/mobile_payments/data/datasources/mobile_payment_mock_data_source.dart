@@ -5,9 +5,15 @@ import '../models/mobile_payment_model.dart';
 
 class MobilePaymentMockDataSource implements IMobilePaymentDataSource {
   @override
-  Future<MobilePaymentInitResponse> initPayment(
-      MobilePaymentInitRequest request) async {
+  Future<MobilePaymentInitResponse> initPayment({
+    required MobilePaymentInitRequest request,
+    required String idempotencyKey,
+  }) async {
     await MockHelpers.simulateNetworkDelay();
+
+    // En mode mock, on log la clé d'idempotence pour vérification
+    // ignore: avoid_print
+    print('[MOCK] Mobile Payment Init with idempotency key: $idempotencyKey');
 
     // Utiliser les vraies propriétés du modèle: network, customerPhone
     final mockData = MockData.mockMobilePaymentInit(

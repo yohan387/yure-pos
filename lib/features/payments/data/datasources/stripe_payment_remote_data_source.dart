@@ -13,20 +13,28 @@ class StripePaymentRemoteDataSource implements IStripePaymentDataSource {
       : _apiClient = apiClient;
 
   @override
-  Future<StripePaymentIntentResponse> createPaymentIntent(int amount) async {
+  Future<StripePaymentIntentResponse> createPaymentIntent({
+    required int amount,
+    required String idempotencyKey,
+  }) async {
     try {
       final secureStorage = SecureStorageService();
       final marchantId = await secureStorage.getMarchandId();
       final terminalId = await secureStorage.getTerminalId();
 
-      final response = await _apiClient.post(ApiConstants.stripePaymentIntent,
-          body: {
-            'amount': amount,
-            'currency': 'EUR',
-            "terminal_id": int.parse('$terminalId'),
-            "merchant_id": int.parse('$marchantId')
-          },
-          requiresAuth: true);
+      final response = await _apiClient.post(
+        ApiConstants.stripePaymentIntent,
+        body: {
+          'amount': amount,
+          'currency': 'EUR',
+          "terminal_id": int.parse('$terminalId'),
+          "merchant_id": int.parse('$marchantId')
+        },
+        headers: {
+          'X-Idempotency-Key': idempotencyKey,
+        },
+        requiresAuth: true,
+      );
 
       log('response create payment intent: $response');
       return StripePaymentIntentResponse.fromJson(response);
@@ -38,20 +46,28 @@ class StripePaymentRemoteDataSource implements IStripePaymentDataSource {
   }
 
   @override
-  Future<StripeLinkToPayResponse> createLinkPayment(int amount) async {
+  Future<StripeLinkToPayResponse> createLinkPayment({
+    required int amount,
+    required String idempotencyKey,
+  }) async {
     try {
       final secureStorage = SecureStorageService();
       final marchantId = await secureStorage.getMarchandId();
       final terminalId = await secureStorage.getTerminalId();
 
-      final response = await _apiClient.post(ApiConstants.stripeLinkPaymentInit,
-          body: {
-            'amount': amount,
-            'currency': 'EUR',
-            "terminal_id": int.parse('$terminalId'),
-            "merchant_id": int.parse('$marchantId')
-          },
-          requiresAuth: true);
+      final response = await _apiClient.post(
+        ApiConstants.stripeLinkPaymentInit,
+        body: {
+          'amount': amount,
+          'currency': 'EUR',
+          "terminal_id": int.parse('$terminalId'),
+          "merchant_id": int.parse('$marchantId')
+        },
+        headers: {
+          'X-Idempotency-Key': idempotencyKey,
+        },
+        requiresAuth: true,
+      );
 
       log('response create link payment: $response');
       return StripeLinkToPayResponse.fromJson(response);

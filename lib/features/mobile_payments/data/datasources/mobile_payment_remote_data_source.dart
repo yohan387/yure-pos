@@ -12,15 +12,21 @@ class MobilePaymentRemoteDataSource implements IMobilePaymentDataSource {
       : _apiClient = apiClient;
 
   @override
-  Future<MobilePaymentInitResponse> initPayment(
-      MobilePaymentInitRequest request) async {
+  Future<MobilePaymentInitResponse> initPayment({
+    required MobilePaymentInitRequest request,
+    required String idempotencyKey,
+  }) async {
     try {
       log('proccessing .... ${ApiConstants.mobilePaymentInitEndpoint}');
       log('body ${request.toJson()}');
       final response = await _apiClient.post(
-          ApiConstants.mobilePaymentInitEndpoint,
-          body: request.toJson(),
-          requiresAuth: true);
+        ApiConstants.mobilePaymentInitEndpoint,
+        body: request.toJson(),
+        headers: {
+          'X-Idempotency-Key': idempotencyKey,
+        },
+        requiresAuth: true,
+      );
       log('sucess payment $response');
       return MobilePaymentInitResponse.fromJson(response);
     } on ServerException {

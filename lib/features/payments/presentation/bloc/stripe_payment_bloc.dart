@@ -5,6 +5,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'package:todouapp/core/constants/colors.dart';
+import 'package:todouapp/core/utils/idempotency_key_manager.dart';
 import 'package:todouapp/core/utils/paiement_amount.dart';
 import 'package:todouapp/core/utils/secure_storage.dart';
 import 'package:todouapp/features/payments/domain/usescases/init_link_payment.dart';
@@ -18,14 +19,20 @@ class StripePaymentBloc extends Bloc<StripePaymentEvent, StripePaymentState> {
   final IStripePaymentRepository _repository;
   final SecureStorageService _secureStorage;
   final InitLinkPayment _initLinkPayment;
+  final IdempotencyKeyManager _idempotencyKeyManager;
+
+  // Stockage temporaire de la clé d'idempotence pour retry
+  String? _currentIdempotencyKey;
 
   StripePaymentBloc({
     required IStripePaymentRepository repository,
     required SecureStorageService secureStorage,
     required InitLinkPayment initLinkPayment,
+    required IdempotencyKeyManager idempotencyKeyManager,
   })  : _repository = repository,
         _secureStorage = secureStorage,
         _initLinkPayment = initLinkPayment,
+        _idempotencyKeyManager = idempotencyKeyManager,
         super(StripePaymentInitial()) {
     on<ProcessStripePayment>(_onProcessPayment);
     on<StripeInitPaymentLinkEvent>(_onInitLinkPayment);
@@ -35,6 +42,9 @@ class StripePaymentBloc extends Bloc<StripePaymentEvent, StripePaymentState> {
     ProcessStripePayment event,
     Emitter<StripePaymentState> emit,
   ) async {
+    // Générer la clé d'idempotence (seulement si pas déjà en cours de retry)
+    _currentIdempotencyKey ??= _idempotencyKeyManager.generateKey();
+
     emit(StripePaymentLoading());
 
     try {
@@ -48,8 +58,11 @@ class StripePaymentBloc extends Bloc<StripePaymentEvent, StripePaymentState> {
       int montantPourStripe =
           PaiementMontant.convertToStripeAmount(event.amount, 'EUR');
 
-      // 2. Créer l'intention de paiement
-      final result = await _repository.createPaymentIntent(montantPourStripe);
+      // 2. Créer l'intention de paiement avec clé d'idempotence
+      final result = await _repository.createPaymentIntent(
+        amount: montantPourStripe,
+        idempotencyKey: _currentIdempotencyKey!,
+      );
 
       await result.fold(
         (failure) => throw Exception(failure.message),
@@ -70,7 +83,8 @@ class StripePaymentBloc extends Bloc<StripePaymentEvent, StripePaymentState> {
           // 4. Afficher le formulaire de paiement
           await Stripe.instance.presentPaymentSheet();
 
-          // 5. Succès
+          // 5. Succès - réinitialiser la clé pour le prochain paiement
+          _currentIdempotencyKey = null;
           emit(StripePaymentSuccess(
             transactionId: 'txn_${DateTime.now().millisecondsSinceEpoch}',
           ));
@@ -81,14 +95,18 @@ class StripePaymentBloc extends Bloc<StripePaymentEvent, StripePaymentState> {
       if (e is StripeException) {
         switch (e.error.code) {
           case FailureCode.Canceled:
+            // Annulation par l'utilisateur - réinitialiser la clé
+            _currentIdempotencyKey = null;
             emit(StripePaymentError(
                 "Le paiement a été annulé par l'utilisateur."));
             break;
           default:
+            // Erreur Stripe - garder la clé pour retry potentiel
             emit(StripePaymentError(
                 e.error.localizedMessage ?? 'Erreur de paiement'));
         }
       } else {
+        // Erreur inconnue - garder la clé pour retry potentiel
         emit(StripePaymentError('Erreur inconnue : ${e.toString()}'));
       }
     }
@@ -98,13 +116,24 @@ class StripePaymentBloc extends Bloc<StripePaymentEvent, StripePaymentState> {
     StripeInitPaymentLinkEvent event,
     Emitter<StripePaymentState> emit,
   ) async {
+    // Générer la clé d'idempotence (seulement si pas déjà en cours de retry)
+    _currentIdempotencyKey ??= _idempotencyKeyManager.generateKey();
+
     emit(StripePaymentLoading());
 
-    final result = await _initLinkPayment(event.amount);
+    final result = await _initLinkPayment(
+      amount: event.amount,
+      idempotencyKey: _currentIdempotencyKey!,
+    );
 
     result.fold(
-      (failure) => emit(StripePaymentError(failure.message)),
+      (failure) {
+        // En cas d'erreur, garder la clé pour retry potentiel
+        emit(StripePaymentError(failure.message));
+      },
       (response) {
+        // Succès - réinitialiser la clé pour le prochain paiement
+        _currentIdempotencyKey = null;
         emit(LinkPaymentQrReady(
           transactionRef: response.transactionRef,
           paymentLink: response.paymentLink,

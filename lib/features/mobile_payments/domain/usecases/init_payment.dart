@@ -9,9 +9,13 @@ class InitPayment {
 
   InitPayment(IMobilePaymentRepository repository) : _repository = repository;
 
-  Future<Either<Failure, MobilePaymentInitResponse>> call(
-    MobilePaymentInitRequest request,
-  ) async {
-    return await _repository.initPayment(request);
+  Future<Either<Failure, MobilePaymentInitResponse>> call({
+    required MobilePaymentInitRequest request,
+    required String idempotencyKey,
+  }) async {
+    return await _repository.initPayment(
+      request: request,
+      idempotencyKey: idempotencyKey,
+    );
   }
 }

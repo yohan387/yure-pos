@@ -9,7 +9,13 @@ class InitLinkPayment {
 
   InitLinkPayment(IStripePaymentRepository repository) : _repository = repository;
 
-  Future<Either<Failure, StripeLinkToPayResponse>> call(int amount) async {
-    return await _repository.createLinkPayment(amount);
+  Future<Either<Failure, StripeLinkToPayResponse>> call({
+    required int amount,
+    required String idempotencyKey,
+  }) async {
+    return await _repository.createLinkPayment(
+      amount: amount,
+      idempotencyKey: idempotencyKey,
+    );
   }
 }

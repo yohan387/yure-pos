@@ -21,6 +21,7 @@ void main() {
 
   group('InitLinkPayment', () {
     const tAmount = 50000;
+    const tIdempotencyKey = 'test-key-123';
     final tResponse = StripeLinkToPayResponse(
       paymentLink: 'https://stripe.com/payment/link123',
       transactionRef: 'txn_abc123',
@@ -29,25 +30,32 @@ void main() {
     test('should call repository.createLinkPayment with correct amount',
         () async {
       // Arrange
-      when(() => mockRepository.createLinkPayment(tAmount))
-          .thenAnswer((_) async => Right(tResponse));
+      when(() => mockRepository.createLinkPayment(
+            amount: any(named: 'amount'),
+            idempotencyKey: any(named: 'idempotencyKey'),
+          )).thenAnswer((_) async => Right(tResponse));
 
       // Act
-      await usecase.call(tAmount);
+      await usecase.call(amount: tAmount, idempotencyKey: tIdempotencyKey);
 
       // Assert
-      verify(() => mockRepository.createLinkPayment(tAmount)).called(1);
+      verify(() => mockRepository.createLinkPayment(
+            amount: tAmount,
+            idempotencyKey: tIdempotencyKey,
+          )).called(1);
       verifyNoMoreInteractions(mockRepository);
     });
 
     test('should return StripeLinkToPayResponse when repository call succeeds',
         () async {
       // Arrange
-      when(() => mockRepository.createLinkPayment(tAmount))
-          .thenAnswer((_) async => Right(tResponse));
+      when(() => mockRepository.createLinkPayment(
+            amount: any(named: 'amount'),
+            idempotencyKey: any(named: 'idempotencyKey'),
+          )).thenAnswer((_) async => Right(tResponse));
 
       // Act
-      final result = await usecase.call(tAmount);
+      final result = await usecase.call(amount: tAmount, idempotencyKey: tIdempotencyKey);
 
       // Assert
       expect(result, equals(Right(tResponse)));
@@ -64,11 +72,13 @@ void main() {
         () async {
       // Arrange
       final tFailure = NetworkFailure();
-      when(() => mockRepository.createLinkPayment(tAmount))
-          .thenAnswer((_) async => Left(tFailure));
+      when(() => mockRepository.createLinkPayment(
+            amount: any(named: 'amount'),
+            idempotencyKey: any(named: 'idempotencyKey'),
+          )).thenAnswer((_) async => Left(tFailure));
 
       // Act
-      final result = await usecase.call(tAmount);
+      final result = await usecase.call(amount: tAmount, idempotencyKey: tIdempotencyKey);
 
       // Assert
       expect(result, equals(Left(tFailure)));
@@ -79,11 +89,13 @@ void main() {
       // Arrange
       const errorMessage = 'Server error occurred';
       final tFailure = ServerFailure(message: errorMessage);
-      when(() => mockRepository.createLinkPayment(tAmount))
-          .thenAnswer((_) async => Left(tFailure));
+      when(() => mockRepository.createLinkPayment(
+            amount: any(named: 'amount'),
+            idempotencyKey: any(named: 'idempotencyKey'),
+          )).thenAnswer((_) async => Left(tFailure));
 
       // Act
-      final result = await usecase.call(tAmount);
+      final result = await usecase.call(amount: tAmount, idempotencyKey: tIdempotencyKey);
 
       // Assert
       expect(result, equals(Left(tFailure)));
@@ -103,15 +115,20 @@ void main() {
         paymentLink: 'https://stripe.com/zero',
         transactionRef: 'txn_zero',
       );
-      when(() => mockRepository.createLinkPayment(zeroAmount))
-          .thenAnswer((_) async => Right(zeroResponse));
+      when(() => mockRepository.createLinkPayment(
+            amount: any(named: 'amount'),
+            idempotencyKey: any(named: 'idempotencyKey'),
+          )).thenAnswer((_) async => Right(zeroResponse));
 
       // Act
-      final result = await usecase.call(zeroAmount);
+      final result = await usecase.call(amount: zeroAmount, idempotencyKey: tIdempotencyKey);
 
       // Assert
       expect(result, equals(Right(zeroResponse)));
-      verify(() => mockRepository.createLinkPayment(zeroAmount)).called(1);
+      verify(() => mockRepository.createLinkPayment(
+            amount: zeroAmount,
+            idempotencyKey: tIdempotencyKey,
+          )).called(1);
     });
 
     test('should handle large amounts', () async {
@@ -121,15 +138,20 @@ void main() {
         paymentLink: 'https://stripe.com/large',
         transactionRef: 'txn_large',
       );
-      when(() => mockRepository.createLinkPayment(largeAmount))
-          .thenAnswer((_) async => Right(largeResponse));
+      when(() => mockRepository.createLinkPayment(
+            amount: any(named: 'amount'),
+            idempotencyKey: any(named: 'idempotencyKey'),
+          )).thenAnswer((_) async => Right(largeResponse));
 
       // Act
-      final result = await usecase.call(largeAmount);
+      final result = await usecase.call(amount: largeAmount, idempotencyKey: tIdempotencyKey);
 
       // Assert
       expect(result, equals(Right(largeResponse)));
-      verify(() => mockRepository.createLinkPayment(largeAmount)).called(1);
+      verify(() => mockRepository.createLinkPayment(
+            amount: largeAmount,
+            idempotencyKey: tIdempotencyKey,
+          )).called(1);
     });
 
     test('should propagate response with empty payment link', () async {
@@ -138,11 +160,13 @@ void main() {
         paymentLink: '',
         transactionRef: 'txn_empty',
       );
-      when(() => mockRepository.createLinkPayment(tAmount))
-          .thenAnswer((_) async => Right(emptyLinkResponse));
+      when(() => mockRepository.createLinkPayment(
+            amount: any(named: 'amount'),
+            idempotencyKey: any(named: 'idempotencyKey'),
+          )).thenAnswer((_) async => Right(emptyLinkResponse));
 
       // Act
-      final result = await usecase.call(tAmount);
+      final result = await usecase.call(amount: tAmount, idempotencyKey: tIdempotencyKey);
 
       // Assert
       expect(result, equals(Right(emptyLinkResponse)));
@@ -157,11 +181,13 @@ void main() {
 
     test('should return correct Either type', () async {
       // Arrange
-      when(() => mockRepository.createLinkPayment(tAmount))
-          .thenAnswer((_) async => Right(tResponse));
+      when(() => mockRepository.createLinkPayment(
+            amount: any(named: 'amount'),
+            idempotencyKey: any(named: 'idempotencyKey'),
+          )).thenAnswer((_) async => Right(tResponse));
 
       // Act
-      final result = await usecase.call(tAmount);
+      final result = await usecase.call(amount: tAmount, idempotencyKey: tIdempotencyKey);
 
       // Assert
       expect(result, isA<Either<Failure, StripeLinkToPayResponse>>());

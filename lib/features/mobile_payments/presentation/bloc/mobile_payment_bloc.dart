@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 
+import '../../../../core/utils/idempotency_key_manager.dart';
 import '../../../../core/utils/payment_verification_handler.dart';
 import '../../data/models/mobile_payment_model.dart';
 import '../../domain/usecases/init_payment.dart';
@@ -16,6 +17,7 @@ class MobilePaymentBloc extends Bloc<MobilePaymentEvent, MobilePaymentState> {
   final InitPayment initPayment;
   final VerifyPayment verifyPayment;
   final StripeVerifyPayment stripeVerifyPayment;
+  final IdempotencyKeyManager idempotencyKeyManager;
 
   Timer? _verificationTimer;
   Timer? _countdownTimer;
@@ -23,11 +25,15 @@ class MobilePaymentBloc extends Bloc<MobilePaymentEvent, MobilePaymentState> {
   final PaymentVerificationHandler _verificationHandler =
       PaymentVerificationHandler();
 
-  MobilePaymentBloc(
-      {required this.initPayment,
-      required this.verifyPayment,
-      required this.stripeVerifyPayment})
-      : super(MobilePaymentInitial()) {
+  // Stockage temporaire de la clé d'idempotence pour retry
+  String? _currentIdempotencyKey;
+
+  MobilePaymentBloc({
+    required this.initPayment,
+    required this.verifyPayment,
+    required this.stripeVerifyPayment,
+    required this.idempotencyKeyManager,
+  }) : super(MobilePaymentInitial()) {
     on<MobileInitPaymentEvent>(_onInitPayment);
     on<MobileVerifyPaymentEvent>(_onVerifyPayment);
     on<StripeVerifyPaymentEvent>(_onStripeVerifyPayment);
@@ -45,6 +51,9 @@ class MobilePaymentBloc extends Bloc<MobilePaymentEvent, MobilePaymentState> {
     MobileInitPaymentEvent event,
     Emitter<MobilePaymentState> emit,
   ) async {
+    // Générer la clé d'idempotence (seulement si pas déjà en cours de retry)
+    _currentIdempotencyKey ??= idempotencyKeyManager.generateKey();
+
     emit(MobilePaymentLoading());
 
     final request = MobilePaymentInitRequest(
@@ -57,11 +66,20 @@ class MobilePaymentBloc extends Bloc<MobilePaymentEvent, MobilePaymentState> {
       operatorOtp: event.operatorOtp,
     );
 
-    final result = await initPayment(request);
+    final result = await initPayment(
+      request: request,
+      idempotencyKey: _currentIdempotencyKey!,
+    );
 
     result.fold(
-      (failure) => emit(MobilePaymentError(failure.message, false)),
+      (failure) {
+        // En cas d'erreur, garder la clé pour retry potentiel
+        emit(MobilePaymentError(failure.message, false));
+      },
       (response) {
+        // Succès - réinitialiser la clé pour le prochain paiement
+        _currentIdempotencyKey = null;
+
         if (event.network == 'WAVE') {
           emit(MobilePaymentQrReady(
             transactionId: response.transactionId,

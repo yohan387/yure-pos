@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:todouapp/core/network/api_client.dart';
 import 'package:todouapp/core/network/i_network_info.dart';
 import 'package:todouapp/core/network/network_info.dart';
+import 'package:todouapp/core/utils/idempotency_key_manager.dart';
 import 'package:todouapp/core/utils/secure_storage.dart';
 
 // Import des DI de chaque feature
@@ -60,5 +61,10 @@ Future<void> _setupCore() async {
 
   sl.registerLazySingleton<INetworkInfo>(
     () => NetworkInfoImpl(sl<Connectivity>()),
+  );
+
+  // ===== Idempotency Key Manager =====
+  sl.registerLazySingleton<IdempotencyKeyManager>(
+    () => IdempotencyKeyManager(),
   );
 }

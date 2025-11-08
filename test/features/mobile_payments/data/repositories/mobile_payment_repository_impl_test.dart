@@ -59,41 +59,62 @@ void main() {
       reference: 'REF_001',
     );
 
+    const tIdempotencyKey = 'test-key-123';
+
     test('should return NetworkFailure when device is offline', () async {
       // Arrange
       when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => false);
 
       // Act
-      final result = await repository.initPayment(tRequest);
+      final result = await repository.initPayment(
+        request: tRequest,
+        idempotencyKey: tIdempotencyKey,
+      );
 
       // Assert
       expect(result, Left(NetworkFailure()));
-      verifyNever(() => mockDataSource.initPayment(any()));
+      verifyNever(() => mockDataSource.initPayment(
+            request: any(named: 'request'),
+            idempotencyKey: any(named: 'idempotencyKey'),
+          ));
     });
 
     test('should return MobilePaymentInitResponse when device is online and call succeeds',
         () async {
       // Arrange
       when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-      when(() => mockDataSource.initPayment(any()))
-          .thenAnswer((_) async => tResponse);
+      when(() => mockDataSource.initPayment(
+            request: any(named: 'request'),
+            idempotencyKey: any(named: 'idempotencyKey'),
+          )).thenAnswer((_) async => tResponse);
 
       // Act
-      final result = await repository.initPayment(tRequest);
+      final result = await repository.initPayment(
+        request: tRequest,
+        idempotencyKey: tIdempotencyKey,
+      );
 
       // Assert
       expect(result, Right(tResponse));
-      verify(() => mockDataSource.initPayment(tRequest)).called(1);
+      verify(() => mockDataSource.initPayment(
+            request: tRequest,
+            idempotencyKey: tIdempotencyKey,
+          )).called(1);
     });
 
     test('should return ServerFailure when ServerException is thrown', () async {
       // Arrange
       when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-      when(() => mockDataSource.initPayment(any()))
-          .thenThrow(ServerException(message: 'Server error'));
+      when(() => mockDataSource.initPayment(
+            request: any(named: 'request'),
+            idempotencyKey: any(named: 'idempotencyKey'),
+          )).thenThrow(ServerException(message: 'Server error'));
 
       // Act
-      final result = await repository.initPayment(tRequest);
+      final result = await repository.initPayment(
+        request: tRequest,
+        idempotencyKey: tIdempotencyKey,
+      );
 
       // Assert
       expect(result.isLeft(), true);
@@ -112,11 +133,16 @@ void main() {
       const errorMessage =
           '400: {"message":"Insufficient balance","code":"INSUFFICIENT_FUNDS"}';
       when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-      when(() => mockDataSource.initPayment(any()))
-          .thenThrow(ServerException(message: errorMessage));
+      when(() => mockDataSource.initPayment(
+            request: any(named: 'request'),
+            idempotencyKey: any(named: 'idempotencyKey'),
+          )).thenThrow(ServerException(message: errorMessage));
 
       // Act
-      final result = await repository.initPayment(tRequest);
+      final result = await repository.initPayment(
+        request: tRequest,
+        idempotencyKey: tIdempotencyKey,
+      );
 
       // Assert
       expect(result.isLeft(), true);
@@ -134,11 +160,16 @@ void main() {
       // Arrange
       const errorMessage = '400: Invalid JSON {broken}';
       when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-      when(() => mockDataSource.initPayment(any()))
-          .thenThrow(ServerException(message: errorMessage));
+      when(() => mockDataSource.initPayment(
+            request: any(named: 'request'),
+            idempotencyKey: any(named: 'idempotencyKey'),
+          )).thenThrow(ServerException(message: errorMessage));
 
       // Act
-      final result = await repository.initPayment(tRequest);
+      final result = await repository.initPayment(
+        request: tRequest,
+        idempotencyKey: tIdempotencyKey,
+      );
 
       // Assert
       expect(result.isLeft(), true);
@@ -155,11 +186,16 @@ void main() {
         () async {
       // Arrange
       when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-      when(() => mockDataSource.initPayment(any()))
-          .thenThrow(Exception('Unknown error'));
+      when(() => mockDataSource.initPayment(
+            request: any(named: 'request'),
+            idempotencyKey: any(named: 'idempotencyKey'),
+          )).thenThrow(Exception('Unknown error'));
 
       // Act
-      final result = await repository.initPayment(tRequest);
+      final result = await repository.initPayment(
+        request: tRequest,
+        idempotencyKey: tIdempotencyKey,
+      );
 
       // Assert
       expect(result.isLeft(), true);
@@ -177,11 +213,16 @@ void main() {
       // Arrange
       const errorMessage = '400: {"error":"Bad request","status":400}';
       when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-      when(() => mockDataSource.initPayment(any()))
-          .thenThrow(ServerException(message: errorMessage));
+      when(() => mockDataSource.initPayment(
+            request: any(named: 'request'),
+            idempotencyKey: any(named: 'idempotencyKey'),
+          )).thenThrow(ServerException(message: errorMessage));
 
       // Act
-      final result = await repository.initPayment(tRequest);
+      final result = await repository.initPayment(
+        request: tRequest,
+        idempotencyKey: tIdempotencyKey,
+      );
 
       // Assert
       expect(result.isLeft(), true);

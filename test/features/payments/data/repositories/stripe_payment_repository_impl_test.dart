@@ -31,6 +31,7 @@ void main() {
   group('StripePaymentRepositoryImpl', () {
     group('createPaymentIntent', () {
       const tAmount = 50000;
+      const tIdempotencyKey = 'test-key-123';
       final tResponse = StripePaymentIntentResponse(
         clientSecret: 'pi_test_secret_12345',
       );
@@ -38,11 +39,16 @@ void main() {
       test('should check network connectivity before making request', () async {
         // Arrange
         when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-        when(() => mockDataSource.createPaymentIntent(any()))
-            .thenAnswer((_) async => tResponse);
+        when(() => mockDataSource.createPaymentIntent(
+              amount: any(named: 'amount'),
+              idempotencyKey: any(named: 'idempotencyKey'),
+            )).thenAnswer((_) async => tResponse);
 
         // Act
-        await repository.createPaymentIntent(tAmount);
+        await repository.createPaymentIntent(
+          amount: tAmount,
+          idempotencyKey: tIdempotencyKey,
+        );
 
         // Assert
         verify(() => mockNetworkInfo.isConnected).called(1);
@@ -55,39 +61,61 @@ void main() {
         when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => false);
 
         // Act
-        final result = await repository.createPaymentIntent(tAmount);
+        final result = await repository.createPaymentIntent(
+          amount: tAmount,
+          idempotencyKey: tIdempotencyKey,
+        );
 
         // Assert
         expect(result, equals(Left(NetworkFailure())));
-        verifyNever(() => mockDataSource.createPaymentIntent(any()));
+        verifyNever(() => mockDataSource.createPaymentIntent(
+              amount: any(named: 'amount'),
+              idempotencyKey: any(named: 'idempotencyKey'),
+            ));
       });
 
       test('should return StripePaymentIntentResponse when call is successful',
           () async {
         // Arrange
         when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-        when(() => mockDataSource.createPaymentIntent(tAmount))
-            .thenAnswer((_) async => tResponse);
+        when(() => mockDataSource.createPaymentIntent(
+              amount: any(named: 'amount'),
+              idempotencyKey: any(named: 'idempotencyKey'),
+            )).thenAnswer((_) async => tResponse);
 
         // Act
-        final result = await repository.createPaymentIntent(tAmount);
+        final result = await repository.createPaymentIntent(
+          amount: tAmount,
+          idempotencyKey: tIdempotencyKey,
+        );
 
         // Assert
         expect(result, equals(Right(tResponse)));
-        verify(() => mockDataSource.createPaymentIntent(tAmount)).called(1);
+        verify(() => mockDataSource.createPaymentIntent(
+              amount: tAmount,
+              idempotencyKey: tIdempotencyKey,
+            )).called(1);
       });
 
       test('should call dataSource with correct amount', () async {
         // Arrange
         when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-        when(() => mockDataSource.createPaymentIntent(tAmount))
-            .thenAnswer((_) async => tResponse);
+        when(() => mockDataSource.createPaymentIntent(
+              amount: any(named: 'amount'),
+              idempotencyKey: any(named: 'idempotencyKey'),
+            )).thenAnswer((_) async => tResponse);
 
         // Act
-        await repository.createPaymentIntent(tAmount);
+        await repository.createPaymentIntent(
+          amount: tAmount,
+          idempotencyKey: tIdempotencyKey,
+        );
 
         // Assert
-        verify(() => mockDataSource.createPaymentIntent(tAmount)).called(1);
+        verify(() => mockDataSource.createPaymentIntent(
+              amount: tAmount,
+              idempotencyKey: tIdempotencyKey,
+            )).called(1);
       });
 
       test('should return ServerFailure when dataSource throws ServerException',
@@ -95,11 +123,16 @@ void main() {
         // Arrange
         const errorMessage = 'Payment intent creation failed';
         when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-        when(() => mockDataSource.createPaymentIntent(tAmount))
-            .thenThrow(ServerException(message: errorMessage));
+        when(() => mockDataSource.createPaymentIntent(
+              amount: any(named: 'amount'),
+              idempotencyKey: any(named: 'idempotencyKey'),
+            )).thenThrow(ServerException(message: errorMessage));
 
         // Act
-        final result = await repository.createPaymentIntent(tAmount);
+        final result = await repository.createPaymentIntent(
+          amount: tAmount,
+          idempotencyKey: tIdempotencyKey,
+        );
 
         // Assert
         expect(
@@ -113,11 +146,16 @@ void main() {
           () async {
         // Arrange
         when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-        when(() => mockDataSource.createPaymentIntent(tAmount))
-            .thenThrow(Exception('Unexpected error'));
+        when(() => mockDataSource.createPaymentIntent(
+              amount: any(named: 'amount'),
+              idempotencyKey: any(named: 'idempotencyKey'),
+            )).thenThrow(Exception('Unexpected error'));
 
         // Act
-        final result = await repository.createPaymentIntent(tAmount);
+        final result = await repository.createPaymentIntent(
+          amount: tAmount,
+          idempotencyKey: tIdempotencyKey,
+        );
 
         // Assert
         expect(
@@ -134,15 +172,23 @@ void main() {
           clientSecret: 'pi_test_zero',
         );
         when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-        when(() => mockDataSource.createPaymentIntent(zeroAmount))
-            .thenAnswer((_) async => zeroResponse);
+        when(() => mockDataSource.createPaymentIntent(
+              amount: any(named: 'amount'),
+              idempotencyKey: any(named: 'idempotencyKey'),
+            )).thenAnswer((_) async => zeroResponse);
 
         // Act
-        final result = await repository.createPaymentIntent(zeroAmount);
+        final result = await repository.createPaymentIntent(
+          amount: zeroAmount,
+          idempotencyKey: tIdempotencyKey,
+        );
 
         // Assert
         expect(result, equals(Right(zeroResponse)));
-        verify(() => mockDataSource.createPaymentIntent(zeroAmount)).called(1);
+        verify(() => mockDataSource.createPaymentIntent(
+              amount: zeroAmount,
+              idempotencyKey: tIdempotencyKey,
+            )).called(1);
       });
 
       test('should handle large amounts', () async {
@@ -152,11 +198,16 @@ void main() {
           clientSecret: 'pi_test_large',
         );
         when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-        when(() => mockDataSource.createPaymentIntent(largeAmount))
-            .thenAnswer((_) async => largeResponse);
+        when(() => mockDataSource.createPaymentIntent(
+              amount: any(named: 'amount'),
+              idempotencyKey: any(named: 'idempotencyKey'),
+            )).thenAnswer((_) async => largeResponse);
 
         // Act
-        final result = await repository.createPaymentIntent(largeAmount);
+        final result = await repository.createPaymentIntent(
+          amount: largeAmount,
+          idempotencyKey: tIdempotencyKey,
+        );
 
         // Assert
         expect(result, equals(Right(largeResponse)));
@@ -165,6 +216,7 @@ void main() {
 
     group('createLinkPayment', () {
       const tAmount = 100000;
+      const tIdempotencyKey = 'test-key-456';
       final tResponse = StripeLinkToPayResponse(
         paymentLink: 'https://stripe.com/payment/link123',
         transactionRef: 'txn_abc123',
@@ -173,11 +225,16 @@ void main() {
       test('should check network connectivity before making request', () async {
         // Arrange
         when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-        when(() => mockDataSource.createLinkPayment(any()))
-            .thenAnswer((_) async => tResponse);
+        when(() => mockDataSource.createLinkPayment(
+              amount: any(named: 'amount'),
+              idempotencyKey: any(named: 'idempotencyKey'),
+            )).thenAnswer((_) async => tResponse);
 
         // Act
-        await repository.createLinkPayment(tAmount);
+        await repository.createLinkPayment(
+          amount: tAmount,
+          idempotencyKey: tIdempotencyKey,
+        );
 
         // Assert
         verify(() => mockNetworkInfo.isConnected).called(1);
@@ -190,39 +247,61 @@ void main() {
         when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => false);
 
         // Act
-        final result = await repository.createLinkPayment(tAmount);
+        final result = await repository.createLinkPayment(
+          amount: tAmount,
+          idempotencyKey: tIdempotencyKey,
+        );
 
         // Assert
         expect(result, equals(Left(NetworkFailure())));
-        verifyNever(() => mockDataSource.createLinkPayment(any()));
+        verifyNever(() => mockDataSource.createLinkPayment(
+              amount: any(named: 'amount'),
+              idempotencyKey: any(named: 'idempotencyKey'),
+            ));
       });
 
       test('should return StripeLinkToPayResponse when call is successful',
           () async {
         // Arrange
         when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-        when(() => mockDataSource.createLinkPayment(tAmount))
-            .thenAnswer((_) async => tResponse);
+        when(() => mockDataSource.createLinkPayment(
+              amount: any(named: 'amount'),
+              idempotencyKey: any(named: 'idempotencyKey'),
+            )).thenAnswer((_) async => tResponse);
 
         // Act
-        final result = await repository.createLinkPayment(tAmount);
+        final result = await repository.createLinkPayment(
+          amount: tAmount,
+          idempotencyKey: tIdempotencyKey,
+        );
 
         // Assert
         expect(result, equals(Right(tResponse)));
-        verify(() => mockDataSource.createLinkPayment(tAmount)).called(1);
+        verify(() => mockDataSource.createLinkPayment(
+              amount: tAmount,
+              idempotencyKey: tIdempotencyKey,
+            )).called(1);
       });
 
       test('should call dataSource with correct amount', () async {
         // Arrange
         when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-        when(() => mockDataSource.createLinkPayment(tAmount))
-            .thenAnswer((_) async => tResponse);
+        when(() => mockDataSource.createLinkPayment(
+              amount: any(named: 'amount'),
+              idempotencyKey: any(named: 'idempotencyKey'),
+            )).thenAnswer((_) async => tResponse);
 
         // Act
-        await repository.createLinkPayment(tAmount);
+        await repository.createLinkPayment(
+          amount: tAmount,
+          idempotencyKey: tIdempotencyKey,
+        );
 
         // Assert
-        verify(() => mockDataSource.createLinkPayment(tAmount)).called(1);
+        verify(() => mockDataSource.createLinkPayment(
+              amount: tAmount,
+              idempotencyKey: tIdempotencyKey,
+            )).called(1);
       });
 
       test('should return ServerFailure when dataSource throws ServerException',
@@ -230,11 +309,16 @@ void main() {
         // Arrange
         const errorMessage = 'Link payment creation failed';
         when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-        when(() => mockDataSource.createLinkPayment(tAmount))
-            .thenThrow(ServerException(message: errorMessage));
+        when(() => mockDataSource.createLinkPayment(
+              amount: any(named: 'amount'),
+              idempotencyKey: any(named: 'idempotencyKey'),
+            )).thenThrow(ServerException(message: errorMessage));
 
         // Act
-        final result = await repository.createLinkPayment(tAmount);
+        final result = await repository.createLinkPayment(
+          amount: tAmount,
+          idempotencyKey: tIdempotencyKey,
+        );
 
         // Assert
         expect(
@@ -248,11 +332,16 @@ void main() {
           () async {
         // Arrange
         when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-        when(() => mockDataSource.createLinkPayment(tAmount))
-            .thenThrow(Exception('Network timeout'));
+        when(() => mockDataSource.createLinkPayment(
+              amount: any(named: 'amount'),
+              idempotencyKey: any(named: 'idempotencyKey'),
+            )).thenThrow(Exception('Network timeout'));
 
         // Act
-        final result = await repository.createLinkPayment(tAmount);
+        final result = await repository.createLinkPayment(
+          amount: tAmount,
+          idempotencyKey: tIdempotencyKey,
+        );
 
         // Assert
         expect(
@@ -270,15 +359,23 @@ void main() {
           transactionRef: 'txn_zero',
         );
         when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-        when(() => mockDataSource.createLinkPayment(zeroAmount))
-            .thenAnswer((_) async => zeroResponse);
+        when(() => mockDataSource.createLinkPayment(
+              amount: any(named: 'amount'),
+              idempotencyKey: any(named: 'idempotencyKey'),
+            )).thenAnswer((_) async => zeroResponse);
 
         // Act
-        final result = await repository.createLinkPayment(zeroAmount);
+        final result = await repository.createLinkPayment(
+          amount: zeroAmount,
+          idempotencyKey: tIdempotencyKey,
+        );
 
         // Assert
         expect(result, equals(Right(zeroResponse)));
-        verify(() => mockDataSource.createLinkPayment(zeroAmount)).called(1);
+        verify(() => mockDataSource.createLinkPayment(
+              amount: zeroAmount,
+              idempotencyKey: tIdempotencyKey,
+            )).called(1);
       });
 
       test('should handle large amounts', () async {
@@ -289,11 +386,16 @@ void main() {
           transactionRef: 'txn_large',
         );
         when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-        when(() => mockDataSource.createLinkPayment(largeAmount))
-            .thenAnswer((_) async => largeResponse);
+        when(() => mockDataSource.createLinkPayment(
+              amount: any(named: 'amount'),
+              idempotencyKey: any(named: 'idempotencyKey'),
+            )).thenAnswer((_) async => largeResponse);
 
         // Act
-        final result = await repository.createLinkPayment(largeAmount);
+        final result = await repository.createLinkPayment(
+          amount: largeAmount,
+          idempotencyKey: tIdempotencyKey,
+        );
 
         // Assert
         expect(result, equals(Right(largeResponse)));
@@ -306,11 +408,16 @@ void main() {
           transactionRef: 'txn_empty',
         );
         when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
-        when(() => mockDataSource.createLinkPayment(tAmount))
-            .thenAnswer((_) async => emptyLinkResponse);
+        when(() => mockDataSource.createLinkPayment(
+              amount: any(named: 'amount'),
+              idempotencyKey: any(named: 'idempotencyKey'),
+            )).thenAnswer((_) async => emptyLinkResponse);
 
         // Act
-        final result = await repository.createLinkPayment(tAmount);
+        final result = await repository.createLinkPayment(
+          amount: tAmount,
+          idempotencyKey: tIdempotencyKey,
+        );
 
         // Assert
         expect(result, equals(Right(emptyLinkResponse)));

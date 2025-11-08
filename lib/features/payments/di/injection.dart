@@ -36,6 +36,7 @@ Future<void> setupPaymentsFeature() async {
       repository: sl<IStripePaymentRepository>(),
       secureStorage: sl<SecureStorageService>(),
       initLinkPayment: sl<InitLinkPayment>(),
+      idempotencyKeyManager: sl(),
     ),
   );
 }
