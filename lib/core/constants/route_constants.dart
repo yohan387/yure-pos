@@ -6,6 +6,8 @@ class RouteConstants {
   static const String emailOtp = '/email-otp';
   static const String otp = '/otp';
   static const String terminalSelection = '/terminal-selection';
+  static const String pinCreation = '/pin-creation';
+  static const String pinConfirmation = '/pin-confirmation';
   static const String home = '/home';
   static const String accueil = '/accueil';
   static const String stripePayment = '/stripe-payment';

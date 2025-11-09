@@ -74,4 +74,32 @@ class SecureStorageService {
   Future<void> setOnboardingCompleted() async {
     await _storage.write(key: AppConstants.onboardingCompletedKey, value: 'true');
   }
+
+  // PIN management
+  Future<String?> getPinHash() async {
+    return await _storage.read(key: 'pin_hash');
+  }
+
+  Future<void> savePinHash(String pinHash) async {
+    await _storage.write(key: 'pin_hash', value: pinHash);
+  }
+
+  Future<void> deletePinHash() async {
+    await _storage.delete(key: 'pin_hash');
+  }
+
+  Future<bool> hasPinConfigured() async {
+    final pinHash = await getPinHash();
+    return pinHash != null && pinHash.isNotEmpty;
+  }
+
+  // PIN setup skipped flag
+  Future<bool> hasPinSetupSkipped() async {
+    final value = await _storage.read(key: 'pin_setup_skipped');
+    return value == 'true';
+  }
+
+  Future<void> setPinSetupSkipped(bool skipped) async {
+    await _storage.write(key: 'pin_setup_skipped', value: skipped.toString());
+  }
 }

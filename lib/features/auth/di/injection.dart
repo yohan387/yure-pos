@@ -14,6 +14,7 @@ import 'package:todouapp/features/auth/domain/usecases/verify_otp.dart';
 import 'package:todouapp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:todouapp/features/auth/presentation/cubit/email_login_cubit.dart';
 import 'package:todouapp/features/auth/presentation/cubit/email_otp_cubit.dart';
+import 'package:todouapp/features/auth/presentation/cubit/pin_creation_cubit.dart';
 import 'package:todouapp/features/auth/presentation/cubit/terminal_selection_cubit.dart';
 import 'package:todouapp/features/auth/presentation/cubit/verify_email_otp_cubit.dart';
 import 'package:todouapp/core/utils/secure_storage.dart';
@@ -100,5 +101,9 @@ Future<void> setupAuthFeature() async {
       getMerchantTerminals: sl<GetMerchantTerminals>(),
       secureStorage: sl<SecureStorageService>(),
     ),
+  );
+
+  sl.registerFactory(
+    () => PinCreationCubit(),
   );
 }
