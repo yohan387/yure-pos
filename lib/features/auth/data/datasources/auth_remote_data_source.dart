@@ -52,4 +52,25 @@ class AuthRemoteDataSource implements IAuthDataSource {
       throw ServerException(message: 'Failed to verify OTP');
     }
   }
+
+  @override
+  Future<AuthResponseModel> loginWithEmail(
+      String email, String password) async {
+    try {
+      final response = await _apiClient.post(ApiConstants.emailLoginEndpoint,
+          body: {'email': email, 'password': password}, requiresAuth: false);
+
+      final storage = FlutterSecureStorage();
+      await storage.write(key: 'email', value: email);
+
+      log("Response du serveur login email : ${response.toString()}");
+      return AuthResponseModel.fromJson(response);
+    } on ServerException {
+      log("ERR du serveur login email");
+      rethrow;
+    } catch (e) {
+      log("ERR du serveur login email ${e.toString()}");
+      throw ServerException(message: 'Failed to login with email');
+    }
+  }
 }

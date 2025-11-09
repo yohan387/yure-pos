@@ -134,7 +134,24 @@ class LoginPage extends StatelessWidget {
                                                       "Veuillez entrer un code valide (6 chiffres)");
                                                 }
                                               },
-                                  )
+                                  ),
+                                  const SizedBox(height: 20),
+                                  // Lien vers connexion par email
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pushNamed(
+                                          context, RouteConstants.emailLogin);
+                                    },
+                                    child: Text(
+                                      'Se connecter avec email et mot de passe',
+                                      style: TextStyle(
+                                        fontSize: 14,
+                                        fontFamily: 'Inter',
+                                        color: primaryColor,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ),
                                 ],
                               ),
                             ),

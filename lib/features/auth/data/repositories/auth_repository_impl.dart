@@ -51,4 +51,20 @@ class AuthRepositoryImpl implements IAuthRepository {
       return Left(ServerFailure(message: e.message));
     }
   }
+
+  @override
+  Future<Either<Failure, AuthResponseModel>> loginWithEmail(
+      String email, String password) async {
+    if (!await _networkInfo.isConnected) {
+      return Left(NetworkFailure());
+    }
+
+    try {
+      final response = await _dataSource.loginWithEmail(email, password);
+      return Right(response);
+    } on ServerException catch (e) {
+      log('loginWithEmail error: ${e.message}');
+      return Left(ServerFailure(message: e.message));
+    }
+  }
 }

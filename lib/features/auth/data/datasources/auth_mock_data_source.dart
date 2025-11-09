@@ -50,4 +50,45 @@ class AuthMockDataSource implements IAuthDataSource {
     // OTP invalide
     throw ServerException(message: "OTP invalide");
   }
+
+  @override
+  Future<AuthResponseModel> loginWithEmail(
+      String email, String password) async {
+    // Simule une latence réseau réaliste
+    await MockHelpers.simulateNetworkDelay();
+
+    // Comptes de test valides
+    final validAccounts = {
+      "test@yure.com": "Test1234",
+      "admin@yure.com": "Admin1234",
+      "merchant@yure.com": "Merchant123",
+    };
+
+    // Validation basique du format email
+    if (!email.contains('@') || !email.contains('.')) {
+      throw ServerException(message: "Format email invalide");
+    }
+
+    // Vérification mot de passe vide
+    if (password.isEmpty) {
+      throw ServerException(message: "Mot de passe requis");
+    }
+
+    // Vérification des identifiants
+    if (validAccounts.containsKey(email) &&
+        validAccounts[email] == password) {
+      // Succès: l'OTP sera envoyé automatiquement par le backend
+      return AuthResponseModel.fromJson({
+        "success": true,
+        "message": "OTP envoyé à votre email",
+        "data": {
+          "email": email,
+          "otp_sent": true,
+        },
+      });
+    }
+
+    // Identifiants invalides
+    throw ServerException(message: "Email ou mot de passe incorrect");
+  }
 }

@@ -13,6 +13,8 @@ import 'package:todouapp/core/utils/route_observer.dart';
 import 'package:todouapp/core/utils/secure_storage.dart';
 import 'package:todouapp/core/utils/token_validator.dart';
 import 'package:todouapp/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:todouapp/features/auth/presentation/cubit/email_login_cubit.dart';
+import 'package:todouapp/features/auth/presentation/pages/email_login_page.dart';
 import 'package:todouapp/features/auth/presentation/pages/login_page.dart';
 import 'package:todouapp/features/auth/presentation/pages/otp_page.dart';
 import 'package:todouapp/features/home/accueil_page.dart';
@@ -123,6 +125,10 @@ class TodouApp extends StatelessWidget {
         routes: {
           RouteConstants.onbording: (context) => OnbordingPage(),
           RouteConstants.login: (context) => LoginPage(),
+          RouteConstants.emailLogin: (context) => BlocProvider(
+                create: (context) => sl<EmailLoginCubit>(),
+                child: const EmailLoginPage(),
+              ),
           RouteConstants.otp: (context) => OtpPage(),
           RouteConstants.accueil: (context) => AccueilPage(),
           RouteConstants.home: (context) => const HomePage(),

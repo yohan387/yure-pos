@@ -10,4 +10,8 @@ abstract interface class IAuthDataSource {
   /// Vérifie l'OTP et retourne le token d'authentification
   /// Lance ServerException si l'OTP est invalide
   Future<AuthResponseModel> verifyOtp(String otp, String code);
+
+  /// Connexion avec email et mot de passe
+  /// Lance ServerException si les identifiants sont invalides
+  Future<AuthResponseModel> loginWithEmail(String email, String password);
 }

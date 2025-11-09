@@ -12,4 +12,9 @@ abstract class IAuthRepository {
   /// Vérifie l'OTP et retourne le token d'authentification
   /// Retourne Either<Failure, AuthResponseModel>
   Future<Either<Failure, AuthResponseModel>> verifyOtp(String otp, String code);
+
+  /// Connexion avec email et mot de passe
+  /// Retourne Either<Failure, AuthResponseModel>
+  Future<Either<Failure, AuthResponseModel>> loginWithEmail(
+      String email, String password);
 }
