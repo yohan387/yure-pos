@@ -262,6 +262,82 @@ lib/
 
 **Dependency Injection**: Manual dependency injection in main.dart - all BLoCs are provided at the app level via MultiBlocProvider with repositories and use cases passed to constructors.
 
+### ⚠️ RÈGLE ARCHITECTURALE CRITIQUE - SÉPARATION DES COUCHES
+
+**INTERDICTION ABSOLUE** : La couche Présentation ne doit JAMAIS appeler directement les services de la couche Data/Infrastructure.
+
+**❌ INTERDIT** :
+```dart
+// ❌ MAUVAIS - Violation de Clean Architecture
+class MyWidget extends StatelessWidget {
+  final SecureStorageService _storage = sl<SecureStorageService>(); // ❌ NE JAMAIS FAIRE
+  final ApiClient _apiClient = sl<ApiClient>(); // ❌ NE JAMAIS FAIRE
+}
+```
+
+**✅ OBLIGATOIRE - Flux Clean Architecture** :
+```
+UI (Présentation) → BLoC → UseCase → Repository → DataSource/Service
+```
+
+**Exemple correct** :
+```dart
+// ✅ BON - Respect de Clean Architecture
+
+// 1. Domain - Interface Repository
+abstract class IOnboardingRepository {
+  Future<bool> hasCompletedOnboarding();
+  Future<void> completeOnboarding();
+}
+
+// 2. Domain - Use Case
+class CompleteOnboarding {
+  final IOnboardingRepository _repository;
+  CompleteOnboarding(this._repository);
+  Future<void> call() => _repository.completeOnboarding();
+}
+
+// 3. Data - Repository Implementation
+class OnboardingRepositoryImpl implements IOnboardingRepository {
+  final SecureStorageService _secureStorage; // ✅ OK ici (couche Data)
+
+  OnboardingRepositoryImpl({required SecureStorageService secureStorage})
+      : _secureStorage = secureStorage;
+
+  Future<void> completeOnboarding() => _secureStorage.setOnboardingCompleted();
+}
+
+// 4. Presentation - BLoC
+class OnboardingBloc extends Bloc<OnboardingEvent, OnboardingState> {
+  final CompleteOnboarding _completeOnboarding; // ✅ Use case uniquement
+
+  OnboardingBloc({required CompleteOnboarding completeOnboarding})
+      : _completeOnboarding = completeOnboarding;
+
+  void _onComplete() async {
+    await _completeOnboarding(); // ✅ Appel du use case
+  }
+}
+
+// 5. Presentation - UI
+class MyWidget extends StatelessWidget {
+  Widget build(BuildContext context) {
+    return BlocBuilder<OnboardingBloc, OnboardingState>( // ✅ BLoC uniquement
+      builder: (context, state) {
+        // UI écoute le BLoC, jamais de service direct
+        return ElevatedButton(
+          onPressed: () {
+            context.read<OnboardingBloc>().add(CompleteEvent()); // ✅ Event BLoC
+          },
+        );
+      },
+    );
+  }
+}
+```
+
+**Référence d'implémentation** : Voir `features/onboarding/` pour un exemple complet conforme à cette règle.
+
 ### Authentication & Security
 
 **Token Management**:

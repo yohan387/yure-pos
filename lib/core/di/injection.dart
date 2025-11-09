@@ -9,6 +9,7 @@ import 'package:todouapp/core/utils/secure_storage.dart';
 
 // Import des DI de chaque feature
 import '../../features/auth/di/injection.dart' as auth_di;
+import '../../features/onboarding/di/injection.dart' as onboarding_di;
 import '../../features/transactions/di/injection.dart' as transactions_di;
 import '../../features/profil/di/injection.dart' as profil_di;
 import '../../features/mobile_payments/di/injection.dart' as mobile_payments_di;
@@ -28,6 +29,7 @@ Future<void> setupDependencies() async {
   // ===== 2. FEATURES (par ordre alphabétique) =====
   await auth_di.setupAuthFeature();
   await mobile_payments_di.setupMobilePaymentsFeature();
+  await onboarding_di.setupOnboardingFeature();
   await payments_di.setupPaymentsFeature();
   await profil_di.setupProfilFeature();
   await transactions_di.setupTransactionsFeature();

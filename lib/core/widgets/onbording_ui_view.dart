@@ -1,12 +1,13 @@
-import 'dart:async';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:todouapp/core/constants/route_constants.dart';
 import 'package:todouapp/core/utils/onbording_model.dart';
 import 'package:todouapp/core/widgets/button_widget.dart';
 import 'package:todouapp/core/widgets/onbording/onbording_dots.dart';
+import 'package:todouapp/features/onboarding/presentation/bloc/onboarding_bloc.dart';
+import 'package:todouapp/features/onboarding/presentation/bloc/onboarding_event.dart';
+import 'package:todouapp/features/onboarding/presentation/bloc/onboarding_state.dart';
 
 import '../constants/colors.dart';
 
@@ -156,25 +157,44 @@ class _OnbordingUiViewState extends State<OnbordingUiView> {
                           ],
                         ),
                         SizedBox(height: media.width * 0.1),
-                        CustomButton(
-                            text: 'Continuer',
-                            onPressed: () {
-                              if (_currentIndex < 2) {
-                                _pageController.nextPage(
-                                  duration: const Duration(milliseconds: 300),
-                                  curve: Curves.linear,
-                                );
-                              } else {
-                                Navigator.pushNamed(
-                                    context, RouteConstants.login);
-                              }
-                            }),
+                        BlocListener<OnboardingBloc, OnboardingState>(
+                          listener: (context, state) {
+                            if (state is OnboardingCompleted) {
+                              Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                RouteConstants.login,
+                                (route) => false,
+                              );
+                            } else if (state is OnboardingError) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text(state.message)),
+                              );
+                            }
+                          },
+                          child: CustomButton(
+                              text: 'Continuer',
+                              onPressed: () {
+                                if (_currentIndex < 2) {
+                                  _pageController.nextPage(
+                                    duration: const Duration(milliseconds: 300),
+                                    curve: Curves.linear,
+                                  );
+                                } else {
+                                  // Déclencher l'événement pour compléter l'onboarding
+                                  context.read<OnboardingBloc>().add(
+                                        const CompleteOnboardingEvent(),
+                                      );
+                                }
+                              }),
+                        ),
                         SizedBox(height: media.width * 0.05),
                         if (_currentIndex < 2)
                           InkWell(
                             onTap: () {
-                              Navigator.pushNamed(
-                                  context, RouteConstants.login);
+                              // Déclencher l'événement pour compléter l'onboarding (même en passant)
+                              context.read<OnboardingBloc>().add(
+                                    const CompleteOnboardingEvent(),
+                                  );
                             },
                             child: Text(
                               'Passer',
