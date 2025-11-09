@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -24,6 +25,8 @@ class EmailOtpPage extends StatefulWidget {
 class _EmailOtpPageState extends State<EmailOtpPage> {
   final TextEditingController _otpController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final StreamController<ErrorAnimationType> _errorController =
+      StreamController<ErrorAnimationType>();
   String? email;
 
   @override
@@ -38,6 +41,12 @@ class _EmailOtpPageState extends State<EmailOtpPage> {
       }
       context.read<EmailOtpCubit>().startTimer();
     }
+  }
+
+  @override
+  void dispose() {
+    _errorController.close();
+    super.dispose();
   }
 
   String _formatTime(int seconds) {
@@ -70,6 +79,7 @@ class _EmailOtpPageState extends State<EmailOtpPage> {
             listener: (context, state) {
               if (state.status == VerifyEmailOtpStatus.failure &&
                   state.message != null) {
+                _errorController.add(ErrorAnimationType.shake);
                 CustomSnackbar.showError(context, state.message!);
               } else if (state.status == VerifyEmailOtpStatus.success) {
                 if (mounted) {
@@ -134,7 +144,9 @@ class _EmailOtpPageState extends State<EmailOtpPage> {
                                     vertical: 8,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: primaryColor.withValues(alpha: 0.1),
+                                    color: emailOtpState.remainingSeconds < 60
+                                        ? Colors.red.withValues(alpha: 0.1)
+                                        : primaryColor.withValues(alpha: 0.1),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Row(
@@ -142,7 +154,9 @@ class _EmailOtpPageState extends State<EmailOtpPage> {
                                     children: [
                                       Icon(
                                         Icons.timer_outlined,
-                                        color: primaryColor,
+                                        color: emailOtpState.remainingSeconds < 60
+                                            ? Colors.red
+                                            : primaryColor,
                                         size: 20,
                                       ),
                                       const SizedBox(width: 8),
@@ -151,7 +165,9 @@ class _EmailOtpPageState extends State<EmailOtpPage> {
                                         style: GoogleFonts.inter(
                                           fontSize: 14,
                                           fontWeight: FontWeight.w500,
-                                          color: primaryColor,
+                                          color: emailOtpState.remainingSeconds < 60
+                                              ? Colors.red
+                                              : primaryColor,
                                         ),
                                       ),
                                     ],
@@ -194,6 +210,15 @@ class _EmailOtpPageState extends State<EmailOtpPage> {
                                 controller: _otpController,
                                 keyboardType: TextInputType.number,
                                 enabled: emailOtpState.remainingSeconds > 0,
+                                autoFocus: true,
+                                enableActiveFill: false,
+                                autoDisposeControllers: false,
+                                errorAnimationController: _errorController,
+                                pastedTextStyle: GoogleFonts.inter(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w600,
+                                  color: primaryColor,
+                                ),
                                 pinTheme: PinTheme(
                                   shape: PinCodeFieldShape.underline,
                                   activeColor: Theme.of(context).primaryColor,
