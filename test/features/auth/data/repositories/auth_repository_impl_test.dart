@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:todouapp/core/errors/exceptions.dart';
 import 'package:todouapp/core/errors/failures.dart';
 import 'package:todouapp/core/network/i_network_info.dart';
+import 'package:todouapp/core/utils/secure_storage.dart';
 import 'package:todouapp/features/auth/data/datasources/i_auth_data_source.dart';
 import 'package:todouapp/features/auth/data/models/auth_response_model.dart';
 import 'package:todouapp/features/auth/data/repositories/auth_repository_impl.dart';
@@ -11,18 +12,22 @@ import 'package:todouapp/features/auth/data/repositories/auth_repository_impl.da
 // Mocks
 class MockAuthDataSource extends Mock implements IAuthDataSource {}
 class MockNetworkInfo extends Mock implements INetworkInfo {}
+class MockSecureStorageService extends Mock implements SecureStorageService {}
 
 void main() {
   late AuthRepositoryImpl repository;
   late MockAuthDataSource mockDataSource;
   late MockNetworkInfo mockNetworkInfo;
+  late MockSecureStorageService mockSecureStorage;
 
   setUp(() {
     mockDataSource = MockAuthDataSource();
     mockNetworkInfo = MockNetworkInfo();
+    mockSecureStorage = MockSecureStorageService();
     repository = AuthRepositoryImpl(
       dataSource: mockDataSource,
       networkInfo: mockNetworkInfo,
+      secureStorage: mockSecureStorage,
     );
   });
 
@@ -135,6 +140,14 @@ void main() {
   });
 
   group('verifyOtp', () {
+    setUp(() {
+      // Setup storage mocks for all verifyOtp tests
+      when(() => mockSecureStorage.saveToken(any())).thenAnswer((_) async => {});
+      when(() => mockSecureStorage.saveMarchandId(any())).thenAnswer((_) async => {});
+      when(() => mockSecureStorage.saveTerminalId(any())).thenAnswer((_) async => {});
+      when(() => mockSecureStorage.saveMerchantName(any())).thenAnswer((_) async => {});
+    });
+
     test('should check if the device is online', () async {
       // arrange
       when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
@@ -163,7 +176,11 @@ void main() {
 
         // assert
         verify(() => mockDataSource.verifyOtp(tOtp, tCode));
-        expect(result, equals(Right(tAuthResponse)));
+        verify(() => mockSecureStorage.saveToken(any()));
+        verify(() => mockSecureStorage.saveMarchandId(any()));
+        verify(() => mockSecureStorage.saveTerminalId(any()));
+        verify(() => mockSecureStorage.saveMerchantName(any()));
+        expect(result, equals(Right(tAuthResponse.toEntity())));
       });
 
       test('should call data source with correct otp and code', () async {

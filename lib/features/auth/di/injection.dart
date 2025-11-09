@@ -36,6 +36,7 @@ Future<void> setupAuthFeature() async {
     () => AuthRepositoryImpl(
       dataSource: sl<IAuthDataSource>(),
       networkInfo: sl(),
+      secureStorage: sl<SecureStorageService>(),
     ),
   );
 

@@ -5,8 +5,9 @@ import 'package:todouapp/features/auth/presentation/cubit/verify_email_otp_state
 class VerifyEmailOtpCubit extends Cubit<VerifyEmailOtpState> {
   final VerifyEmailOtp _verifyEmailOtp;
 
-  VerifyEmailOtpCubit({required VerifyEmailOtp verifyEmailOtp})
-      : _verifyEmailOtp = verifyEmailOtp,
+  VerifyEmailOtpCubit({
+    required VerifyEmailOtp verifyEmailOtp,
+  })  : _verifyEmailOtp = verifyEmailOtp,
         super(const VerifyEmailOtpState());
 
   Future<void> verifyOtp(String email, String otp) async {
@@ -22,6 +23,7 @@ class VerifyEmailOtpCubit extends Cubit<VerifyEmailOtpState> {
         ));
       },
       (response) {
+        // Token storage is now handled by AuthRepositoryImpl
         emit(state.copyWith(
           status: VerifyEmailOtpStatus.success,
           message: response.message,

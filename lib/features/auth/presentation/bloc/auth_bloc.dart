@@ -57,19 +57,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       final result = await verifyOtp(event.otp, event.code);
 
-      await result.fold(
-        (failure) async {
+      result.fold(
+        (failure) {
           emit(state.copyWith(
             message: failure.message,
             statusOtp: AuthStatus.failure,
           ));
         },
-        (response) async {
-          await secureStorage.saveToken(response.accessToken);
-          await secureStorage.saveMarchandId(response.marchandId);
-          await secureStorage.saveTerminalId(response.terminalId);
-          await secureStorage.saveMerchantName(response.merchantFirstName);
-
+        (response) {
+          // Token storage is now handled by AuthRepositoryImpl
           if (!emit.isDone) {
             emit(state.copyWith(
                 status: AuthStatus.success,

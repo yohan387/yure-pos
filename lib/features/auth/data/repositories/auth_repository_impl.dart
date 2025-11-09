@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:todouapp/core/errors/failures.dart';
 import 'package:todouapp/core/network/i_network_info.dart';
+import 'package:todouapp/core/utils/secure_storage.dart';
 import 'package:todouapp/features/auth/data/datasources/i_auth_data_source.dart';
 import 'package:todouapp/features/auth/domain/repositories/i_auth_repository.dart';
 import 'package:dartz/dartz.dart';
@@ -13,12 +14,15 @@ import '../../domain/entities/auth_response.dart';
 class AuthRepositoryImpl implements IAuthRepository {
   final IAuthDataSource _dataSource;
   final INetworkInfo _networkInfo;
+  final SecureStorageService _secureStorage;
 
   AuthRepositoryImpl({
     required IAuthDataSource dataSource,
     required INetworkInfo networkInfo,
+    required SecureStorageService secureStorage,
   })  : _dataSource = dataSource,
-        _networkInfo = networkInfo;
+        _networkInfo = networkInfo,
+        _secureStorage = secureStorage;
 
   @override
   FutureResult<AuthResponse> verifyCode(String code) async {
@@ -44,7 +48,15 @@ class AuthRepositoryImpl implements IAuthRepository {
 
     try {
       final response = await _dataSource.verifyOtp(otp, code);
-      return Right(response.toEntity());
+      final entity = response.toEntity();
+
+      // Save authentication data to secure storage
+      await _secureStorage.saveToken(entity.accessToken);
+      await _secureStorage.saveMarchandId(entity.marchandId);
+      await _secureStorage.saveTerminalId(entity.terminalId);
+      await _secureStorage.saveMerchantName(entity.merchantFirstName);
+
+      return Right(entity);
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));
     }
@@ -89,7 +101,15 @@ class AuthRepositoryImpl implements IAuthRepository {
 
     try {
       final response = await _dataSource.verifyEmailOtp(email, otp);
-      return Right(response.toEntity());
+      final entity = response.toEntity();
+
+      // Save authentication data to secure storage
+      await _secureStorage.saveToken(entity.accessToken);
+      await _secureStorage.saveMarchandId(entity.marchandId);
+      await _secureStorage.saveTerminalId(entity.terminalId);
+      await _secureStorage.saveMerchantName(entity.merchantFirstName);
+
+      return Right(entity);
     } on ServerException catch (e) {
       log('verifyEmailOtp error: ${e.message}');
       return Left(ServerFailure(message: e.message));
