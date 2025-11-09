@@ -55,4 +55,14 @@ class SecureStorageService {
   Future<void> saveStripeConnectedTerminal(String token) async {
     await _storage.write(key: 'reader', value: token);
   }
+
+  // Onboarding completed flag
+  Future<bool> hasCompletedOnboarding() async {
+    final value = await _storage.read(key: AppConstants.onboardingCompletedKey);
+    return value == 'true';
+  }
+
+  Future<void> setOnboardingCompleted() async {
+    await _storage.write(key: AppConstants.onboardingCompletedKey, value: 'true');
+  }
 }

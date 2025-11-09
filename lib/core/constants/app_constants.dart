@@ -1,6 +1,7 @@
 class AppConstants {
   static const String appName = 'FinTech App';
   static const String tokenKey = 'auth_token';
+  static const String onboardingCompletedKey = 'onboarding_completed';
   static const String cachedBalanceKey = 'cached_balance';
   static const String cachedTransactionsKey = 'cached_transactions';
 

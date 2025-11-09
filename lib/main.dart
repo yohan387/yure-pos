@@ -47,7 +47,7 @@ void main() async {
   await setupDependencies();
   log('✅ Dépendances initialisées');
 
-  // ===== 4. Vérifier l'authentification =====
+  // ===== 4. Vérifier l'authentification et onboarding =====
   final secureStorage = sl<SecureStorageService>();
   String? token;
 
@@ -59,7 +59,10 @@ void main() async {
   }
 
   final isAuthenticated = TokenValidator.isTokenValid(token);
+  final hasCompletedOnboarding = await secureStorage.hasCompletedOnboarding();
+
   log('🔐 Authentifié: $isAuthenticated');
+  log('👁️ Onboarding complété: $hasCompletedOnboarding');
 
   // ===== 5. Écouter les événements d'expiration de token =====
   eventBus.on<TokenExpiredEvent>().listen((_) async {
@@ -84,16 +87,31 @@ void main() async {
 
   // ===== 7. Lancer l'application =====
   log('Step 3 - Running app');
-  runApp(TodouApp(isAuthenticated: isAuthenticated));
+  runApp(TodouApp(
+    isAuthenticated: isAuthenticated,
+    hasCompletedOnboarding: hasCompletedOnboarding,
+  ));
 }
 
 class TodouApp extends StatelessWidget {
   final bool isAuthenticated;
+  final bool hasCompletedOnboarding;
 
   const TodouApp({
     Key? key,
     required this.isAuthenticated,
+    required this.hasCompletedOnboarding,
   }) : super(key: key);
+
+  String _getInitialRoute() {
+    // Si l'onboarding n'est pas complété, toujours montrer l'onboarding
+    if (!hasCompletedOnboarding) {
+      return RouteConstants.onbording;
+    }
+
+    // Si l'onboarding est complété, vérifier l'authentification
+    return isAuthenticated ? RouteConstants.accueil : RouteConstants.login;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -120,8 +138,7 @@ class TodouApp extends StatelessWidget {
         navigatorObservers: [routeObserver],
         title: 'Todou App',
         debugShowCheckedModeBanner: false,
-        initialRoute:
-            isAuthenticated ? RouteConstants.accueil : RouteConstants.onbording,
+        initialRoute: _getInitialRoute(),
         routes: {
           RouteConstants.onbording: (context) => OnbordingPage(),
           RouteConstants.login: (context) => LoginPage(),
