@@ -87,7 +87,18 @@ class _OtpPageState extends State<OtpPage> {
         listener: (context, state) {
           if (state.statusOtp == AuthStatus.failure) {
             _errorController.add(ErrorAnimationType.shake);
-            CustomSnackbar.showError(context, state.message ?? 'OTP incorrect');
+
+            // Différencier code expiré vs code invalide
+            String errorMessage;
+            if (_remainingSeconds == 0) {
+              errorMessage = 'Code expiré. Veuillez demander un nouveau code.';
+            } else {
+              errorMessage = state.message?.toLowerCase().contains('expiré') == true
+                  ? 'Code expiré. Veuillez demander un nouveau code.'
+                  : 'Code invalide. Veuillez réessayer.';
+            }
+
+            CustomSnackbar.showError(context, errorMessage);
           } else if (state.statusOtp == AuthStatus.success &&
               state.isAuthenticated) {
             Navigator.pushNamedAndRemoveUntil(

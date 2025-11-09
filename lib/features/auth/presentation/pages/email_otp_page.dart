@@ -80,7 +80,19 @@ class _EmailOtpPageState extends State<EmailOtpPage> {
               if (state.status == VerifyEmailOtpStatus.failure &&
                   state.message != null) {
                 _errorController.add(ErrorAnimationType.shake);
-                CustomSnackbar.showError(context, state.message!);
+
+                // Différencier code expiré vs code invalide
+                final emailOtpState = context.read<EmailOtpCubit>().state;
+                String errorMessage;
+                if (emailOtpState.remainingSeconds == 0) {
+                  errorMessage = 'Code expiré. Veuillez demander un nouveau code.';
+                } else {
+                  errorMessage = state.message!.toLowerCase().contains('expiré')
+                      ? 'Code expiré. Veuillez demander un nouveau code.'
+                      : 'Code invalide. Veuillez réessayer.';
+                }
+
+                CustomSnackbar.showError(context, errorMessage);
               } else if (state.status == VerifyEmailOtpStatus.success) {
                 if (mounted) {
                   Navigator.pushNamedAndRemoveUntil(
