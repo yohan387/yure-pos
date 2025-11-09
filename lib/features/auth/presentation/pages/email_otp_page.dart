@@ -85,11 +85,14 @@ class _EmailOtpPageState extends State<EmailOtpPage> {
                 final emailOtpState = context.read<EmailOtpCubit>().state;
                 String errorMessage;
                 if (emailOtpState.remainingSeconds == 0) {
+                  // Timer client expiré
+                  errorMessage = 'Code expiré. Veuillez demander un nouveau code.';
+                } else if (state.message!.toLowerCase().contains('expiré')) {
+                  // Serveur dit que le code est expiré (peut-être expiré côté serveur avant le timer client)
                   errorMessage = 'Code expiré. Veuillez demander un nouveau code.';
                 } else {
-                  errorMessage = state.message!.toLowerCase().contains('expiré')
-                      ? 'Code expiré. Veuillez demander un nouveau code.'
-                      : 'Code invalide. Veuillez réessayer.';
+                  // Code invalide
+                  errorMessage = 'Code invalide. Veuillez réessayer.';
                 }
 
                 CustomSnackbar.showError(context, errorMessage);
