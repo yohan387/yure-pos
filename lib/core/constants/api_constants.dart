@@ -3,6 +3,8 @@ class ApiConstants {
       'https://tyure-backend-dev.todoustudio.cloud/api/v1';
   static const String loginEndpoint = '/merchants/terminals/request-otp';
   static const String emailLoginEndpoint = '/auth/email-login';
+  static const String resendEmailOtpEndpoint = '/auth/resend-email-otp';
+  static const String verifyEmailOtpEndpoint = '/auth/verify-email-otp';
   static const String verifyOtpEndpoint = '/merchants/terminals/verify-otp';
   static const String balanceEndpoint = '/auth/merchants/';
   static const String transactionsEndpoint = '/auth/merchants/';

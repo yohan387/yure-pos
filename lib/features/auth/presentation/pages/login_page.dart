@@ -20,10 +20,6 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: MyAppBar(
-        height: 256,
-        child: Header(asset: 'assets/images/pos-terminal.png'),
-      ),
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state.status == AuthStatus.failure) {

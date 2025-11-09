@@ -73,4 +73,38 @@ class AuthRemoteDataSource implements IAuthDataSource {
       throw ServerException(message: 'Failed to login with email');
     }
   }
+
+  @override
+  Future<AuthResponseModel> resendEmailOtp(String email) async {
+    try {
+      final response = await _apiClient.post(ApiConstants.resendEmailOtpEndpoint,
+          body: {'email': email}, requiresAuth: false);
+
+      log("Response du serveur resend email OTP : ${response.toString()}");
+      return AuthResponseModel.fromJson(response);
+    } on ServerException {
+      log("ERR du serveur resend email OTP");
+      rethrow;
+    } catch (e) {
+      log("ERR du serveur resend email OTP ${e.toString()}");
+      throw ServerException(message: 'Failed to resend email OTP');
+    }
+  }
+
+  @override
+  Future<AuthResponseModel> verifyEmailOtp(String email, String otp) async {
+    try {
+      final response = await _apiClient.post(ApiConstants.verifyEmailOtpEndpoint,
+          body: {'email': email, 'otp': otp}, requiresAuth: false);
+
+      log("Response du serveur verify email OTP : ${response.toString()}");
+      return AuthResponseModel.fromJson(response);
+    } on ServerException {
+      log("ERR du serveur verify email OTP");
+      rethrow;
+    } catch (e) {
+      log("ERR du serveur verify email OTP ${e.toString()}");
+      throw ServerException(message: 'Failed to verify email OTP');
+    }
+  }
 }

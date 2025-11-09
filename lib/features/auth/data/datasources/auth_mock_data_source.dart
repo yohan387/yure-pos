@@ -24,7 +24,7 @@ class AuthMockDataSource implements IAuthDataSource {
   Future<AuthResponseModel> verifyOtp(String otp, String code) async {
     await MockHelpers.simulateNetworkDelay();
 
-    if (otp == "1234") {
+    if (otp == "234567") {
       return AuthResponseModel.fromJson({
         "success": true,
         "message": "Connexion réussie",
@@ -48,9 +48,9 @@ class AuthMockDataSource implements IAuthDataSource {
     await MockHelpers.simulateNetworkDelay();
 
     final validAccounts = {
-      "test@yure.com": "Test1234",
-      "admin@yure.com": "Admin1234",
-      "merchant@yure.com": "Merchant123",
+      "test@yure.com": "123456",
+      "admin@yure.com": "123456",
+      "merchant@yure.com": "123456",
     };
 
     if (!email.contains('@') || !email.contains('.')) {
@@ -61,8 +61,7 @@ class AuthMockDataSource implements IAuthDataSource {
       throw ServerException(message: "Mot de passe requis");
     }
 
-    if (validAccounts.containsKey(email) &&
-        validAccounts[email] == password) {
+    if (validAccounts.containsKey(email) && validAccounts[email] == password) {
       return AuthResponseModel.fromJson({
         "success": true,
         "message": "OTP envoyé à votre email",
@@ -74,5 +73,53 @@ class AuthMockDataSource implements IAuthDataSource {
     }
 
     throw ServerException(message: "Email ou mot de passe incorrect");
+  }
+
+  @override
+  Future<AuthResponseModel> resendEmailOtp(String email) async {
+    await MockHelpers.simulateNetworkDelay();
+
+    if (!email.contains('@') || !email.contains('.')) {
+      throw ServerException(message: "Format email invalide");
+    }
+
+    return AuthResponseModel.fromJson({
+      "success": true,
+      "message": "Code OTP renvoyé avec succès",
+      "data": {
+        "email": email,
+        "otp_sent": true,
+      },
+    });
+  }
+
+  @override
+  Future<AuthResponseModel> verifyEmailOtp(String email, String otp) async {
+    await MockHelpers.simulateNetworkDelay();
+
+    if (!email.contains('@') || !email.contains('.')) {
+      throw ServerException(message: "Format email invalide");
+    }
+
+    if (otp.isEmpty || otp.length != 6) {
+      throw ServerException(message: "Format OTP invalide");
+    }
+
+    if (otp == "234567") {
+      return AuthResponseModel.fromJson({
+        "success": true,
+        "message": "Vérification réussie",
+        "data": {
+          "token": MockData.mockToken,
+          "user": {
+            "id": "user_mock_001",
+            "email": email,
+            "name": "Utilisateur Test",
+          },
+        },
+      });
+    }
+
+    throw ServerException(message: "Code OTP invalide ou expiré");
   }
 }

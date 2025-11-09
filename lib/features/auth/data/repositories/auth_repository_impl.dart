@@ -65,4 +65,34 @@ class AuthRepositoryImpl implements IAuthRepository {
       return Left(ServerFailure(message: e.message));
     }
   }
+
+  @override
+  FutureResult<AuthResponse> resendEmailOtp(String email) async {
+    if (!await _networkInfo.isConnected) {
+      return Left(NetworkFailure());
+    }
+
+    try {
+      final response = await _dataSource.resendEmailOtp(email);
+      return Right(response.toEntity());
+    } on ServerException catch (e) {
+      log('resendEmailOtp error: ${e.message}');
+      return Left(ServerFailure(message: e.message));
+    }
+  }
+
+  @override
+  FutureResult<AuthResponse> verifyEmailOtp(String email, String otp) async {
+    if (!await _networkInfo.isConnected) {
+      return Left(NetworkFailure());
+    }
+
+    try {
+      final response = await _dataSource.verifyEmailOtp(email, otp);
+      return Right(response.toEntity());
+    } on ServerException catch (e) {
+      log('verifyEmailOtp error: ${e.message}');
+      return Left(ServerFailure(message: e.message));
+    }
+  }
 }

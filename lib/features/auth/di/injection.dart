@@ -6,10 +6,14 @@ import 'package:todouapp/features/auth/data/datasources/i_auth_data_source.dart'
 import 'package:todouapp/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:todouapp/features/auth/domain/repositories/i_auth_repository.dart';
 import 'package:todouapp/features/auth/domain/usecases/login_with_email.dart';
+import 'package:todouapp/features/auth/domain/usecases/resend_email_otp.dart';
 import 'package:todouapp/features/auth/domain/usecases/verify_code.dart';
+import 'package:todouapp/features/auth/domain/usecases/verify_email_otp.dart';
 import 'package:todouapp/features/auth/domain/usecases/verify_otp.dart';
 import 'package:todouapp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:todouapp/features/auth/presentation/cubit/email_login_cubit.dart';
+import 'package:todouapp/features/auth/presentation/cubit/email_otp_cubit.dart';
+import 'package:todouapp/features/auth/presentation/cubit/verify_email_otp_cubit.dart';
 import 'package:todouapp/core/utils/secure_storage.dart';
 
 /// Setup des dépendances pour la feature Auth
@@ -48,6 +52,14 @@ Future<void> setupAuthFeature() async {
     () => LoginWithEmail(sl<IAuthRepository>()),
   );
 
+  sl.registerLazySingleton(
+    () => ResendEmailOtp(sl<IAuthRepository>()),
+  );
+
+  sl.registerLazySingleton(
+    () => VerifyEmailOtp(sl<IAuthRepository>()),
+  );
+
   // ===== BLOC =====
   sl.registerFactory(
     () => AuthBloc(
@@ -61,6 +73,18 @@ Future<void> setupAuthFeature() async {
   sl.registerFactory(
     () => EmailLoginCubit(
       loginWithEmail: sl<LoginWithEmail>(),
+    ),
+  );
+
+  sl.registerFactory(
+    () => EmailOtpCubit(
+      resendEmailOtp: sl<ResendEmailOtp>(),
+    ),
+  );
+
+  sl.registerFactory(
+    () => VerifyEmailOtpCubit(
+      verifyEmailOtp: sl<VerifyEmailOtp>(),
     ),
   );
 }

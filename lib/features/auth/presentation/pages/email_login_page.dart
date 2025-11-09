@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todouapp/core/constants/colors.dart';
+import 'package:todouapp/core/constants/route_constants.dart';
 import 'package:todouapp/core/widgets/button_widget.dart';
 import 'package:todouapp/core/widgets/custom_snackbar.dart';
 import 'package:todouapp/core/widgets/header.dart';
@@ -75,6 +76,11 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
             CustomSnackbar.showSuccess(
               context,
               state.message ?? 'OTP envoyé à votre email',
+            );
+            Navigator.pushNamed(
+              context,
+              RouteConstants.emailOtp,
+              arguments: {'email': state.email},
             );
           }
         },

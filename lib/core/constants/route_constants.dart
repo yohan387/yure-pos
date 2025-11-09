@@ -3,6 +3,7 @@ class RouteConstants {
   static const String onbording = '/onbording';
   static const String login = '/login';
   static const String emailLogin = '/email-login';
+  static const String emailOtp = '/email-otp';
   static const String otp = '/otp';
   static const String home = '/home';
   static const String accueil = '/accueil';

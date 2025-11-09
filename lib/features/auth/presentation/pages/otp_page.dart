@@ -33,10 +33,6 @@ class _OtpPageState extends State<OtpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: MyAppBar(
-        height: 256,
-        child: Header(asset: 'assets/images/secure-password.png'),
-      ),
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state.statusOtp == AuthStatus.failure) {
