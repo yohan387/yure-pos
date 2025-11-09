@@ -17,7 +17,7 @@ class FullPageLoader extends StatelessWidget {
       absorbing: true,
       child: Center(
         child: Container(
-          color: Colors.transparent,
+          color: const Color.fromARGB(103, 0, 0, 0),
           child: const Center(
             child: SpinKitThreeBounce(color: Colors.red),
           ),

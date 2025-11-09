@@ -1,6 +1,5 @@
 import 'package:equatable/equatable.dart';
 
-/// États du Cubit pour la connexion email
 enum EmailLoginStatus {
   initial,
   loading,

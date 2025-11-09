@@ -33,7 +33,8 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
     if (value == null || value.isEmpty) {
       return 'Veuillez saisir votre email';
     }
-    final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    final emailRegex =
+        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
     if (!emailRegex.hasMatch(value)) {
       return 'Format email invalide';
     }
@@ -63,10 +64,6 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      appBar: MyAppBar(
-        height: 256,
-        child: const Header(asset: 'assets/images/pos-terminal.png'),
-      ),
       body: BlocConsumer<EmailLoginCubit, EmailLoginState>(
         listener: (context, state) {
           if (state.status == EmailLoginStatus.failure) {
@@ -79,8 +76,6 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
               context,
               state.message ?? 'OTP envoyé à votre email',
             );
-            // TODO: Rediriger vers écran OTP (APP-003)
-            // Navigator.pushNamed(context, RouteConstants.emailOtp);
           }
         },
         builder: (context, state) {
@@ -128,12 +123,13 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                               key: _formKey,
                               child: Column(
                                 children: [
-                                  // Champ Email
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Padding(
-                                        padding: const EdgeInsets.only(bottom: 3),
+                                        padding:
+                                            const EdgeInsets.only(bottom: 3),
                                         child: Text(
                                           "Email",
                                           style: TextStyle(
@@ -146,18 +142,21 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                                       ),
                                       TextFormField(
                                         controller: _emailController,
-                                        keyboardType: TextInputType.emailAddress,
+                                        keyboardType:
+                                            TextInputType.emailAddress,
                                         validator: _validateEmail,
                                         decoration: InputDecoration(
                                           hintText: 'exemple@yure.com',
                                           border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
                                             borderSide: BorderSide(
                                               color: Colors.grey.shade200,
                                             ),
                                           ),
                                           focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(20.0),
+                                            borderRadius:
+                                                BorderRadius.circular(20.0),
                                             borderSide: BorderSide(
                                               color: Colors.grey.shade800,
                                             ),
@@ -167,12 +166,13 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                                     ],
                                   ),
                                   const SizedBox(height: 20),
-                                  // Champ Mot de passe
                                   Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Padding(
-                                        padding: const EdgeInsets.only(bottom: 3),
+                                        padding:
+                                            const EdgeInsets.only(bottom: 3),
                                         child: Text(
                                           "Mot de passe",
                                           style: TextStyle(
@@ -190,13 +190,15 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                                         decoration: InputDecoration(
                                           hintText: '••••••••',
                                           border: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius:
+                                                BorderRadius.circular(12),
                                             borderSide: BorderSide(
                                               color: Colors.grey.shade200,
                                             ),
                                           ),
                                           focusedBorder: OutlineInputBorder(
-                                            borderRadius: BorderRadius.circular(20.0),
+                                            borderRadius:
+                                                BorderRadius.circular(20.0),
                                             borderSide: BorderSide(
                                               color: Colors.grey.shade800,
                                             ),
@@ -210,7 +212,8 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                                             ),
                                             onPressed: () {
                                               setState(() {
-                                                _isPasswordVisible = !_isPasswordVisible;
+                                                _isPasswordVisible =
+                                                    !_isPasswordVisible;
                                               });
                                             },
                                           ),
@@ -219,15 +222,14 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                                     ],
                                   ),
                                   const SizedBox(height: 30),
-                                  // Bouton Connexion
                                   CustomButton(
                                     text: 'Se connecter',
-                                    onPressed: state.status == EmailLoginStatus.loading
-                                        ? null
-                                        : _handleLogin,
+                                    onPressed:
+                                        state.status == EmailLoginStatus.loading
+                                            ? null
+                                            : _handleLogin,
                                   ),
                                   const SizedBox(height: 20),
-                                  // Lien vers connexion par code terminal
                                   TextButton(
                                     onPressed: () {
                                       Navigator.pop(context);
