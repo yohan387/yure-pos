@@ -71,7 +71,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           await secureStorage.saveMerchantName(response.merchantFirstName);
 
           if (!emit.isDone) {
-            // Vérification cruciale
             emit(state.copyWith(
                 status: AuthStatus.success,
                 message: response.message,
@@ -91,19 +90,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     }
   }
-
-  // Future<void> _onCheckAuthStatus(
-  //   CheckAuthStatusEvent event,
-  //   Emitter<AuthState> emit,
-  // ) async {
-  //   final token = await secureStorage.getToken();
-  //   final isValid = TokenValidator.isTokenValid(token);
-
-  //   emit(state.copyWith(
-  //     isAuthenticated: isValid,
-  //     accessToken: isValid ? token : null,
-  //   ));
-  // }
 
   Future<void> _onCheckAuthStatus(
     CheckAuthStatusEvent event,

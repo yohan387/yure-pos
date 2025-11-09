@@ -7,10 +7,9 @@ import 'package:todouapp/features/auth/domain/repositories/i_auth_repository.dar
 import 'package:dartz/dartz.dart';
 
 import '../../../../core/errors/exceptions.dart';
-import '../models/auth_response_model.dart';
+import '../../../../core/types/future_result.dart';
+import '../../domain/entities/auth_response.dart';
 
-/// Implémentation du repository d'authentification
-/// Gère la logique métier et la vérification réseau
 class AuthRepositoryImpl implements IAuthRepository {
   final IAuthDataSource _dataSource;
   final INetworkInfo _networkInfo;
@@ -22,7 +21,7 @@ class AuthRepositoryImpl implements IAuthRepository {
         _networkInfo = networkInfo;
 
   @override
-  Future<Either<Failure, AuthResponseModel>> verifyCode(String code) async {
+  FutureResult<AuthResponse> verifyCode(String code) async {
     log('Network info ${_networkInfo.isConnected}');
     if (!await _networkInfo.isConnected) {
       return Left(NetworkFailure());
@@ -30,7 +29,7 @@ class AuthRepositoryImpl implements IAuthRepository {
 
     try {
       final response = await _dataSource.verifyCode(code);
-      return Right(response);
+      return Right(response.toEntity());
     } on ServerException catch (e) {
       log('auth impl ${e.message}');
       return Left(ServerFailure(message: e.message));
@@ -38,22 +37,21 @@ class AuthRepositoryImpl implements IAuthRepository {
   }
 
   @override
-  Future<Either<Failure, AuthResponseModel>> verifyOtp(
-      String otp, String code) async {
+  FutureResult<AuthResponse> verifyOtp(String otp, String code) async {
     if (!await _networkInfo.isConnected) {
       return Left(NetworkFailure());
     }
 
     try {
       final response = await _dataSource.verifyOtp(otp, code);
-      return Right(response);
+      return Right(response.toEntity());
     } on ServerException catch (e) {
       return Left(ServerFailure(message: e.message));
     }
   }
 
   @override
-  Future<Either<Failure, AuthResponseModel>> loginWithEmail(
+  FutureResult<AuthResponse> loginWithEmail(
       String email, String password) async {
     if (!await _networkInfo.isConnected) {
       return Left(NetworkFailure());
@@ -61,7 +59,7 @@ class AuthRepositoryImpl implements IAuthRepository {
 
     try {
       final response = await _dataSource.loginWithEmail(email, password);
-      return Right(response);
+      return Right(response.toEntity());
     } on ServerException catch (e) {
       log('loginWithEmail error: ${e.message}');
       return Left(ServerFailure(message: e.message));

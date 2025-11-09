@@ -21,10 +21,10 @@ class EmailLoginCubit extends Cubit<EmailLoginState> {
           message: failure.message,
         ));
       },
-      (response) {
+      (authResponse) {
         emit(state.copyWith(
           status: EmailLoginStatus.success,
-          message: response.message,
+          message: authResponse.message,
           email: email,
         ));
       },

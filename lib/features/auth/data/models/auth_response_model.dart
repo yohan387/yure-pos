@@ -1,3 +1,5 @@
+import 'package:todouapp/features/auth/domain/entities/auth_response.dart';
+
 class AuthResponseModel {
   final String message;
   final String accessToken;
@@ -19,6 +21,16 @@ class AuthResponseModel {
       marchandId: "${json['merchant_id']}",
       terminalId: "${json['terminal_id']}",
       merchantFirstName: "${json['merchant_first_name']}",
+    );
+  }
+
+  AuthResponse toEntity() {
+    return AuthResponse(
+      message: message,
+      accessToken: accessToken,
+      marchandId: marchandId,
+      terminalId: terminalId,
+      merchantFirstName: merchantFirstName,
     );
   }
 }
