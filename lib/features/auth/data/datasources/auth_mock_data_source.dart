@@ -3,6 +3,7 @@ import 'package:todouapp/core/mock/mock_data.dart';
 import 'package:todouapp/core/mock/mock_helpers.dart';
 import 'package:todouapp/features/auth/data/datasources/i_auth_data_source.dart';
 import 'package:todouapp/features/auth/data/models/auth_response_model.dart';
+import 'package:todouapp/features/auth/data/models/terminal_model.dart';
 
 class AuthMockDataSource implements IAuthDataSource {
   @override
@@ -121,5 +122,15 @@ class AuthMockDataSource implements IAuthDataSource {
     }
 
     throw ServerException(message: "Code OTP invalide ou expiré");
+  }
+
+  @override
+  Future<List<TerminalModel>> getMerchantTerminals() async {
+    await MockHelpers.simulateNetworkDelay();
+
+    // Convertir les données mockées en liste de TerminalModel
+    return MockData.mockTerminals
+        .map((json) => TerminalModel.fromJson(json))
+        .toList();
   }
 }

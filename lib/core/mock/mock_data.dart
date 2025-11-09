@@ -175,4 +175,34 @@ class MockData {
       "processed_at": DateTime.now().toIso8601String(),
     };
   }
+
+  // ========== TERMINALS ==========
+
+  /// Liste de terminaux mockés pour le commerçant
+  static final mockTerminals = [
+    {
+      "id": "term_001",
+      "name": "Terminal Principal",
+      "code": "TP-001",
+      "status": "active",
+    },
+    {
+      "id": "term_002",
+      "name": "Caisse 2",
+      "code": "TC-002",
+      "status": "active",
+    },
+    {
+      "id": "term_003",
+      "name": "Terminal Mobile",
+      "code": "TM-003",
+      "status": "inactive",
+    },
+    {
+      "id": "term_004",
+      "name": "Caisse Express",
+      "code": "CE-004",
+      "status": "pending",
+    },
+  ];
 }

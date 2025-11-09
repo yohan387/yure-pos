@@ -15,11 +15,13 @@ import 'package:todouapp/core/utils/token_validator.dart';
 import 'package:todouapp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:todouapp/features/auth/presentation/cubit/email_login_cubit.dart';
 import 'package:todouapp/features/auth/presentation/cubit/email_otp_cubit.dart';
+import 'package:todouapp/features/auth/presentation/cubit/terminal_selection_cubit.dart';
 import 'package:todouapp/features/auth/presentation/cubit/verify_email_otp_cubit.dart';
 import 'package:todouapp/features/auth/presentation/pages/email_login_page.dart';
 import 'package:todouapp/features/auth/presentation/pages/email_otp_page.dart';
 import 'package:todouapp/features/auth/presentation/pages/login_page.dart';
 import 'package:todouapp/features/auth/presentation/pages/otp_page.dart';
+import 'package:todouapp/features/auth/presentation/pages/terminal_selection_page.dart';
 import 'package:todouapp/features/home/accueil_page.dart';
 import 'package:todouapp/features/mobile_payments/presentation/bloc/mobile_payment_bloc.dart';
 import 'package:todouapp/features/profil/presentation/bloc/profil_bloc.dart';
@@ -157,6 +159,10 @@ class TodouApp extends StatelessWidget {
                 child: const EmailOtpPage(),
               ),
           RouteConstants.otp: (context) => OtpPage(),
+          RouteConstants.terminalSelection: (context) => BlocProvider(
+                create: (context) => sl<TerminalSelectionCubit>(),
+                child: const TerminalSelectionPage(),
+              ),
           RouteConstants.accueil: (context) => AccueilPage(),
           RouteConstants.home: (context) => const HomePage(),
           RouteConstants.stripePayment: (context) {

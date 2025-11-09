@@ -5,6 +5,7 @@ import 'package:todouapp/core/errors/exceptions.dart';
 import 'package:todouapp/core/network/api_client.dart';
 import 'package:todouapp/features/auth/data/datasources/i_auth_data_source.dart';
 import 'package:todouapp/features/auth/data/models/auth_response_model.dart';
+import 'package:todouapp/features/auth/data/models/terminal_model.dart';
 
 import '../../../../core/constants/api_constants.dart';
 
@@ -105,6 +106,32 @@ class AuthRemoteDataSource implements IAuthDataSource {
     } catch (e) {
       log("ERR du serveur verify email OTP ${e.toString()}");
       throw ServerException(message: 'Failed to verify email OTP');
+    }
+  }
+
+  @override
+  Future<List<TerminalModel>> getMerchantTerminals() async {
+    try {
+      final response = await _apiClient.get(
+        ApiConstants.merchantTerminalsEndpoint,
+        requiresAuth: true,
+      );
+
+      log("Response du serveur get merchant terminals : ${response.toString()}");
+
+      // Supposant que la réponse est une liste directe ou dans un champ 'data'
+      final List<dynamic> terminalsJson =
+          response is List ? response : response['data'] ?? [];
+
+      return terminalsJson
+          .map((json) => TerminalModel.fromJson(json as Map<String, dynamic>))
+          .toList();
+    } on ServerException {
+      log("ERR du serveur get merchant terminals");
+      rethrow;
+    } catch (e) {
+      log("ERR du serveur get merchant terminals ${e.toString()}");
+      throw ServerException(message: 'Failed to get merchant terminals');
     }
   }
 }

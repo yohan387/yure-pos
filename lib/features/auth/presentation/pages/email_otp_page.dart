@@ -100,7 +100,7 @@ class _EmailOtpPageState extends State<EmailOtpPage> {
                 if (mounted) {
                   Navigator.pushNamedAndRemoveUntil(
                     context,
-                    RouteConstants.accueil,
+                    RouteConstants.terminalSelection,
                     (route) => false,
                   );
                 }

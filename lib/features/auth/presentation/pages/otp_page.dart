@@ -106,7 +106,7 @@ class _OtpPageState extends State<OtpPage> {
               state.isAuthenticated) {
             Navigator.pushNamedAndRemoveUntil(
               context,
-              RouteConstants.accueil,
+              RouteConstants.terminalSelection,
               (route) => false,
             );
           }

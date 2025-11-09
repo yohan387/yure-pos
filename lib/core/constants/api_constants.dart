@@ -6,6 +6,7 @@ class ApiConstants {
   static const String resendEmailOtpEndpoint = '/auth/resend-email-otp';
   static const String verifyEmailOtpEndpoint = '/auth/verify-email-otp';
   static const String verifyOtpEndpoint = '/merchants/terminals/verify-otp';
+  static const String merchantTerminalsEndpoint = '/api/merchant/terminals';
   static const String balanceEndpoint = '/auth/merchants/';
   static const String transactionsEndpoint = '/auth/merchants/';
   static const String mobilePaymentInitEndpoint =

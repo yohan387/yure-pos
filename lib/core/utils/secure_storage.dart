@@ -56,6 +56,15 @@ class SecureStorageService {
     await _storage.write(key: 'reader', value: token);
   }
 
+  // Selected terminal for merchant
+  Future<String?> getSelectedTerminal() async {
+    return await _storage.read(key: 'selected_terminal_id');
+  }
+
+  Future<void> saveSelectedTerminal(String terminalId) async {
+    await _storage.write(key: 'selected_terminal_id', value: terminalId);
+  }
+
   // Onboarding completed flag
   Future<bool> hasCompletedOnboarding() async {
     final value = await _storage.read(key: AppConstants.onboardingCompletedKey);

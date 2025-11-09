@@ -10,6 +10,7 @@ import 'package:dartz/dartz.dart';
 import '../../../../core/errors/exceptions.dart';
 import '../../../../core/types/future_result.dart';
 import '../../domain/entities/auth_response.dart';
+import '../../domain/entities/terminal.dart';
 
 class AuthRepositoryImpl implements IAuthRepository {
   final IAuthDataSource _dataSource;
@@ -112,6 +113,22 @@ class AuthRepositoryImpl implements IAuthRepository {
       return Right(entity);
     } on ServerException catch (e) {
       log('verifyEmailOtp error: ${e.message}');
+      return Left(ServerFailure(message: e.message));
+    }
+  }
+
+  @override
+  FutureResult<List<Terminal>> getMerchantTerminals() async {
+    if (!await _networkInfo.isConnected) {
+      return Left(NetworkFailure());
+    }
+
+    try {
+      final models = await _dataSource.getMerchantTerminals();
+      final entities = models.map((model) => model.toEntity()).toList();
+      return Right(entities);
+    } on ServerException catch (e) {
+      log('getMerchantTerminals error: ${e.message}');
       return Left(ServerFailure(message: e.message));
     }
   }
