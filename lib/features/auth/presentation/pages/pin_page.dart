@@ -26,19 +26,51 @@ class PinPage extends StatelessWidget {
 class _PinPageContent extends StatelessWidget {
   const _PinPageContent();
 
+  void _handleBackButton(BuildContext context, PinState state) {
+    if (state.isSetupMode) {
+      if (state.isConfirmationStep) {
+        // À l'étape de confirmation, revenir à l'étape de création
+        context.read<PinCubit>().restart();
+      } else {
+        // À l'étape de création, quitter l'app (fermer la page)
+        Navigator.of(context).pop();
+      }
+    } else {
+      // Pour les autres modes, comportement normal
+      Navigator.of(context).pop();
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF080808)),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
-      body: BlocConsumer<PinCubit, PinState>(
+    return BlocBuilder<PinCubit, PinState>(
+      builder: (context, state) {
+        return PopScope(
+          canPop: false,
+          onPopInvokedWithResult: (didPop, result) {
+            if (!didPop) {
+              _handleBackButton(context, state);
+            }
+          },
+          child: Scaffold(
+            backgroundColor: Colors.white,
+            appBar: AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Color(0xFF080808)),
+                onPressed: () => _handleBackButton(context, state),
+              ),
+            ),
+            body: _buildBody(context, state),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildBody(BuildContext context, PinState state) {
+    return BlocConsumer<PinCubit, PinState>(
         listener: (context, state) {
           if (state.step == PinStep.success) {
             // Navigation selon le mode
@@ -201,7 +233,6 @@ class _PinPageContent extends StatelessWidget {
             ),
           );
         },
-      ),
-    );
+      );
   }
 }
