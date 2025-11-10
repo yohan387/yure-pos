@@ -281,10 +281,9 @@ class _LinkTopayPageState extends State<LinkTopayPage> {
                                       state.transactionRef),
                                 );
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Lien de paiement non prêt"),
-                              ),
+                            CustomSnackbar.showWarning(
+                              context,
+                              "Lien de paiement non prêt",
                             );
                           }
                         },

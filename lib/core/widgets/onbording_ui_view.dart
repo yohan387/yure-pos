@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:todouapp/core/constants/route_constants.dart';
 import 'package:todouapp/core/utils/onbording_model.dart';
 import 'package:todouapp/core/widgets/button_widget.dart';
+import 'package:todouapp/core/widgets/custom_snackbar.dart';
 import 'package:todouapp/core/widgets/onbording/onbording_dots.dart';
 import 'package:todouapp/features/onboarding/presentation/bloc/onboarding_bloc.dart';
 import 'package:todouapp/features/onboarding/presentation/bloc/onboarding_event.dart';
@@ -166,9 +167,7 @@ class _OnbordingUiViewState extends State<OnbordingUiView> {
                                 (route) => false,
                               );
                             } else if (state is OnboardingError) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(state.message)),
-                              );
+                              CustomSnackbar.showError(context, state.message);
                             }
                           },
                           child: CustomButton(

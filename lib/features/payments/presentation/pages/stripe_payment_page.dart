@@ -4,6 +4,7 @@ import 'package:todouapp/features/nfc/scanner_reader.dart';
 import 'package:todouapp/features/payments/presentation/bloc/stripe_payment_bloc.dart';
 
 import '../../../../core/constants/colors.dart';
+import '../../../../core/widgets/custom_snackbar.dart';
 import '../../../../core/widgets/page_loader.dart';
 import '../../../transactions/presentation/bloc/transaction_bloc.dart';
 import 'payment_response_page.dart';
@@ -54,12 +55,7 @@ class _StripePaymentPageState extends State<StripePaymentPage> {
             context.read<TransactionBloc>().add(LoadInitialTransactionsEvent());
           } else if (state is StripePaymentError) {
             // 2. Afficher erreur
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.red,
-              ),
-            );
+            CustomSnackbar.showError(context, state.message);
           }
         },
         builder: (context, state) {
