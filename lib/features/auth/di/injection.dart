@@ -21,8 +21,10 @@ import 'package:todouapp/features/auth/data/datasources/i_pin_local_data_source.
 import 'package:todouapp/features/auth/data/datasources/pin_local_data_source.dart';
 import 'package:todouapp/features/auth/data/repositories/pin_repository_impl.dart';
 import 'package:todouapp/features/auth/domain/repositories/i_pin_repository.dart';
+import 'package:todouapp/features/auth/domain/usecases/get_pin_status.dart';
 import 'package:todouapp/features/auth/domain/usecases/save_pin.dart';
 import 'package:todouapp/features/auth/domain/usecases/set_pin_setup_skipped.dart';
+import 'package:todouapp/features/auth/domain/usecases/verify_pin.dart';
 import 'package:todouapp/features/auth/presentation/cubit/pin_state.dart';
 import 'package:todouapp/core/utils/secure_storage.dart';
 
@@ -94,6 +96,14 @@ Future<void> setupAuthFeature() async {
     () => SetPinSetupSkipped(sl<IPinRepository>()),
   );
 
+  sl.registerLazySingleton(
+    () => VerifyPin(sl<IPinRepository>()),
+  );
+
+  sl.registerLazySingleton(
+    () => GetPinStatus(sl<IPinRepository>()),
+  );
+
   // ===== BLOC =====
   sl.registerFactory(
     () => AuthBloc(
@@ -133,6 +143,7 @@ Future<void> setupAuthFeature() async {
     (mode, _) => PinCubit(
       savePin: sl<SavePin>(),
       setPinSetupSkipped: sl<SetPinSetupSkipped>(),
+      verifyPin: mode == PinMode.verify ? sl<VerifyPin>() : null,
       mode: mode,
     ),
   );

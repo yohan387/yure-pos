@@ -3,9 +3,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:todouapp/core/constants/colors.dart';
 import 'package:todouapp/core/constants/route_constants.dart';
+import 'package:todouapp/core/di/injection.dart';
 import 'package:todouapp/core/widgets/custom_snackbar.dart';
 import 'package:todouapp/core/widgets/page_loader.dart';
 import 'package:todouapp/features/auth/domain/entities/terminal.dart';
+import 'package:todouapp/features/auth/domain/usecases/get_pin_status.dart';
+import 'package:todouapp/features/auth/domain/repositories/i_pin_repository.dart';
 import 'package:todouapp/features/auth/presentation/cubit/terminal_selection_cubit.dart';
 import 'package:todouapp/features/auth/presentation/cubit/terminal_selection_state.dart';
 
@@ -107,16 +110,37 @@ class _TerminalSelectionPageState extends State<TerminalSelectionPage> {
     return InkWell(
       onTap: () async {
         final cubit = context.read<TerminalSelectionCubit>();
+        final navigator = Navigator.of(context);
+
         cubit.selectTerminal(terminal);
         await cubit.confirmSelection();
 
         if (mounted) {
-          // Navigate to PIN setup page
-          Navigator.pushNamedAndRemoveUntil(
-            context,
-            RouteConstants.pinSetup,
-            (route) => false,
-          );
+          // Vérifier le statut du PIN pour déterminer la navigation
+          final getPinStatus = GetPinStatus(sl<IPinRepository>());
+          final pinStatus = await getPinStatus();
+
+          if (!mounted) return;
+
+          if (pinStatus.needsPinVerification) {
+            // PIN configuré → Vérifier le PIN
+            navigator.pushNamedAndRemoveUntil(
+              RouteConstants.pinVerify,
+              (route) => false,
+            );
+          } else if (pinStatus.needsPinSetup) {
+            // Pas de PIN et pas ignoré → Setup PIN
+            navigator.pushNamedAndRemoveUntil(
+              RouteConstants.pinSetup,
+              (route) => false,
+            );
+          } else {
+            // PIN ignoré → Accueil direct
+            navigator.pushNamedAndRemoveUntil(
+              RouteConstants.accueil,
+              (route) => false,
+            );
+          }
         }
       },
       borderRadius: BorderRadius.circular(12),

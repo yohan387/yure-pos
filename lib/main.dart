@@ -167,6 +167,8 @@ class TodouApp extends StatelessWidget {
               ),
           RouteConstants.pinSetup: (context) =>
               const PinPage(mode: PinMode.setup),
+          RouteConstants.pinVerify: (context) =>
+              const PinPage(mode: PinMode.verify),
           RouteConstants.accueil: (context) => AccueilPage(),
           RouteConstants.home: (context) => const HomePage(),
           RouteConstants.stripePayment: (context) {

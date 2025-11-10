@@ -1,18 +1,22 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todouapp/features/auth/domain/usecases/save_pin.dart';
 import 'package:todouapp/features/auth/domain/usecases/set_pin_setup_skipped.dart';
+import 'package:todouapp/features/auth/domain/usecases/verify_pin.dart';
 import 'package:todouapp/features/auth/presentation/cubit/pin_state.dart';
 
 class PinCubit extends Cubit<PinState> {
   final SavePin _savePin;
   final SetPinSetupSkipped _setPinSetupSkipped;
+  final VerifyPin? _verifyPin;
 
   PinCubit({
     required SavePin savePin,
     required SetPinSetupSkipped setPinSetupSkipped,
+    VerifyPin? verifyPin,
     required PinMode mode,
   })  : _savePin = savePin,
         _setPinSetupSkipped = setPinSetupSkipped,
+        _verifyPin = verifyPin,
         super(PinState(mode: mode));
 
   void addDigit(String digit) {
@@ -45,8 +49,9 @@ class PinCubit extends Cubit<PinState> {
   Future<void> _handlePinComplete(String pin) async {
     if (state.isSetupMode) {
       await _handleSetupMode(pin);
+    } else if (state.isVerifyMode) {
+      await _handleVerifyMode(pin);
     }
-    // Pour verify mode: sera implémenté dans APP-011/012
   }
 
   Future<void> _handleSetupMode(String pin) async {
@@ -95,6 +100,49 @@ class PinCubit extends Cubit<PinState> {
         errorMessage: failure.message,
       )),
       (_) => emit(state.copyWith(step: PinStep.success)),
+    );
+  }
+
+  Future<void> _handleVerifyMode(String pin) async {
+    if (_verifyPin == null) {
+      emit(state.copyWith(
+        step: PinStep.error,
+        errorMessage: 'VerifyPin use case not provided',
+      ));
+      return;
+    }
+
+    emit(state.copyWith(step: PinStep.verifying));
+
+    final result = await _verifyPin!(pin);
+    result.fold(
+      (failure) => emit(state.copyWith(
+        step: PinStep.error,
+        errorMessage: failure.message,
+      )),
+      (isValid) {
+        if (isValid) {
+          emit(state.copyWith(step: PinStep.success));
+        } else {
+          // PIN incorrect - décrémenter les tentatives
+          final newAttempts = state.attemptsLeft - 1;
+          if (newAttempts == 0) {
+            // APP-013: Plus de tentatives - sera géré dans APP-013
+            emit(state.copyWith(
+              step: PinStep.error,
+              errorMessage: 'Nombre de tentatives dépassé',
+              attemptsLeft: 0,
+            ));
+          } else {
+            emit(state.copyWith(
+              step: PinStep.incorrect,
+              errorMessage: 'Code PIN incorrect ($newAttempts ${newAttempts > 1 ? "tentatives restantes" : "tentative restante"})',
+              attemptsLeft: newAttempts,
+              currentPin: '',
+            ));
+          }
+        }
+      },
     );
   }
 }
