@@ -144,6 +144,7 @@ Future<void> setupAuthFeature() async {
       savePin: sl<SavePin>(),
       setPinSetupSkipped: sl<SetPinSetupSkipped>(),
       verifyPin: mode == PinMode.verify ? sl<VerifyPin>() : null,
+      secureStorage: mode == PinMode.verify ? sl<SecureStorageService>() : null,
       mode: mode,
     ),
   );

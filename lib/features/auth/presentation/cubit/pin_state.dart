@@ -17,6 +17,7 @@ enum PinStep {
   error,            // Erreur générale
   mismatch,         // PIN ne correspond pas (confirmation)
   incorrect,        // PIN incorrect (login)
+  blocked,          // Bloqué après 3 tentatives (APP-013)
 }
 
 class PinState extends Equatable {

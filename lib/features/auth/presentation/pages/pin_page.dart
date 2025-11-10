@@ -49,6 +49,15 @@ class _PinPageContent extends StatelessWidget {
             );
           }
 
+          // APP-013: Trop de tentatives → Déconnexion
+          if (state.step == PinStep.blocked) {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              RouteConstants.login,
+              (route) => false,
+            );
+          }
+
           // Vibration sur erreur
           if (state.showError) {
             HapticFeedback.vibrate();
