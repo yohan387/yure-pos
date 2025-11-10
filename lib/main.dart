@@ -12,6 +12,7 @@ import 'package:todouapp/core/utils/navigation.dart';
 import 'package:todouapp/core/utils/route_observer.dart';
 import 'package:todouapp/core/utils/secure_storage.dart';
 import 'package:todouapp/core/utils/token_validator.dart';
+import 'package:todouapp/features/auth/domain/repositories/i_pin_repository.dart';
 import 'package:todouapp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:todouapp/features/auth/presentation/cubit/email_login_cubit.dart';
 import 'package:todouapp/features/auth/presentation/cubit/email_otp_cubit.dart';
@@ -68,8 +69,17 @@ void main() async {
   final isAuthenticated = TokenValidator.isTokenValid(token);
   final hasCompletedOnboarding = await secureStorage.hasCompletedOnboarding();
 
+  // Vérifier le statut du PIN
+  final pinRepository = sl<IPinRepository>();
+  final hasPinConfiguredResult = await pinRepository.hasPinConfigured();
+  final hasPinConfigured = hasPinConfiguredResult.fold(
+    (failure) => false, // En cas d'erreur, considérer qu'il n'y a pas de PIN
+    (configured) => configured,
+  );
+
   log('🔐 Authentifié: $isAuthenticated');
   log('👁️ Onboarding complété: $hasCompletedOnboarding');
+  log('🔑 PIN configuré: $hasPinConfigured');
 
   // ===== 5. Écouter les événements d'expiration de token =====
   eventBus.on<TokenExpiredEvent>().listen((_) async {
@@ -97,17 +107,20 @@ void main() async {
   runApp(TodouApp(
     isAuthenticated: isAuthenticated,
     hasCompletedOnboarding: hasCompletedOnboarding,
+    hasPinConfigured: hasPinConfigured,
   ));
 }
 
 class TodouApp extends StatelessWidget {
   final bool isAuthenticated;
   final bool hasCompletedOnboarding;
+  final bool hasPinConfigured;
 
   const TodouApp({
     Key? key,
     required this.isAuthenticated,
     required this.hasCompletedOnboarding,
+    required this.hasPinConfigured,
   }) : super(key: key);
 
   String _getInitialRoute() {
@@ -116,8 +129,18 @@ class TodouApp extends StatelessWidget {
       return RouteConstants.onbording;
     }
 
-    // Si l'onboarding est complété, vérifier l'authentification
-    return isAuthenticated ? RouteConstants.accueil : RouteConstants.login;
+    // Si l'utilisateur n'est pas authentifié, montrer le login
+    if (!isAuthenticated) {
+      return RouteConstants.login;
+    }
+
+    // Si l'utilisateur est authentifié et a un PIN configuré, demander le PIN
+    if (hasPinConfigured) {
+      return RouteConstants.pinVerify;
+    }
+
+    // Sinon, aller directement à l'accueil
+    return RouteConstants.accueil;
   }
 
   @override

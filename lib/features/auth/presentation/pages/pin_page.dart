@@ -32,8 +32,8 @@ class _PinPageContent extends StatelessWidget {
         // À l'étape de confirmation, revenir à l'étape de création
         context.read<PinCubit>().restart();
       } else {
-        // À l'étape de création, quitter l'app (fermer la page)
-        Navigator.of(context).pop();
+        // À l'étape de création, quitter l'app complètement
+        SystemNavigator.pop();
       }
     } else {
       // Pour les autres modes, comportement normal
