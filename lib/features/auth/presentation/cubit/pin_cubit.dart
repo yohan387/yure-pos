@@ -186,4 +186,34 @@ class PinCubit extends Cubit<PinState> {
       },
     );
   }
+
+  Future<void> changeTerminal() async {
+    if (_deletePin == null || _secureStorage == null) {
+      emit(state.copyWith(
+        step: PinStep.error,
+        errorMessage: 'DeletePin use case or SecureStorage not provided',
+      ));
+      return;
+    }
+
+    emit(state.copyWith(step: PinStep.verifying));
+
+    // Supprimer le PIN
+    final deletePinResult = await _deletePin();
+
+    await deletePinResult.fold(
+      (failure) async {
+        emit(state.copyWith(
+          step: PinStep.error,
+          errorMessage: failure.message,
+        ));
+      },
+      (_) async {
+        // Supprimer le token
+        await _secureStorage.deleteToken();
+        // Émettre un état spécial pour navigation vers terminal selection
+        emit(state.copyWith(step: PinStep.terminalChange));
+      },
+    );
+  }
 }

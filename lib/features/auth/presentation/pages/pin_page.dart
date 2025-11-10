@@ -58,6 +58,15 @@ class _PinPageContent extends StatelessWidget {
             );
           }
 
+          // APP-015: Changement de terminal
+          if (state.step == PinStep.terminalChange) {
+            Navigator.pushNamedAndRemoveUntil(
+              context,
+              RouteConstants.terminalSelection,
+              (route) => false,
+            );
+          }
+
           // Vibration sur erreur
           if (state.showError) {
             HapticFeedback.vibrate();
@@ -167,6 +176,19 @@ class _PinPageContent extends StatelessWidget {
                     onPressed: () => context.read<PinCubit>().forgotPin(),
                     child: Text(
                       'PIN oublié ?',
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ),
+                // Bouton "Changer de terminal" (mode verify uniquement)
+                if (state.isVerifyMode)
+                  TextButton(
+                    onPressed: () => context.read<PinCubit>().changeTerminal(),
+                    child: Text(
+                      'Changer de terminal',
                       style: GoogleFonts.inter(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,

@@ -18,6 +18,7 @@ enum PinStep {
   mismatch,         // PIN ne correspond pas (confirmation)
   incorrect,        // PIN incorrect (login)
   blocked,          // Bloqué après 3 tentatives (APP-013)
+  terminalChange,   // Changement de terminal demandé (APP-015)
 }
 
 class PinState extends Equatable {
