@@ -161,6 +161,19 @@ class _PinPageContent extends StatelessWidget {
                       ),
                     ),
                   ),
+                // Bouton "PIN oublié ?" (mode verify uniquement)
+                if (state.isVerifyMode)
+                  TextButton(
+                    onPressed: () => context.read<PinCubit>().forgotPin(),
+                    child: Text(
+                      'PIN oublié ?',
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ),
                 const SizedBox(height: 40),
               ],
             ),

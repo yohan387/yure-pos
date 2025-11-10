@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todouapp/core/utils/secure_storage.dart';
+import 'package:todouapp/features/auth/domain/usecases/delete_pin.dart';
 import 'package:todouapp/features/auth/domain/usecases/save_pin.dart';
 import 'package:todouapp/features/auth/domain/usecases/set_pin_setup_skipped.dart';
 import 'package:todouapp/features/auth/domain/usecases/verify_pin.dart';
@@ -9,17 +10,20 @@ class PinCubit extends Cubit<PinState> {
   final SavePin _savePin;
   final SetPinSetupSkipped _setPinSetupSkipped;
   final VerifyPin? _verifyPin;
+  final DeletePin? _deletePin;
   final SecureStorageService? _secureStorage;
 
   PinCubit({
     required SavePin savePin,
     required SetPinSetupSkipped setPinSetupSkipped,
     VerifyPin? verifyPin,
+    DeletePin? deletePin,
     SecureStorageService? secureStorage,
     required PinMode mode,
   })  : _savePin = savePin,
         _setPinSetupSkipped = setPinSetupSkipped,
         _verifyPin = verifyPin,
+        _deletePin = deletePin,
         _secureStorage = secureStorage,
         super(PinState(mode: mode));
 
@@ -149,6 +153,36 @@ class PinCubit extends Cubit<PinState> {
             ));
           }
         }
+      },
+    );
+  }
+
+  Future<void> forgotPin() async {
+    if (_deletePin == null || _secureStorage == null) {
+      emit(state.copyWith(
+        step: PinStep.error,
+        errorMessage: 'DeletePin use case or SecureStorage not provided',
+      ));
+      return;
+    }
+
+    emit(state.copyWith(step: PinStep.verifying));
+
+    // Supprimer le PIN
+    final deletePinResult = await _deletePin();
+
+    await deletePinResult.fold(
+      (failure) async {
+        emit(state.copyWith(
+          step: PinStep.error,
+          errorMessage: failure.message,
+        ));
+      },
+      (_) async {
+        // Supprimer le token
+        await _secureStorage.deleteToken();
+        // Émettre un état spécial pour navigation vers login
+        emit(state.copyWith(step: PinStep.blocked));
       },
     );
   }
