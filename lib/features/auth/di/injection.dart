@@ -14,9 +14,15 @@ import 'package:todouapp/features/auth/domain/usecases/verify_otp.dart';
 import 'package:todouapp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:todouapp/features/auth/presentation/cubit/email_login_cubit.dart';
 import 'package:todouapp/features/auth/presentation/cubit/email_otp_cubit.dart';
-import 'package:todouapp/features/auth/presentation/cubit/pin_creation_cubit.dart';
+import 'package:todouapp/features/auth/presentation/cubit/pin_cubit.dart';
 import 'package:todouapp/features/auth/presentation/cubit/terminal_selection_cubit.dart';
 import 'package:todouapp/features/auth/presentation/cubit/verify_email_otp_cubit.dart';
+import 'package:todouapp/features/auth/data/datasources/i_pin_local_data_source.dart';
+import 'package:todouapp/features/auth/data/datasources/pin_local_data_source.dart';
+import 'package:todouapp/features/auth/data/repositories/pin_repository_impl.dart';
+import 'package:todouapp/features/auth/domain/repositories/i_pin_repository.dart';
+import 'package:todouapp/features/auth/domain/usecases/save_pin.dart';
+import 'package:todouapp/features/auth/presentation/cubit/pin_state.dart';
 import 'package:todouapp/core/utils/secure_storage.dart';
 
 /// Setup des dépendances pour la feature Auth
@@ -68,6 +74,21 @@ Future<void> setupAuthFeature() async {
     () => GetMerchantTerminals(sl<IAuthRepository>()),
   );
 
+  // ===== PIN DATA SOURCE =====
+  sl.registerLazySingleton<IPinLocalDataSource>(
+    () => PinLocalDataSource(sl<SecureStorageService>()),
+  );
+
+  // ===== PIN REPOSITORY =====
+  sl.registerLazySingleton<IPinRepository>(
+    () => PinRepositoryImpl(sl<IPinLocalDataSource>()),
+  );
+
+  // ===== PIN USE CASES =====
+  sl.registerLazySingleton(
+    () => SavePin(sl<IPinRepository>()),
+  );
+
   // ===== BLOC =====
   sl.registerFactory(
     () => AuthBloc(
@@ -103,7 +124,10 @@ Future<void> setupAuthFeature() async {
     ),
   );
 
-  sl.registerFactory(
-    () => PinCreationCubit(),
+  sl.registerFactoryParam<PinCubit, PinMode, void>(
+    (mode, _) => PinCubit(
+      savePin: sl<SavePin>(),
+      mode: mode,
+    ),
   );
 }

@@ -15,14 +15,14 @@ import 'package:todouapp/core/utils/token_validator.dart';
 import 'package:todouapp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:todouapp/features/auth/presentation/cubit/email_login_cubit.dart';
 import 'package:todouapp/features/auth/presentation/cubit/email_otp_cubit.dart';
-import 'package:todouapp/features/auth/presentation/cubit/pin_creation_cubit.dart';
+import 'package:todouapp/features/auth/presentation/cubit/pin_state.dart';
 import 'package:todouapp/features/auth/presentation/cubit/terminal_selection_cubit.dart';
 import 'package:todouapp/features/auth/presentation/cubit/verify_email_otp_cubit.dart';
 import 'package:todouapp/features/auth/presentation/pages/email_login_page.dart';
 import 'package:todouapp/features/auth/presentation/pages/email_otp_page.dart';
 import 'package:todouapp/features/auth/presentation/pages/login_page.dart';
 import 'package:todouapp/features/auth/presentation/pages/otp_page.dart';
-import 'package:todouapp/features/auth/presentation/pages/pin_creation_page.dart';
+import 'package:todouapp/features/auth/presentation/pages/pin_page.dart';
 import 'package:todouapp/features/auth/presentation/pages/terminal_selection_page.dart';
 import 'package:todouapp/features/home/accueil_page.dart';
 import 'package:todouapp/features/mobile_payments/presentation/bloc/mobile_payment_bloc.dart';
@@ -165,10 +165,8 @@ class TodouApp extends StatelessWidget {
                 create: (context) => sl<TerminalSelectionCubit>(),
                 child: const TerminalSelectionPage(),
               ),
-          RouteConstants.pinCreation: (context) => BlocProvider(
-                create: (context) => sl<PinCreationCubit>(),
-                child: const PinCreationPage(),
-              ),
+          RouteConstants.pinSetup: (context) =>
+              const PinPage(mode: PinMode.setup),
           RouteConstants.accueil: (context) => AccueilPage(),
           RouteConstants.home: (context) => const HomePage(),
           RouteConstants.stripePayment: (context) {

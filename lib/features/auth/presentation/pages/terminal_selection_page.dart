@@ -111,10 +111,10 @@ class _TerminalSelectionPageState extends State<TerminalSelectionPage> {
         await cubit.confirmSelection();
 
         if (mounted) {
-          // Navigate to PIN creation page
+          // Navigate to PIN setup page
           Navigator.pushNamedAndRemoveUntil(
             context,
-            RouteConstants.pinCreation,
+            RouteConstants.pinSetup,
             (route) => false,
           );
         }
