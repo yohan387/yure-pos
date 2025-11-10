@@ -126,6 +126,19 @@ class _PinPageContent extends StatelessWidget {
                   deleteEnabled: state.canDelete,
                 ),
                 const SizedBox(height: 20),
+                // Bouton "Passer cette étape" (mode setup, étape création uniquement)
+                if (state.isSetupMode && state.isCreationStep)
+                  TextButton(
+                    onPressed: () => context.read<PinCubit>().skipSetup(),
+                    child: Text(
+                      'Passer cette étape',
+                      style: GoogleFonts.inter(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                  ),
                 // Bouton "Recommencer" uniquement si mismatch
                 if (state.step == PinStep.mismatch)
                   TextButton(

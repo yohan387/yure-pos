@@ -1,14 +1,18 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todouapp/features/auth/domain/usecases/save_pin.dart';
+import 'package:todouapp/features/auth/domain/usecases/set_pin_setup_skipped.dart';
 import 'package:todouapp/features/auth/presentation/cubit/pin_state.dart';
 
 class PinCubit extends Cubit<PinState> {
   final SavePin _savePin;
+  final SetPinSetupSkipped _setPinSetupSkipped;
 
   PinCubit({
     required SavePin savePin,
+    required SetPinSetupSkipped setPinSetupSkipped,
     required PinMode mode,
   })  : _savePin = savePin,
+        _setPinSetupSkipped = setPinSetupSkipped,
         super(PinState(mode: mode));
 
   void addDigit(String digit) {
@@ -80,5 +84,17 @@ class PinCubit extends Cubit<PinState> {
 
   void restart() {
     emit(PinState(mode: state.mode));
+  }
+
+  Future<void> skipSetup() async {
+    emit(state.copyWith(step: PinStep.verifying));
+    final result = await _setPinSetupSkipped(true);
+    result.fold(
+      (failure) => emit(state.copyWith(
+        step: PinStep.error,
+        errorMessage: failure.message,
+      )),
+      (_) => emit(state.copyWith(step: PinStep.success)),
+    );
   }
 }
