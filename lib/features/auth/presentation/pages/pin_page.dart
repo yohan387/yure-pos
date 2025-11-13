@@ -71,168 +71,181 @@ class _PinPageContent extends StatelessWidget {
 
   Widget _buildBody(BuildContext context, PinState state) {
     return BlocConsumer<PinCubit, PinState>(
-        listener: (context, state) {
-          if (state.step == PinStep.success) {
-            // Navigation selon le mode
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              RouteConstants.accueil,
-              (route) => false,
-            );
-          }
-
-          // APP-013: Trop de tentatives → Déconnexion
-          if (state.step == PinStep.blocked) {
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              RouteConstants.login,
-              (route) => false,
-            );
-          }
-
-          // APP-015: Changement de terminal
-          if (state.step == PinStep.terminalChange) {
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              RouteConstants.terminalSelection,
-              (route) => false,
-            );
-          }
-
-          // Vibration sur erreur
-          if (state.showError) {
-            HapticFeedback.vibrate();
-          }
-        },
-        builder: (context, state) {
-          return SafeArea(
-            child: Column(
-              children: [
-                const SizedBox(height: 40),
-                // Logo
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    color: Colors.grey[200],
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.lock_outline,
-                    size: 40,
-                    color: Color(0xFF080808),
-                  ),
-                ),
-                const SizedBox(height: 40),
-                // Titre dynamique
-                Text(
-                  state.title,
-                  style: GoogleFonts.inter(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w700,
-                    color: const Color(0xFF080808),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                // Sous-titre dynamique
-                if (state.subtitle.isNotEmpty)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
-                    child: Text(
-                      state.subtitle,
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w400,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ),
-                const SizedBox(height: 60),
-                // Affichage PIN
-                PinInputDisplay(filledCount: state.currentPin.length),
-                const SizedBox(height: 20),
-                // Message d'erreur
-                if (state.showError)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 32),
-                    child: Text(
-                      state.errorMessage ?? 'Erreur',
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.inter(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.red,
-                      ),
-                    ),
-                  ),
-                const Spacer(),
-                // Clavier
-                PinKeyboard(
-                  onDigitPressed: (digit) =>
-                      context.read<PinCubit>().addDigit(digit),
-                  onDeletePressed: () =>
-                      context.read<PinCubit>().deleteLastDigit(),
-                  deleteEnabled: state.canDelete,
-                ),
-                const SizedBox(height: 20),
-                // Bouton "Passer cette étape" (mode setup, étape création uniquement)
-                if (state.isSetupMode && state.isCreationStep)
-                  TextButton(
-                    onPressed: () => context.read<PinCubit>().skipSetup(),
-                    child: Text(
-                      'Passer cette étape',
-                      style: GoogleFonts.inter(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ),
-                // Bouton "Recommencer" uniquement si mismatch
-                if (state.step == PinStep.mismatch)
-                  TextButton(
-                    onPressed: () => context.read<PinCubit>().restart(),
-                    child: Text(
-                      'Recommencer',
-                      style: GoogleFonts.inter(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.red,
-                      ),
-                    ),
-                  ),
-                // Bouton "PIN oublié ?" (mode verify uniquement)
-                if (state.isVerifyMode)
-                  TextButton(
-                    onPressed: () => context.read<PinCubit>().forgotPin(),
-                    child: Text(
-                      'PIN oublié ?',
-                      style: GoogleFonts.inter(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ),
-                // Bouton "Changer de terminal" (mode verify uniquement)
-                if (state.isVerifyMode)
-                  TextButton(
-                    onPressed: () => context.read<PinCubit>().changeTerminal(),
-                    child: Text(
-                      'Changer de terminal',
-                      style: GoogleFonts.inter(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey[600],
-                      ),
-                    ),
-                  ),
-                const SizedBox(height: 40),
-              ],
-            ),
+      listener: (context, state) {
+        if (state.step == PinStep.success) {
+          // Navigation selon le mode
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            RouteConstants.accueil,
+            (route) => false,
           );
-        },
-      );
+        }
+
+        // APP-013: Trop de tentatives → Déconnexion
+        if (state.step == PinStep.blocked) {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            RouteConstants.login,
+            (route) => false,
+          );
+        }
+
+        // APP-015: Changement de terminal
+        if (state.step == PinStep.terminalChange) {
+          Navigator.pushNamedAndRemoveUntil(
+            context,
+            RouteConstants.terminalSelection,
+            (route) => false,
+          );
+        }
+
+        // Vibration sur erreur
+        if (state.showError) {
+          HapticFeedback.vibrate();
+        }
+      },
+      builder: (context, state) {
+        return SafeArea(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: constraints.maxHeight,
+                  ),
+                  child: IntrinsicHeight(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 40),
+                        // Logo
+                        Container(
+                          width: 80,
+                          height: 80,
+                          decoration: BoxDecoration(
+                            color: Colors.grey[200],
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.lock_outline,
+                            size: 40,
+                            color: Color(0xFF080808),
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+                        // Titre dynamique
+                        Text(
+                          state.title,
+                          style: GoogleFonts.inter(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w700,
+                            color: const Color(0xFF080808),
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        // Sous-titre dynamique
+                        if (state.subtitle.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 32),
+                            child: Text(
+                              state.subtitle,
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.inter(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                        const SizedBox(height: 60),
+                        // Affichage PIN
+                        PinInputDisplay(filledCount: state.currentPin.length),
+                        const SizedBox(height: 20),
+                        // Message d'erreur
+                        if (state.showError)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 32),
+                            child: Text(
+                              state.errorMessage ?? 'Erreur',
+                              textAlign: TextAlign.center,
+                              style: GoogleFonts.inter(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.red,
+                              ),
+                            ),
+                          ),
+                        const Spacer(),
+                        // Clavier
+                        PinKeyboard(
+                          onDigitPressed: (digit) =>
+                              context.read<PinCubit>().addDigit(digit),
+                          onDeletePressed: () =>
+                              context.read<PinCubit>().deleteLastDigit(),
+                          deleteEnabled: state.canDelete,
+                        ),
+                        const SizedBox(height: 20),
+                        // Bouton "Passer cette étape" (mode setup, étape création uniquement)
+                        if (state.isSetupMode && state.isCreationStep)
+                          TextButton(
+                            onPressed: () => context.read<PinCubit>().skipSetup(),
+                            child: Text(
+                              'Passer cette étape',
+                              style: GoogleFonts.inter(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                        // Bouton "Recommencer" uniquement si mismatch
+                        if (state.step == PinStep.mismatch)
+                          TextButton(
+                            onPressed: () => context.read<PinCubit>().restart(),
+                            child: Text(
+                              'Recommencer',
+                              style: GoogleFonts.inter(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.red,
+                              ),
+                            ),
+                          ),
+                        // Bouton "PIN oublié ?" (mode verify uniquement)
+                        if (state.isVerifyMode)
+                          TextButton(
+                            onPressed: () => context.read<PinCubit>().forgotPin(),
+                            child: Text(
+                              'PIN oublié ?',
+                              style: GoogleFonts.inter(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                        // Bouton "Changer de terminal" (mode verify uniquement)
+                        if (state.isVerifyMode)
+                          TextButton(
+                            onPressed: () => context.read<PinCubit>().changeTerminal(),
+                            child: Text(
+                              'Changer de terminal',
+                              style: GoogleFonts.inter(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                          ),
+                        const SizedBox(height: 40),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
+    );
   }
 }

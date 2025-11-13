@@ -44,11 +44,13 @@ class _TerminalSelectionPageState extends State<TerminalSelectionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
+        toolbarHeight: 64,
         title: Text(
-          'Sélection du terminal',
+          'Sélection terminal',
           style: GoogleFonts.inter(
-            fontSize: 18,
+            fontSize: 24,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -84,7 +86,7 @@ class _TerminalSelectionPageState extends State<TerminalSelectionPage> {
   Widget _buildTerminalsList(
       BuildContext context, TerminalSelectionState state) {
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.only(top: 4, left: 16, right: 16, bottom: 32),
       itemCount: state.terminals.length,
       itemBuilder: (context, index) {
         final terminal = state.terminals[index];
@@ -150,12 +152,12 @@ class _TerminalSelectionPageState extends State<TerminalSelectionPage> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? primaryColor : Colors.grey[300]!,
-            width: isSelected ? 2 : 1,
+            color: primaryColor,
+            width: 0.2,
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: primaryColor.withValues(alpha: 0.05),
               blurRadius: 8,
               offset: const Offset(0, 2),
             ),
@@ -175,7 +177,7 @@ class _TerminalSelectionPageState extends State<TerminalSelectionPage> {
               ),
               child: Icon(
                 Icons.point_of_sale,
-                color: isSelected ? primaryColor : Colors.grey[600],
+                color: primaryColor,
                 size: 28,
               ),
             ),
@@ -241,7 +243,7 @@ class _TerminalSelectionPageState extends State<TerminalSelectionPage> {
             ),
             // Selection Radio
             Icon(
-              isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+              Icons.navigate_next_rounded,
               color: isSelected ? primaryColor : Colors.grey[400],
               size: 24,
             ),

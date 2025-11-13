@@ -31,7 +31,8 @@
       "Bash(move RAPPORT_TESTS_UNITAIRES.md rapports)",
       "Bash(git checkout:*)",
       "Bash(git merge:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(git log:*)"
     ],
     "deny": [],
     "ask": []

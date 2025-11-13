@@ -162,10 +162,10 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                                           ),
                                           focusedBorder: OutlineInputBorder(
                                             borderRadius:
-                                                BorderRadius.circular(20.0),
+                                                BorderRadius.circular(12.0),
                                             borderSide: BorderSide(
-                                              color: Colors.grey.shade800,
-                                            ),
+                                                color: primaryColor,
+                                                width: 1.4),
                                           ),
                                         ),
                                       ),
@@ -196,18 +196,19 @@ class _EmailLoginPageState extends State<EmailLoginPage> {
                                         decoration: InputDecoration(
                                           hintText: '••••••••',
                                           border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(12),
+                                            borderRadius: BorderRadius.circular(
+                                              12,
+                                            ),
                                             borderSide: BorderSide(
                                               color: Colors.grey.shade200,
                                             ),
                                           ),
                                           focusedBorder: OutlineInputBorder(
                                             borderRadius:
-                                                BorderRadius.circular(20.0),
+                                                BorderRadius.circular(12.0),
                                             borderSide: BorderSide(
-                                              color: Colors.grey.shade800,
-                                            ),
+                                                color: primaryColor,
+                                                width: 1.4),
                                           ),
                                           suffixIcon: IconButton(
                                             icon: Icon(

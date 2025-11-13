@@ -3,10 +3,10 @@ import 'package:google_fonts/google_fonts.dart';
 
 /// Type de snackbar
 enum SnackbarType {
-  error,   // Erreur - Icône rouge
+  error, // Erreur - Icône rouge
   warning, // Attention - Icône jaune/orange
   success, // Succès - Icône verte
-  info,    // Information - Icône blanche/bleue
+  info, // Information - Icône blanche/bleue
 }
 
 class CustomSnackbar {
@@ -35,7 +35,7 @@ class CustomSnackbar {
           borderRadius: BorderRadius.circular(12),
         ),
         margin: const EdgeInsets.all(16),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         duration: duration,
         elevation: 6,
       ),
@@ -129,14 +129,14 @@ class _SnackbarContent extends StatelessWidget {
             Icon(
               icon,
               color: iconColor,
-              size: 24,
+              size: 18,
             ),
-            const SizedBox(width: 12),
+            const SizedBox(width: 4),
             Expanded(
               child: Text(
                 title,
                 style: GoogleFonts.inter(
-                  fontSize: 16,
+                  fontSize: 12,
                   fontWeight: FontWeight.w600,
                   color: Colors.white,
                 ),
@@ -144,17 +144,15 @@ class _SnackbarContent extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 8),
+
         // Ligne 2 : Message détaillé
-        Padding(
-          padding: const EdgeInsets.only(left: 36), // Aligné avec le texte du titre
-          child: Text(
-            message,
-            style: GoogleFonts.inter(
-              fontSize: 14,
-              fontWeight: FontWeight.w400,
-              color: Colors.white.withValues(alpha: 0.9),
-            ),
+        const SizedBox(height: 8),
+        Text(
+          message,
+          style: GoogleFonts.inter(
+            fontSize: 14,
+            fontWeight: FontWeight.w400,
+            color: Colors.white.withValues(alpha: 0.9),
           ),
         ),
       ],
