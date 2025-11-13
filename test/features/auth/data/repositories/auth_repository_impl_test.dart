@@ -61,7 +61,7 @@ void main() {
         when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
       });
 
-      test('should return AuthResponseModel when the call to data source is successful', () async {
+      test('should return AuthResponse entity when the call to data source is successful', () async {
         // arrange
         when(() => mockDataSource.verifyCode(any()))
             .thenAnswer((_) async => tAuthResponse);
@@ -71,7 +71,15 @@ void main() {
 
         // assert
         verify(() => mockDataSource.verifyCode(tCode));
-        expect(result, equals(Right(tAuthResponse)));
+        expect(result.isRight(), true);
+        result.fold(
+          (failure) => fail('Should return Right'),
+          (authResponse) {
+            expect(authResponse.message, tAuthResponse.message);
+            expect(authResponse.accessToken, tAuthResponse.accessToken);
+            expect(authResponse.marchandId, tAuthResponse.marchandId);
+          },
+        );
       });
 
       test('should call data source with correct code', () async {
@@ -166,7 +174,7 @@ void main() {
         when(() => mockNetworkInfo.isConnected).thenAnswer((_) async => true);
       });
 
-      test('should return AuthResponseModel when the call to data source is successful', () async {
+      test('should return AuthResponse entity when the call to data source is successful', () async {
         // arrange
         when(() => mockDataSource.verifyOtp(any(), any()))
             .thenAnswer((_) async => tAuthResponse);
@@ -180,7 +188,15 @@ void main() {
         verify(() => mockSecureStorage.saveMarchandId(any()));
         verify(() => mockSecureStorage.saveTerminalId(any()));
         verify(() => mockSecureStorage.saveMerchantName(any()));
-        expect(result, equals(Right(tAuthResponse.toEntity())));
+        expect(result.isRight(), true);
+        result.fold(
+          (failure) => fail('Should return Right'),
+          (authResponse) {
+            expect(authResponse.message, tAuthResponse.message);
+            expect(authResponse.accessToken, tAuthResponse.accessToken);
+            expect(authResponse.marchandId, tAuthResponse.marchandId);
+          },
+        );
       });
 
       test('should call data source with correct otp and code', () async {

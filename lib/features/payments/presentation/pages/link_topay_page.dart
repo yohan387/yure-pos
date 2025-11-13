@@ -10,7 +10,6 @@ import '../../../../core/widgets/custom_snackbar.dart';
 import '../../../mobile_payments/presentation/bloc/mobile_payment_bloc.dart';
 import '../../../transactions/data/models/transaction_model.dart';
 import '../bloc/stripe_payment_bloc.dart';
-import 'payment_response_page.dart';
 
 class LinkTopayPage extends StatefulWidget {
   final double amount;
@@ -161,8 +160,7 @@ class _LinkTopayPageState extends State<LinkTopayPage> {
         } else if (state is MobilePaymentError) {
           // Paiement échoué
 
-          CustomSnackbar.showError(
-              context, state.message ?? 'Échec du paiement');
+          CustomSnackbar.showError(context, state.message);
         }
       },
       child: Scaffold(

@@ -7,7 +7,6 @@ import 'package:share_plus/share_plus.dart';
 import 'package:todouapp/core/widgets/button_widget.dart';
 
 import 'package:todouapp/features/profil/presentation/bloc/profil_bloc.dart';
-import 'package:todouapp/features/transactions/presentation/bloc/transaction_bloc.dart';
 
 import '../../../../core/constants/colors.dart';
 import '../../../../core/utils/amout_format.dart';

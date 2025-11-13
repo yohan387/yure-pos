@@ -27,19 +27,29 @@ class TransactionModel {
 
   factory TransactionModel.fromJson(Map<String, dynamic> json) {
     return TransactionModel(
-      id: json['id'] ?? '',
+      id: _parseIntField(json['id']),
       amount: (json['amount'] as num).toDouble(),
       currency: json['currency'] ?? '',
       date: json['created_at'] == null
           ? DateTime.now()
           : DateTime.parse(json['created_at']),
       status: json['status'] ?? '',
-      merchantId: json['merchant_id'] ?? 0,
-      terminalId: json['terminal_id'] ?? 0,
+      merchantId: _parseIntField(json['merchant_id']),
+      terminalId: _parseIntField(json['terminal_id']),
       transactionRef: json['transaction_ref'] ?? '',
       paymentMethod: json['payment_method'] ?? 'Mobile Money',
       customerPhone: json['customer_phone'] ?? '',
       network: json['network'] ?? '',
     );
+  }
+
+  /// Helper method to parse int fields that might come as String or int
+  static int _parseIntField(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is String) {
+      return int.tryParse(value) ?? 0;
+    }
+    return 0;
   }
 }

@@ -6,8 +6,6 @@ import '../../../../core/constants/colors.dart';
 import '../../../../core/constants/route_constants.dart';
 import '../../../../core/widgets/button_widget.dart';
 import '../../../../core/widgets/custom_snackbar.dart';
-import '../../../../core/widgets/header.dart';
-import '../../../../core/widgets/my_app_bar.dart';
 import '../../../../core/widgets/page_loader.dart';
 import '../bloc/auth_bloc.dart';
 

@@ -22,15 +22,16 @@ class ApiClient {
   Future<dynamic> authenticatedRequest(Function request) async {
     final token = await secureStorage.getToken();
     log("obtenir le token $token");
-    try {
-      TokenValidator.isTokenValid(token);
-      return await request();
-    } on TokenExpiredException {
+
+    // Vérifier la validité du token
+    if (!TokenValidator.isTokenValid(token)) {
       await secureStorage.deleteToken();
       eventBus.fire(TokenExpiredEvent());
       throw ServerException(
           message: 'La session a expiré. Veuillez vous reconnecter.');
     }
+
+    return await request();
   }
 
   Future<dynamic> post(

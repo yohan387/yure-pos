@@ -3,11 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/constants/colors.dart';
 import '../../data/models/transaction_model.dart';
 import '../bloc/transaction_bloc.dart';
 import '../widgets/transaction_card.dart';
-import '../widgets/transaction_card_shimmer.dart';
 
 class SearchPage extends StatefulWidget {
   final List<TransactionModel> initialTransactions;

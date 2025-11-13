@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -12,7 +10,7 @@ import '../../../../core/utils/initials.dart';
 import '../../../../core/utils/secure_storage.dart';
 
 class ProfilPage extends StatefulWidget {
-  const ProfilPage({Key? key}) : super(key: key);
+  const ProfilPage({super.key});
 
   @override
   _ProfilPageState createState() => _ProfilPageState();

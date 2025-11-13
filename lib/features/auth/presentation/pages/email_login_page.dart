@@ -4,8 +4,6 @@ import 'package:todouapp/core/constants/colors.dart';
 import 'package:todouapp/core/constants/route_constants.dart';
 import 'package:todouapp/core/widgets/button_widget.dart';
 import 'package:todouapp/core/widgets/custom_snackbar.dart';
-import 'package:todouapp/core/widgets/header.dart';
-import 'package:todouapp/core/widgets/my_app_bar.dart';
 import 'package:todouapp/core/widgets/page_loader.dart';
 import 'package:todouapp/features/auth/presentation/cubit/email_login_cubit.dart';
 import 'package:todouapp/features/auth/presentation/cubit/email_login_state.dart';

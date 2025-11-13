@@ -1,10 +1,8 @@
 import 'dart:async';
-import 'dart:developer';
-import 'package:bloc/bloc.dart';
+
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:todouapp/features/profil/domain/usecases/get_profil.dart';
-import 'package:todouapp/features/transactions/domain/usecases/get_balance.dart';
-import 'package:todouapp/features/transactions/domain/usecases/get_transactions.dart';
 
 import '../../data/models/profil_model.dart';
 

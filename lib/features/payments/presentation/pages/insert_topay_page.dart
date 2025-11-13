@@ -7,7 +7,6 @@ import '../../../../core/constants/route_constants.dart';
 import '../../../../core/widgets/button_widget.dart';
 import '../../../mobile_payments/presentation/bloc/mobile_payment_bloc.dart';
 import '../../../nfc/scanner_reader.dart';
-import '../bloc/stripe_payment_bloc.dart';
 
 class InsertTopayPage extends StatefulWidget {
   final double amount;

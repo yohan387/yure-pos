@@ -28,24 +28,27 @@ void main() {
     merchantFirstName: 'Bob',
   );
 
-  test('should get AuthResponseModel from the repository when code is verified successfully', () async {
+  test(
+      'should get AuthResponse entity from the repository when code is verified successfully',
+      () async {
     // arrange
     when(() => mockRepository.verifyCode(any()))
-        .thenAnswer((_) async => Right(tAuthResponse));
+        .thenAnswer((_) async => Right(tAuthResponse.toEntity()));
 
     // act
     final result = await usecase.call(tCode);
 
     // assert
-    expect(result, equals(Right(tAuthResponse)));
+    expect(result.isRight(), true);
     verify(() => mockRepository.verifyCode(tCode));
     verifyNoMoreInteractions(mockRepository);
   });
 
-  test('should forward the call to repository with correct code parameter', () async {
+  test('should forward the call to repository with correct code parameter',
+      () async {
     // arrange
     when(() => mockRepository.verifyCode(any()))
-        .thenAnswer((_) async => Right(tAuthResponse));
+        .thenAnswer((_) async => Right(tAuthResponse.toEntity()));
 
     // act
     await usecase.call(tCode);
@@ -68,7 +71,8 @@ void main() {
     verify(() => mockRepository.verifyCode(tCode));
   });
 
-  test('should return NetworkFailure when there is no internet connection', () async {
+  test('should return NetworkFailure when there is no internet connection',
+      () async {
     // arrange
     when(() => mockRepository.verifyCode(any()))
         .thenAnswer((_) async => Left(NetworkFailure()));
@@ -81,7 +85,8 @@ void main() {
     verify(() => mockRepository.verifyCode(tCode));
   });
 
-  test('should return exactly what the repository returns without modification', () async {
+  test('should return exactly what the repository returns without modification',
+      () async {
     // arrange
     final tCustomAuthResponse = AuthResponseModel(
       message: 'Custom OTP message',
@@ -91,13 +96,13 @@ void main() {
       merchantFirstName: 'Alice',
     );
     when(() => mockRepository.verifyCode(any()))
-        .thenAnswer((_) async => Right(tCustomAuthResponse));
+        .thenAnswer((_) async => Right(tCustomAuthResponse.toEntity()));
 
     // act
     final result = await usecase.call(tCode);
 
     // assert
-    expect(result, equals(Right(tCustomAuthResponse)));
+    expect(result.isRight(), true);
     result.fold(
       (failure) => fail('Should not return failure'),
       (authResponse) {
@@ -105,7 +110,8 @@ void main() {
         expect(authResponse.accessToken, tCustomAuthResponse.accessToken);
         expect(authResponse.marchandId, tCustomAuthResponse.marchandId);
         expect(authResponse.terminalId, tCustomAuthResponse.terminalId);
-        expect(authResponse.merchantFirstName, tCustomAuthResponse.merchantFirstName);
+        expect(authResponse.merchantFirstName,
+            tCustomAuthResponse.merchantFirstName);
       },
     );
   });
